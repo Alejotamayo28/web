@@ -246,7 +246,18 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         >
-          <div className="p-6 space-y-2 pt-16 lg:pt-6">
+          {/* Code Background Image */}
+          <div 
+            className="absolute inset-0 pointer-events-none opacity-[0.08]"
+            style={{
+              backgroundImage: 'url(/ejemplo-codigo-2.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'left top',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+
+          <div className="p-6 space-y-2 pt-16 lg:pt-6 relative z-10">
             {/* Navigation */}
             <div className="space-y-1">
               <SidebarNavItem 

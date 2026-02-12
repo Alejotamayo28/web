@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/alejotamayo28/Downloads/portfolio-website(1)/app/layout\":[\"static/media/d8c14dc5fcaf3a63-s.p.woff2\",\"static/media/cccb76cee38030ea-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
