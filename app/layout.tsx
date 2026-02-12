@@ -16,7 +16,7 @@ const inconsolata = Inconsolata({
 })
 
 export const metadata: Metadata = {
-  title: 'Alejandro Vergara Tamayo - Backend Developer',
+  title: 'Alejandro | Desarrollador Backend',
   description: 'Backend Developer especializado en Node.js, TypeScript, PostgreSQL, Docker y AWS',
   generator: 'v0.app',
 }
