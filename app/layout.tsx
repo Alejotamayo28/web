@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${libreBaskerville.variable} ${inconsolata.variable}`}>
+    <html lang="es" className={`${libreBaskerville.variable} ${inconsolata.variable} dark`}>
       <body className="font-serif antialiased">{children}</body>
     </html>
   )
