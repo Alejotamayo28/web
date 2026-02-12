@@ -9,6 +9,7 @@ import { SidebarProjectItem } from "@/components/sidebar-project-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 import {
   Download, Github, Linkedin, Mail, MapPin,
   Home, Briefcase, Code2, GraduationCap, ChevronDown,
@@ -320,33 +321,55 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
 
         {/* Main Content */}
         <div className="flex-1 lg:pt-0 lg:ml-80 xl:ml-96">
-          {/* Home Section */}
-          <section ref={homeRef} id="home" className="min-h-screen flex flex-col items-center justify-center px-6 py-20 relative overflow-hidden">
-            <div className="absolute top-20 right-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-20 left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-            
-            <div className="text-center relative z-10 max-w-3xl space-y-6">
-              <h1 className="text-5xl md:text-7xl font-bold text-primary mb-4 text-balance">
-                {cvData.name}
-              </h1>
-              <p className="text-xl md:text-2xl text-foreground/80 leading-relaxed">
-                Backend Developer
-              </p>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Especializado en microservicios, APIs REST/gRPC/RabbitMQ, y arquitecturas cloud escalables con Node.js y AWS
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center items-center pt-4">
-                <Button onClick={handleDownloadCV} size="lg" className="flex items-center gap-2">
-                  <Download className="h-5 w-5" />
-                  Descargar CV
-                </Button>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{cvData.contact.location}</span>
+        {/* Home Section */}
+        <section ref={homeRef} id="home" className="min-h-screen flex flex-col items-center justify-center px-6 py-20 relative overflow-hidden">
+          <div className="absolute top-20 right-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+
+          <div className="relative z-10 max-w-5xl w-full">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
+              {/* Text Content - Left */}
+              <div className="text-center lg:text-left space-y-6 flex-1">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-4 text-balance">
+                  {cvData.name}
+                </h1>
+                <p className="text-xl md:text-2xl text-foreground/80 leading-relaxed">
+                  Backend Developer
+                </p>
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  Especializado en microservicios, APIs REST/gRPC/RabbitMQ, y arquitecturas cloud escalables con Node.js y AWS
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center lg:justify-start items-center pt-4">
+                  <Button onClick={handleDownloadCV} size="lg" className="flex items-center gap-2">
+                    <Download className="h-5 w-5" />
+                    Descargar CV
+                  </Button>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{cvData.contact.location}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Profile Photo - Right */}
+              <div className="flex-shrink-0">
+                <div className="relative">
+                  <div className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl">
+                    <Image
+                      src="/traje-alejandro.png"
+                      alt={cvData.name}
+                      fill
+                      className="object-cover rounded-full"
+                      priority
+                    />
+                  </div>
+                  {/* Decorative ring */}
+                  <div className="absolute -inset-2 rounded-full border-2 border-primary/10" />
                 </div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
           {/* Projects Section */}
           <section ref={projectsRef} id="projects" className="min-h-screen px-6 py-20">
