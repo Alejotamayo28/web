@@ -79,36 +79,36 @@ export default function Portfolio() {
     alert("Función de descarga de CV - Conectar con archivo PDF real");
   };
 
-  const SidebarNavItem = ({ 
-    icon: Icon, 
-    label, 
-    isActive, 
-    onClick,
-    isExpandable = false,
-    isExpanded = false
-  }: { 
-    icon: any, 
-    label: string, 
-    isActive: boolean, 
-    onClick: () => void,
-    isExpandable?: boolean,
-    isExpanded?: boolean
-  }) => (
-    <button
-      onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
-        isActive 
-          ? 'bg-primary text-primary-foreground' 
-          : 'hover:bg-accent/10 text-foreground'
-      }`}
-    >
-      <Icon className={`h-5 w-5 ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
-      <span className="flex-1 text-left font-medium">{label}</span>
-      {isExpandable && (
-        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
-      )}
-    </button>
-  );
+const SidebarNavItem = ({
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
+  isExpandable = false,
+  isExpanded = false
+}: {
+  icon: any,
+  label: string,
+  isActive: boolean,
+  onClick: () => void,
+  isExpandable?: boolean,
+  isExpanded?: boolean
+}) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+      isActive
+        ? 'bg-primary text-primary-foreground'
+        : 'hover:bg-accent/10 text-foreground'
+    }`}
+  >
+    <Icon className={`h-5 w-5 ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
+    <span className="flex-1 text-left font-medium">{label}</span>
+    {isExpandable && (
+      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+    )}
+  </button>
+);
 
   const SkillCategoryCard = ({ 
     icon: Icon, 
@@ -260,71 +260,71 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
           <div className="p-6 space-y-2 pt-16 lg:pt-6 relative z-10">
             {/* Navigation */}
             <div className="space-y-1">
-              <SidebarNavItem 
+              <SidebarNavItem
                 icon={Home}
                 label="Home"
                 isActive={activeSection === 'home'}
                 onClick={() => scrollToSection(homeRef, 'home')}
               />
-            <SidebarNavItem
-              icon={Briefcase}
-              label="Proyectos"
-              isActive={activeSection === 'projects'}
-              onClick={() => scrollToSection(projectsRef, 'projects')}
-            />
-            <SidebarNavItem
-              icon={Code2}
-              label="Habilidades"
-              isActive={activeSection === 'skills'}
-              onClick={() => scrollToSection(skillsRef, 'skills')}
-            />
-            <SidebarNavItem
-              icon={GraduationCap}
-              label="Formación"
-              isActive={activeSection === 'education'}
-              onClick={() => scrollToSection(educationRef, 'education')}
-            />
-            <SidebarNavItem
-              icon={Mail}
-              label="Contacto"
-              isActive={false}
-              isExpanded={true}
-              onClick={() => {}}
-            />
-            <div className="ml-4 pl-4 border-l-2 border-border space-y-1 py-2">
-              <a
-                href="https://github.com/Alejotamayo28"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
-              >
-                <Github className="h-4 w-4" />
-                GitHub
-              </a>
-              <a
-                href="https://www.linkedin.com/in/alejandro-vergara-tamayo-/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
-              >
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
-              </a>
-              <a
-                href={`mailto:${cvData.contact.email}`}
-                className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-                Email
-              </a>
+              <SidebarNavItem
+                icon={Briefcase}
+                label="Proyectos"
+                isActive={activeSection === 'projects'}
+                onClick={() => scrollToSection(projectsRef, 'projects')}
+              />
+              <SidebarNavItem
+                icon={Code2}
+                label="Habilidades"
+                isActive={activeSection === 'skills'}
+                onClick={() => scrollToSection(skillsRef, 'skills')}
+              />
+              <SidebarNavItem
+                icon={GraduationCap}
+                label="Formación"
+                isActive={activeSection === 'education'}
+                onClick={() => scrollToSection(educationRef, 'education')}
+              />
+              <SidebarNavItem
+                icon={Mail}
+                label="Contacto"
+                isActive={false}
+                isExpanded={true}
+                onClick={() => {}}
+              />
+              <div className="ml-4 pl-4 border-l-2 border-border space-y-1 py-2">
+                <a
+                  href="https://github.com/Alejotamayo28"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
+                >
+                  <Github className="h-4 w-4" />
+                  GitHub
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/alejandro-vergara-tamayo-/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
+                >
+                  <Linkedin className="h-4 w-4" />
+                  LinkedIn
+                </a>
+                <a
+                  href={`mailto:${cvData.contact.email}`}
+                  className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
+                >
+                  <Mail className="h-4 w-4" />
+                  Email
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      </aside>
+        </aside>
 
         {/* Overlay */}
         {isSidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 lg:hidden"
             onClick={() => setIsSidebarOpen(false)}
           />
@@ -341,11 +341,11 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
             <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
               {/* Text Content - Left */}
               <div className="text-center lg:text-left space-y-6 flex-1">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-4 text-balance">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 text-balance">
                   {cvData.name}
                 </h1>
                 <p className="text-xl md:text-2xl text-foreground/80 leading-relaxed">
-                  Backend Developer
+                  Desarrollador Backend
                 </p>
                 <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                   Especializado en microservicios, APIs REST/gRPC/RabbitMQ, y arquitecturas cloud escalables con Node.js y AWS
