@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import {
-  Download, Github, Linkedin, Mail, MapPin,
+  Download, Github, Linkedin, Mail, MapPin, FileText,
   Home, Briefcase, Code2, GraduationCap, ChevronDown,
   Menu, X, Server, Cloud, Database, FileCode2,
   LayoutGrid
@@ -22,6 +22,7 @@ export default function Portfolio() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
 
   const homeRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
@@ -75,8 +76,17 @@ export default function Portfolio() {
     setIsModalOpen(true);
   };
 
+  const handleViewCV = () => {
+    window.open('/Alejandro_Vergara_Tamayo_CV.pdf', '_blank');
+  };
+
   const handleDownloadCV = () => {
-    alert("Función de descarga de CV - Conectar con archivo PDF real");
+    const link = document.createElement('a');
+    link.href = '/Alejandro_Vergara_Tamayo_CV.pdf';
+    link.download = 'Alejandro_Vergara_Tamayo_CV.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
 const SidebarNavItem = ({
@@ -338,7 +348,7 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
           <div className="absolute bottom-20 left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 
           <div className="relative z-10 max-w-5xl w-full">
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
+            <div className="flex flex-col-reverse lg:flex-row items-center justify-center gap-8 lg:gap-16">
               {/* Text Content - Left */}
               <div className="text-center lg:text-left space-y-6 flex-1">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 text-balance">
@@ -351,10 +361,34 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
                   Especializado en microservicios, APIs REST/gRPC/RabbitMQ, y arquitecturas cloud escalables con Node.js y AWS
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start items-center pt-4">
-                  <Button onClick={handleDownloadCV} size="lg" className="flex items-center gap-2">
-                    <Download className="h-5 w-5" />
-                    Descargar CV
-                  </Button>
+              <div className="relative">
+                <Button 
+                  size="lg" 
+                  className="flex items-center gap-2"
+                  onClick={() => setIsCvMenuOpen(!isCvMenuOpen)}
+                >
+                  Curriculum
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isCvMenuOpen ? 'rotate-180' : ''}`} />
+                </Button>
+              {isCvMenuOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 ml-4 pl-4 border-l-2 border-border space-y-1 py-2 animate-in fade-in-0 zoom-in-95 duration-200 z-50">
+                  <button
+                    onClick={handleViewCV}
+                    className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 transition-colors"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Visualizar
+                  </button>
+                  <button
+                    onClick={handleDownloadCV}
+                    className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 transition-colors"
+                  >
+                    <Download className="h-4 w-4" />
+                    Descargar
+                  </button>
+                </div>
+              )}
+              </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{cvData.contact.location}</span>
