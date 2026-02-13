@@ -3,11 +3,12 @@ import { Project } from "@/types/cv";
 export const projectsData: Project[] = [
   {
     id: "zapenu",
-    title: "Zapenu - Startup Backend",
+    title: "Zapenu - Startup",
     description: "Sistema de microservicios para gestión de productos y menús de restaurantes",
     fullDescription: "Plataforma backend completa para startup de delivery que soporta +10k items por tienda con arquitectura de microservicios.",
     image: "/images/zapenu.jpg",
     tags: ["TypeScript", "Node.js", "PostgreSQL", "gRPC", "Docker", "AWS"],
+    link: "/zapenu",
     details: {
       challenge: "Diseñar una arquitectura escalable para manejar miles de productos por tienda con tiempos de respuesta rápidos y comunicación eficiente entre servicios.",
       solution: "Implementé microservicios con comunicación gRPC, modelo relacional optimizado en PostgreSQL, y sistema de archivos en Cloudflare R2. Introduje TSOA/Swagger para documentación automática.",

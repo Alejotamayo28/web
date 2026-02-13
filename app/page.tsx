@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Download, Github, Linkedin, Mail, MapPin, FileText,
   Home, Briefcase, Code2, GraduationCap, ChevronDown,
@@ -204,12 +205,9 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
       }
     };
     const Icon = getProjectIcon(project.id);
+    const isInternalLink = project.link?.startsWith('/');
     
-  return (
-    <Card
-      className="group cursor-pointer bg-card/50 border-border/30 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-      onClick={onClick}
-    >
+    const cardContent = (
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -226,8 +224,26 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    );
+  
+    if (isInternalLink && project.link) {
+      return (
+        <Link href={project.link} className="block">
+          <Card className="group cursor-pointer bg-card/50 border-border/30 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            {cardContent}
+          </Card>
+        </Link>
+      );
+    }
+    
+    return (
+      <Card
+        className="group cursor-pointer bg-card/50 border-border/30 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+        onClick={onClick}
+      >
+        {cardContent}
+      </Card>
+    );
   };
 
   return (

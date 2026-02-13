@@ -1,0 +1,820 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Server,
+  Globe,
+  Shield,
+  Database,
+  Cloud,
+  MessageSquare,
+  CreditCard,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  DollarSign,
+  Zap,
+  Lock,
+  Key,
+  Clock,
+  Users,
+  ShoppingCart,
+  Package,
+  Workflow,
+  GitBranch,
+  AlertCircle,
+  ExternalLink
+} from "lucide-react";
+
+const navigationItems = [
+  { id: "overview", label: "Overview" },
+  { id: "architecture", label: "Architecture" },
+  { id: "dataflows", label: "Data Flows" },
+  { id: "decisions", label: "Decisions" },
+  { id: "costs", label: "Costs" },
+  { id: "security", label: "Security" },
+  { id: "future", label: "Future" },
+  { id: "limitations", label: "Limitations" },
+];
+
+const overviewData = {
+  title: "Zapenu",
+  description: "Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos",
+  badges: [
+    { label: "Architecture-focused", icon: "GitBranch", color: "bg-secondary text-secondary-foreground" },
+    { label: "Real payments integration", icon: "CreditCard", color: "bg-secondary text-secondary-foreground" },
+    { label: "Cost-aware design", icon: "DollarSign", color: "bg-secondary text-secondary-foreground" },
+    { label: "Security-conscious", icon: "Shield", color: "bg-secondary text-secondary-foreground" },
+  ],
+  problem: {
+    title: "Problema Resuelto",
+    items: [
+      "Digitalización de menús con opciones personalizables",
+      "Gestión multi-tenant de múltiples locales comerciales",
+      "Procesamiento de pedidos con flujos de estado",
+      "Procesamiento de pagos en línea mediante integración con MercadoPago",
+      "Notificaciones en tiempo real a través de WhatsApp",
+    ]
+  },
+  stack: {
+    frontend: ["React 19", "Vite 6.2.x", "Tailwind CSS 3.4", "Radix UI / shadcn/ui"],
+    backend: ["Node.js 20", "Express.js 4.21.2", "TypeScript 4.9.5", "TSOA 6.6.0"],
+    database: ["PostgreSQL", "Supabase", "AWS RDS"],
+    infrastructure: ["Cloudflare Pages", "Cloudflare R2", "Docker", "VPS"],
+    payments: ["MercadoPago SDK v2.0.15"],
+    messaging: ["WhatsApp (WAHA)", "Telegram"],
+    auth: ["Supabase Auth (JWT)"],
+  }
+};
+
+const architectureData = {
+  layers: [
+    {
+      name: "Presentation Layer",
+      services: [
+        { name: "Homero", type: "Frontend Público", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Menú digital para clientes", access: "Público", cache: "5 min" },
+        { name: "Marge", type: "Frontend Admin", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Dashboard de gestión", access: "Autenticado", cache: "1 min" },
+      ]
+    },
+    {
+      name: "Edge Layer",
+      services: [
+        { name: "Cloudflare Edge", type: "CDN + Functions", stack: "Cloudflare", role: "Cache, Auth, Proxy", features: ["Cache 5min (Homero)", "Auth (Marge)", "Edge Functions"] },
+      ]
+    },
+    {
+      name: "Backend Layer",
+      services: [
+        { name: "Barto", type: "API Principal", stack: "Node.js + Express + TSOA", port: "3001", role: "Gestión de productos, órdenes, usuarios", protocol: "REST + gRPC" },
+        { name: "Omnipago", type: "Microservicio de Pagos", stack: "Node.js 16 + Express", port: "4000", role: "Integración con MercadoPago", protocol: "REST" },
+      ]
+    },
+    {
+      name: "Data Layer",
+      services: [
+        { name: "PostgreSQL (Supabase)", type: "DB Principal", role: "Datos de operaciones, productos, órdenes" },
+        { name: "PostgreSQL (RDS + omnipago)", type: "DB Pagos", role: "Schema payments_gateway" },
+        { name: "Cloudflare R2", type: "Object Storage", role: "Almacenamiento de imágenes (S3-compatible)" },
+      ]
+    },
+    {
+      name: "External Services",
+      services: [
+        { name: "MercadoPago", type: "Pasarela de pagos", role: "Procesamiento de transacciones, Webhooks" },
+        { name: "WAHA", type: "WhatsApp API", role: "Notificaciones en tiempo real", port: "3000" },
+        { name: "Supabase", type: "Auth + Storage", role: "Autenticación JWT, Row Level Security" },
+      ]
+    }
+  ]
+};
+
+const dataFlowsData = [
+  {
+    id: "order-creation",
+    title: "Creación de Pedido",
+    icon: ShoppingCart,
+    steps: [
+      { num: 1, title: "Cliente navega menú", desc: "GET /products/all/{client}/{short_id}" },
+      { num: 2, title: "Selecciona productos", desc: "Construye carrito local (React state)" },
+      { num: 3, title: "Confirma pedido", desc: "POST /orders (sin auth público)" },
+      { num: 4, title: "Procesamiento backend", desc: "Valida, calcula totales, inserta en DB" },
+      { num: 5, title: "Notificación async", desc: "WhatsApp al negocio vía WAHA" },
+    ]
+  },
+  {
+    id: "authentication",
+    title: "Autenticación Administrativa",
+    icon: Lock,
+    steps: [
+      { num: 1, title: "Admin abre Marge", desc: "Redirigido a /login" },
+      { num: 2, title: "Ingresa email", desc: "Supabase Auth: signInWithOtp()" },
+      { num: 3, title: "Magic link", desc: "Callback con session JWT" },
+      { num: 4, title: "Token storage", desc: "LocalStorage + Context API" },
+      { num: 5, title: "Requests protegidos", desc: "Bearer token en headers" },
+    ]
+  },
+  {
+    id: "payment-flow",
+    title: "Flujo de Pagos",
+    icon: CreditCard,
+    steps: [
+      { num: 1, title: "Confirmar pedido", desc: "POST /orders → PENDING_PAYMENT" },
+      { num: 2, title: "Crear preferencia", desc: "POST /omnipago/payments/create-order" },
+      { num: 3, title: "Redirect a MP", desc: "init_point → checkout MercadoPago" },
+      { num: 4, title: "Webhook", desc: "POST /payments/payment-webhook" },
+      { num: 5, title: "Actualizar estado", desc: "PUT /orders/{id}/payment-status" },
+    ]
+  }
+];
+
+const decisionsData = [
+  {
+    decision: "Separación de Frontends (Homero vs Marge)",
+    why: "Homero público con cache agresivo, Marge con auth y datos sensibles",
+    tradeoff: "Duplicación de código, overhead de mantenimiento. vs. Independencia de deploy, optimización de bundle, seguridad por separación",
+    alternatives: "Single SPA con code-splitting"
+  },
+  {
+    decision: "Supabase como Backend-as-a-Service",
+    why: "Menor infraestructura, precio predictivo, RLS incorporado",
+    tradeoff: "Vendor lock-in, límites de conexiones, latencia en regiones no cubiertas",
+    alternatives: "Auth0 + RDS independiente, Firebase"
+  },
+  {
+    decision: "TSOA para Generación de API",
+    why: "Type safety end-to-end, OpenAPI automático, validación integrada",
+    tradeoff: "Curva de aprendizaje, menos flexible que Express puro, dependencia de tooling",
+    alternatives: "Express manual, NestJS, Fastify"
+  },
+  {
+    decision: "Cloudflare R2 vs AWS S3",
+    why: "Costo: $0 egress fees (vs AWS), S3-compatible",
+    tradeoff: "Menos maduro, menos integraciones nativas, dependencia de Cloudflare",
+    alternatives: "AWS S3, MinIO self-hosted"
+  },
+  {
+    decision: "WhatsApp (WAHA) Self-Hosted",
+    why: "Costo cero (usa WhatsApp Business API no oficial), control total",
+    tradeoff: "No oficial, puede romperse, requiere mantener sesión activa",
+    alternatives: "Twilio, MessageBird, WATI"
+  },
+  {
+    decision: "Microservicio de Pagos (Omnipago)",
+    why: "Separación de responsabilidades, aislamiento de fallas de pagos",
+    tradeoff: "Complejidad de deployment, latencia adicional (HTTP entre servicios)",
+    alternatives: "Integrado en barto (monolito)"
+  }
+];
+
+const costsData = {
+  baseline: [
+    { component: "VPS Backend (barto)", provider: "AWS/GCP/Otros", model: "Compute instance (ARM64)", estimate: "$5-20/mes" },
+    { component: "VPS Backend (omnipago)", provider: "AWS/GCP/Otros", model: "Compute instance", estimate: "$5-15/mes" },
+    { component: "Supabase", provider: "Supabase", model: "Free tier / Pro", estimate: "$0-25/mes" },
+    { component: "PostgreSQL (omnipago)", provider: "Self-hosted", model: "Shared con VPS", estimate: "$0 (marginal)" },
+    { component: "Cloudflare R2", provider: "Cloudflare", model: "Storage + Class A/B ops", estimate: "$0-5/mes" },
+    { component: "Cloudflare Pages", provider: "Cloudflare", model: "Free tier", estimate: "$0" },
+    { component: "WhatsApp WAHA", provider: "Self-hosted", model: "Infraestructura propia", estimate: "$0 (marginal)" },
+    { component: "GitHub Actions", provider: "GitHub", model: "Self-hosted", estimate: "$0" },
+    { component: "MercadoPago Fees", provider: "MercadoPago", model: "% por transacción", estimate: "2.99% + IVA" },
+  ],
+  total: "$30-80/mes",
+  drivers: [
+    { label: "MercadoPago Fees", impact: "Variable según volumen", icon: CreditCard },
+    { label: "Supabase Pro si escala", impact: "$25+/mes", icon: Database },
+    { label: "Cloudflare Pages Pro", impact: "$20/mes si 10x tráfico", icon: Cloud },
+  ],
+  risks: [
+    { scenario: "10x tráfico en Homero", risk: "Cloudflare Pages free tier limits", mitigation: "Upgrade a Pro ($20/mes)" },
+    { scenario: "100x imágenes subidas", risk: "R2 storage y operaciones", mitigation: "Límites de tamaño (10MB), compresión previa" },
+    { scenario: "1000x pedidos/día", risk: "Supabase rate limits", mitigation: "Pool tuning, potencial migración" },
+    { scenario: "Viralización WhatsApp", risk: "Ban de número WAHA", mitigation: "No identificado: fallback a email/SMS" },
+    { scenario: "Crecimiento DB", risk: "Supabase storage limits", mitigation: "Archivado, particionamiento no identificado" },
+  ]
+};
+
+const securityData = {
+  implemented: [
+    { item: "JWT (Supabase Auth)", status: "implemented" },
+    { item: "Refresh automático por Supabase client", status: "implemented" },
+    { item: "Expiración tokens (1h access, 1sem refresh)", status: "implemented" },
+    { item: "RLS en Supabase (profiles)", status: "implemented" },
+    { item: "pg-format para escaping (parcial)", status: "implemented" },
+    { item: "UUID renaming en uploads", status: "implemented" },
+    { item: "Extensión validada en uploads", status: "implemented" },
+    { item: "React DOM escaping (XSS bajo)", status: "implemented" },
+    { item: "CORS configurado", status: "implemented" },
+    { item: "Multer limits (10MB)", status: "implemented" },
+    { item: "HMAC-SHA256 webhooks", status: "implemented" },
+    { item: "Secret por cliente en webhooks", status: "implemented" },
+  ],
+  risks: [
+    { item: "Almacenamiento JWT en LocalStorage", severity: "medium", note: "Vulnerable a XSS" },
+    { item: "RBAC básico (solo scopes)", severity: "medium", note: "Roles diferenciados no claros" },
+    { item: "Ownership manual en interactors", severity: "high", note: "No identificado explícitamente" },
+    { item: "IDOR en /products/{id}, /orders/{id}", severity: "high", note: "Sin verificación de ownership" },
+    { item: "Rate Limiting no identificado", severity: "medium", note: "Endpoints login, pedidos" },
+    { item: "Self-hosted GitHub Runner", severity: "high", note: "Acceso al VPS si se compromete" },
+    { item: "WAHA no oficial", severity: "medium", note: "Susceptible a bans" },
+    { item: "Webhook Replay Attack", severity: "medium", note: "Sin validación de timestamp" },
+    { item: "Race Condition en Pagos", severity: "medium", note: "Procesamiento concurrente" },
+    { item: "Secret hardcodeado en config.json", severity: "medium", note: "Rotación manual requerida" },
+  ],
+  notImplemented: [
+    { item: "MFA", note: "No identificado" },
+    { item: "Admin vs User roles diferenciados", note: "No claro" },
+    { item: "Rate Limiting explícito", note: "Dependería de Cloudflare" },
+    { item: "Retry de webhooks", note: "No identificado" },
+    { item: "Idempotencia garantizada", note: "Webhooks pueden duplicar" },
+    { item: "Circuit breaker en MP", note: "Sin fallback" },
+    { item: "Reconciliación automática", note: "No identificado" },
+  ]
+};
+
+const variantsData = [
+  { name: "Mobile App Nativa", case: "Clientes frecuentes, notificaciones push, offline", complexity: "Alto", status: "future" },
+  { name: "Sistema de Pagos Integrado", case: "Checkout online con tarjetas, wallets", complexity: "Medio-Alto", status: "future" },
+  { name: "Multi-idioma y Multi-moneda", case: "Expansión internacional, turismo", complexity: "Medio", status: "future" },
+  { name: "Arquitectura Microservicios", case: "Escalar equipos independientes, HA", complexity: "Muy Alto", status: "future" },
+  { name: "Real-time con WebSockets", case: "Actualizaciones de pedido en tiempo real", complexity: "Medio", status: "future" },
+  { name: "White-label / SaaS Multi-tenant", case: "Vender plataforma a múltiples negocios", complexity: "Alto", status: "future" },
+];
+
+const limitationsData = [
+  { category: "Capacidades NO implementadas", items: ["Inventario en tiempo real", "Delivery/logística", "Analytics avanzados", "Multi-moneda", "Offline mode", "PWA", "Reservas de mesas", "Chat tiempo real", "API pública documentada"] },
+  { category: "Casos de uso NO cubiertos", items: ["Cadena de restaurantes", "Franquicias", "Marketplace", "Food delivery (Rappi, UberEats)", "Kioscos self-service", "Llamadas telefónicas", "Fidelización", "Multi-idioma simultáneo", "Accesibilidad WCAG", "GDPR/CCPA"] },
+  { category: "Restricciones técnicas", items: ["Single VPS - Single point of failure", "PostgreSQL único - Sin read replicas", "Sin CDN para API", "Sin cola de mensajes", "Sin cache distribuido", "Sin backups automatizados", "Sin monitoreo avanzado", "Sin feature flags", "Sin AB testing"] },
+];
+
+export default function ZapenuProjectPage() {
+  const [activeSection, setActiveSection] = useState("overview");
+  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          setActiveSection(sectionId);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    Object.keys(sectionRefs.current).forEach((key) => {
+      if (sectionRefs.current[key]) {
+        observer.observe(sectionRefs.current[key]!);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    setActiveSection(sectionId);
+    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/#projects" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Projects</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-1">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                  activeSection === item.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <div className="flex">
+        {/* Main Content */}
+        <main className="flex-1">
+          {/* Hero Section */}
+          <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-8">
+                <h1 className="text-3xl md:text-5xl font-bold text-foreground opacity-80 mb-4">{overviewData.title}</h1>
+                <p className="text-lg md:text-xl text-primary mb-8">{overviewData.description}</p>
+                <div className="grid grid-cols-2 sm:flex gap-2 mb-8">
+                  {overviewData.badges.map((badge, idx) => {
+                    const iconMap: Record<string, React.ElementType> = {
+                      GitBranch,
+                      CreditCard,
+                      DollarSign,
+                      Shield,
+                    };
+                    const Icon = iconMap[badge.icon] || Badge;
+                    return (
+                      <Badge key={idx} className={`${badge.color} flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 text-xs md:text-sm`}>
+                        <Icon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                        <span className="truncate">{badge.label}</span>
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+              </div>
+
+              {/* Problem Solved */}
+              <div className="mb-12">
+                <h2 className="text-xl md:text-2xl font-bold mb-6 text-foreground opacity-80 text-center">{overviewData.problem.title}</h2>
+                <ul className="space-y-3 max-w-2xl mx-auto">
+                  {overviewData.problem.items.map((item, idx) => (
+                    <li key={idx} className="flex gap-2 md:gap-3 text-sm md:text-base text-primary items-start justify-center">
+                      <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+          </section>
+
+          {/* Architecture Section */}
+          <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">System Architecture</h2>
+              
+              <div className="space-y-8">
+                {architectureData.layers.map((layer, layerIdx) => (
+                  <div key={layerIdx}>
+                    <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+                      <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm">{layerIdx + 1}</span>
+                      {layer.name}
+                    </h3>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {layer.services.map((service, svcIdx) => (
+                        <Card key={svcIdx} className="hover:border-primary/30 transition-colors">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="font-semibold">{service.name}</h4>
+                              {service.port && <Badge variant="outline" className="text-xs">{service.port}</Badge>}
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">{service.type}</p>
+                            <p className="text-sm text-primary mb-2">{service.role}</p>
+                            {service.stack && <Badge variant="secondary" className="text-xs mb-2">{service.stack}</Badge>}
+                            {service.access && (
+                              <div className="flex gap-2 mt-2">
+                                <Badge variant={service.access === "Público" ? "default" : "destructive"} className="text-xs">
+                                  {service.access}
+                                </Badge>
+                                {service.cache && <Badge variant="outline" className="text-xs">Cache: {service.cache}</Badge>}
+                              </div>
+                            )}
+                            {service.protocol && <Badge variant="secondary" className="text-xs mt-2">{service.protocol}</Badge>}
+                            {service.features && (
+                              <ul className="mt-2 space-y-1">
+                                {service.features.map((f, i) => (
+                                  <li key={i} className="text-xs text-muted-foreground flex gap-1">
+                                    <span>•</span> {f}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Architecture Diagram Visual */}
+              <div className="mt-16 p-8 bg-card rounded-xl border border-border">
+                <h3 className="text-xl font-semibold mb-6 text-center">Infrastructure Flow</h3>
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-20 h-20 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                      <Globe className="h-8 w-8 text-blue-500" />
+                    </div>
+                    <span className="text-sm font-medium">Clients</span>
+                    <span className="text-xs text-muted-foreground">Browser, Mobile</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-20 h-20 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                      <Cloud className="h-8 w-8 text-orange-500" />
+                    </div>
+                    <span className="text-sm font-medium">Cloudflare</span>
+                    <span className="text-xs text-muted-foreground">Edge + Cache</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-20 h-20 rounded-lg bg-green-500/20 flex items-center justify-center">
+                      <Server className="h-8 w-8 text-green-500" />
+                    </div>
+                    <span className="text-sm font-medium">Barto API</span>
+                    <span className="text-xs text-muted-foreground">Port 3001</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-20 h-20 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                      <CreditCard className="h-8 w-8 text-purple-500" />
+                    </div>
+                    <span className="text-sm font-medium">Omnipago</span>
+                    <span className="text-xs text-muted-foreground">Port 4000</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-4">
+                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                        <Database className="h-6 w-6 text-yellow-500" />
+                      </div>
+                      <div className="w-16 h-16 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                        <MessageSquare className="h-6 w-6 text-pink-500" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tech Stack */}
+              <div className="mt-16">
+                <h3 className="text-2xl font-bold mb-8 text-center">Tech Stack</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Globe className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Frontend</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {overviewData.stack.frontend.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Server className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Backend</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {overviewData.stack.backend.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Database className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Database</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {overviewData.stack.database.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Cloud className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Infrastructure</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {overviewData.stack.infrastructure.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Data Flows Section */}
+          <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-6 py-20">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">Key Data Flows</h2>
+              
+              <div className="space-y-12">
+                {dataFlowsData.map((flow, idx) => (
+                  <div key={flow.id} className="relative">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <flow.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-semibold">{flow.title}</h3>
+                    </div>
+                    <div className="grid gap-4">
+                      {flow.steps.map((step, stepIdx) => (
+                        <div key={stepIdx} className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                              {step.num}
+                            </div>
+                            {stepIdx < flow.steps.length - 1 && (
+                              <div className="w-0.5 h-12 bg-border" />
+                            )}
+                          </div>
+                          <Card className="flex-1">
+                            <CardContent className="p-4">
+                              <h4 className="font-semibold mb-1">{step.title}</h4>
+                              <p className="text-sm text-muted-foreground font-mono">{step.desc}</p>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Design Decisions Section */}
+          <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">Design Decisions & Trade-offs</h2>
+              
+              <div className="space-y-6">
+                {decisionsData.map((decision, idx) => (
+                  <Card key={idx} className="hover:border-primary/30 transition-colors">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold mb-3">{decision.decision}</h3>
+                      <div className="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="font-semibold text-green-500">Why: </span>
+                          <span className="text-muted-foreground">{decision.why}</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-orange-500">Trade-off: </span>
+                          <span className="text-muted-foreground">{decision.tradeoff}</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <span className="text-xs text-muted-foreground">Alternatives: </span>
+                        <span className="text-xs text-primary">{decision.alternatives}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Costs Section */}
+          <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-6 py-20">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">Cost Considerations</h2>
+              
+              <div className="mb-8 text-center">
+                <div className="inline-block px-8 py-4 bg-primary/10 rounded-xl">
+                  <span className="text-sm text-muted-foreground">Estimated Monthly Cost</span>
+                  <p className="text-4xl font-bold text-primary">{costsData.total}</p>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold mb-4">Cost Breakdown</h3>
+                <div className="grid gap-3">
+                  {costsData.baseline.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-3 bg-card rounded-lg border border-border">
+                      <div>
+                        <span className="font-medium">{item.component}</span>
+                        <span className="text-xs text-muted-foreground ml-2">({item.provider})</span>
+                      </div>
+                      <Badge variant="outline">{item.estimate}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-orange-500" />
+                      Main Cost Drivers
+                    </h4>
+                    <div className="space-y-3">
+                      {costsData.drivers.map((driver, idx) => (
+                        <div key={idx} className="flex gap-3">
+                          <driver.icon className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-medium text-sm">{driver.label}</span>
+                            <span className="text-xs text-muted-foreground ml-2">{driver.impact}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      Scaling Risks
+                    </h4>
+                    <div className="space-y-3">
+                      {costsData.risks.map((risk, idx) => (
+                        <div key={idx}>
+                          <span className="font-medium text-sm">{risk.scenario}</span>
+                          <p className="text-xs text-muted-foreground">Mitigation: {risk.mitigation}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </section>
+
+          {/* Security Section */}
+          <section id="security" ref={(el) => { sectionRefs.current['security'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">Security & Reliability</h2>
+              
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <Card className="border-green-500/30">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-green-500">
+                      <CheckCircle className="h-4 w-4" />
+                      Implemented
+                    </h4>
+                    <ul className="space-y-2">
+                      {securityData.implemented.map((item, idx) => (
+                        <li key={idx} className="text-sm flex gap-2">
+                          <CheckCircle className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span>{item.item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card className="border-yellow-500/30">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-yellow-500">
+                      <AlertTriangle className="h-4 w-4" />
+                      Known Risks
+                    </h4>
+                    <ul className="space-y-2">
+                      {securityData.risks.map((item, idx) => (
+                        <li key={idx} className="text-sm">
+                          <div className="flex gap-2">
+                            <AlertTriangle className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
+                            <span>{item.item}</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground ml-5">{item.note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card className="border-red-500/30">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-500">
+                      <XCircle className="h-4 w-4" />
+                      Not Implemented
+                    </h4>
+                    <ul className="space-y-2">
+                      {securityData.notImplemented.map((item, idx) => (
+                        <li key={idx} className="text-sm flex gap-2">
+                          <XCircle className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
+                          <span>{item.item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Critical Issues */}
+              <Card className="border-red-500/50">
+                <CardContent className="p-6">
+                  <h4 className="font-semibold mb-4 flex items-center gap-2 text-red-500">
+                    <AlertCircle className="h-5 w-5" />
+                    Critical Security Concerns
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-red-500/10 rounded-lg">
+                      <span className="font-medium">IDOR (Insecure Direct Object Reference)</span>
+                      <p className="text-sm text-muted-foreground mt-1">Endpoints como GET /products/{'{'}id{'}'} no muestran verificación explícita de que el usuario tenga acceso a ese recurso.</p>
+                    </div>
+                    <div className="p-3 bg-red-500/10 rounded-lg">
+                      <span className="font-medium">XSS via LocalStorage</span>
+                      <p className="text-sm text-muted-foreground mt-1">Tokens JWT almacenados en LocalStorage son accesibles a JavaScript malicioso (script injection).</p>
+                    </div>
+                    <div className="p-3 bg-red-500/10 rounded-lg">
+                      <span className="font-medium">Self-hosted GitHub Runner</span>
+                      <p className="text-sm text-muted-foreground mt-1">El runner de GitHub Actions en el VPS tiene acceso completo al servidor. Si se compromete, el atacante controla toda la infraestructura.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          {/* Future Section */}
+          <section id="future" ref={(el) => { sectionRefs.current['future'] = el; }} className="min-h-screen px-6 py-20">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">Variants & Future Evolution</h2>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                {variantsData.map((variant, idx) => (
+                  <Card key={idx} className="hover:border-primary/30 transition-colors">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold flex items-center gap-2">
+                          🔮 {variant.name}
+                        </h4>
+                        <Badge variant="outline">{variant.complexity}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{variant.case}</p>
+                      <Badge className="mt-3 bg-purple-500/20 text-purple-500">Future / Proposed</Badge>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Limitations Section */}
+          <section id="limitations" ref={(el) => { sectionRefs.current['limitations'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-12 text-center">Limitations & Non-Goals</h2>
+              
+              <div className="space-y-8">
+                {limitationsData.map((category, idx) => (
+                  <div key={idx}>
+                    <h3 className="text-xl font-semibold mb-4">{category.category}</h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {category.items.map((item, itemIdx) => (
+                        <div key={itemIdx} className="flex gap-2 p-3 bg-card rounded-lg border border-border">
+                          <XCircle className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-muted-foreground">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Footer Statement */}
+          <footer className="px-6 py-16 bg-primary/5">
+            <div className="max-w-2xl mx-auto text-center">
+              <p className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
+                "This project reflects how I design systems: pragmatic, cost-aware, and built under real constraints."
+              </p>
+              <p className="mt-4 text-muted-foreground">
+                Architecture designed for the Latin American market with focus on operational simplicity and scalability.
+              </p>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </div>
+  );
+}
