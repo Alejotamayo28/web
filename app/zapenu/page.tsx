@@ -233,7 +233,12 @@ export default function ZapenuProjectPage() {
   const [activeSection, setActiveSection] = useState("overview");
   const [isProblemExpanded, setIsProblemExpanded] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [expandedLayers, setExpandedLayers] = useState<boolean[]>([true, false, false, false, false]);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+
+  const toggleLayer = (index: number) => {
+    setExpandedLayers(prev => prev.map((isExpanded, i) => i === index ? !isExpanded : isExpanded));
+  };
 
   useEffect(() => {
     const observerOptions = {
@@ -465,159 +470,174 @@ export default function ZapenuProjectPage() {
         )}
       </section>
 
-      {/* Architecture Section */}
+{/* Architecture Section - Accordion Style */}
       <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">System Architecture</h2>
-          
+
           {/* Contenedor único para todas las capas */}
           <div className="rounded-xl border-2 border-foreground/80 overflow-hidden bg-transparent">
-{/* Header general del System Architecture */}
-          <div className="flex items-center justify-center gap-3 p-6 bg-primary/5 border-b border-border">
-            <Server className="h-6 w-6 text-primary" />
-            <h3 className="text-xl font-semibold text-foreground opacity-80">Arquitectura de 5 Capas</h3>
-          </div>
-            
-            <div className="p-6 md:p-8">
-              {/* Mappings de iconos y colores por capa */}
+            {/* Header general del System Architecture */}
+            <div className="flex items-center justify-center gap-3 p-4 md:p-6 bg-primary/5 border-b border-border">
+              <Server className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">5-Layer Architecture</h3>
+              <Badge variant="secondary" className="text-xs">{architectureData.layers.reduce((acc, layer) => acc + layer.services.length, 0)} Services</Badge>
+            </div>
+
+            <div className="p-4 md:p-6">
+              {/* Acordeones de capas */}
               {(() => {
                 const layerIcons = [Monitor, Cloud, Server, Database, ExternalLink];
-            const layerColors = [
-              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
-              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
-              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
-              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
-              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
-            ];
                 const serviceIcons: Record<string, React.ElementType> = {
                   'Homero': Globe, 'Marge': Lock, 'Cloudflare Edge': Cloud,
                   'Barto': Server, 'Omnipago': CreditCard,
                   'PostgreSQL (Supabase)': Database, 'PostgreSQL (RDS + omnipago)': Database, 'Cloudflare R2': HardDrive,
                   'MercadoPago': CreditCard, 'WAHA': MessageSquare, 'Supabase': Database
                 };
-                
+
                 return (
-                  <div className="space-y-8">
+                  <div className="space-y-0">
                     {architectureData.layers.map((layer, layerIdx) => {
                       const LayerIcon = layerIcons[layerIdx];
-                      const colors = layerColors[layerIdx];
-                      
+                      const isExpanded = expandedLayers[layerIdx];
+                      const isLast = layerIdx === architectureData.layers.length - 1;
+
                       return (
-                        <div key={layerIdx}>
-                          {/* Header de cada capa */}
-                          <div className={`flex items-center gap-3 p-3 rounded-lg ${colors.bg} border ${colors.border} mb-4`}>
-                            <div className={`w-8 h-8 rounded-lg bg-background flex items-center justify-center ${colors.text}`}>
-                              <LayerIcon className="h-4 w-4" />
+                        <div key={layerIdx} className={`${!isLast ? 'border-b border-border' : ''}`}>
+                          {/* Header clickeable del acordeón */}
+                          <button
+                            onClick={() => toggleLayer(layerIdx)}
+                            className="w-full flex items-center gap-3 p-3 md:p-4 hover:bg-accent/5 transition-colors text-left group"
+                          >
+                            {/* Icono de la capa */}
+                            <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <LayerIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                             </div>
-                            <div className="flex-1">
+                            
+                            {/* Info de la capa */}
+                            <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${colors.badge}`}>
-                                  {layerIdx + 1}
+                                <span className="text-xs md:text-sm font-bold text-primary">
+                                  {layerIdx + 1}.
                                 </span>
-                                <h4 className={`text-base font-semibold ${colors.text}`}>{layer.name}</h4>
+                                <h4 className="text-sm md:text-base font-semibold text-foreground opacity-80 truncate">
+                                  {layer.name}
+                                </h4>
                               </div>
-                              <p className="text-[10px] text-muted-foreground">{layer.services.length} services</p>
+                              <p className="text-[10px] md:text-xs text-muted-foreground truncate">
+                                {layer.services.map(s => s.name).join(' • ')}
+                              </p>
                             </div>
-                          </div>
-                          
-                          {/* Grid de servicios - Más anchos */}
-                          <div className="flex flex-wrap justify-center gap-4">
-                            {layer.services.map((service, svcIdx) => {
-                              const ServiceIcon = serviceIcons[service.name] || Server;
-                              
-                              return (
-                                <Card 
-                                  key={svcIdx} 
-                                  className={`group w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)] xl:w-[calc(25%-0.75rem)] border-l-2 ${colors.border.replace('/20', '')} hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 ${colors.bg} bg-background`}
+
+                            {/* Contador y toggle */}
+                            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                              <Badge variant="secondary" className="text-[10px] md:text-xs h-5 md:h-6">
+                                {layer.services.length}
+                              </Badge>
+                              <div className={`w-6 h-6 md:w-7 md:h-7 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                                <ChevronDown className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                              </div>
+                            </div>
+                          </button>
+
+                          {/* Contenido expandible */}
+                          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <div className="p-3 md:p-4 pt-0 md:pt-0">
+                              {/* Grid de servicios */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                                {layer.services.map((service, svcIdx) => {
+                                  const ServiceIcon = serviceIcons[service.name] || Server;
+
+                                  return (
+<Card
+                                  key={svcIdx}
+                                  className="group border-0 border-l-2 border-l-primary/40 hover:border-l-primary hover:shadow-md transition-all duration-200 bg-background"
                                 >
-                                  <CardContent className="p-4">
-                                    {/* Header del servicio */}
-                                    <div className="flex items-start gap-3 mb-3">
-                                      <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center ${colors.text} group-hover:scale-105 transition-transform flex-shrink-0`}>
-                                        <ServiceIcon className="h-5 w-5" />
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-2">
-                                          <h4 className="font-semibold text-foreground text-base truncate">{service.name}</h4>
-                                          {service.port && (
-                                            <Badge variant="outline" className="text-[10px] whitespace-nowrap flex-shrink-0 h-5 px-1.5">
-                                              {service.port}
-                                            </Badge>
-                                          )}
+                                      <CardContent className="p-3 md:p-4">
+                                        {/* Header del servicio */}
+                                        <div className="flex items-start gap-2.5 md:gap-3 mb-2.5 md:mb-3">
+                                          <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                            <ServiceIcon className="h-4 w-4 md:h-4.5 md:w-4.5 text-primary" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2">
+                                              <h5 className="text-sm md:text-base font-semibold text-foreground opacity-80 truncate">
+                                                {service.name}
+                                              </h5>
+                                              {service.port && typeof service.port === 'string' && service.port.length < 10 && (
+                                                <Badge variant="outline" className="text-[10px] h-4 md:h-5 px-1 md:px-1.5 flex-shrink-0">
+                                                  {service.port}
+                                                </Badge>
+                                              )}
+                                            </div>
+                                            <p className="text-[10px] md:text-xs text-primary truncate">{service.type}</p>
+                                          </div>
                                         </div>
-                                        <p className="text-xs text-primary">{service.type}</p>
-                                      </div>
-                                    </div>
-                                    
-                                    {/* Descripción */}
-                                    <p className="text-sm text-foreground opacity-80 mb-3 border-t border-border/50 pt-2 leading-relaxed">
-                                      {service.role}
-                                    </p>
-                                    
-                                    {/* Badges de tecnología */}
+
+                                        {/* Descripción */}
+                                        <p className="text-xs text-foreground opacity-70 mb-2.5 md:mb-3 leading-relaxed line-clamp-2">
+                                          {service.role}
+                                        </p>
+
+                                        {/* Stack */}
+                                        {service.stack && (
+                                          <div className="mb-2">
+                                            <Badge variant="secondary" className="text-[10px] h-5 px-2">
+                                              {service.stack}
+                                            </Badge>
+                                          </div>
+                                        )}
+
+{/* Badges de tecnología - Todos con variant secondary para consistencia */}
                                     <div className="flex flex-wrap gap-1.5">
-                                      {service.stack && (
-                                        <Badge variant="secondary" className={`text-[10px] h-5 px-2 truncate max-w-[120px] ${colors.badge}`}>
-                                          {service.stack}
-                                        </Badge>
-                                      )}
                                       {service.protocol && (
-                                        <Badge variant="outline" className="text-[10px] h-5 px-2 truncate max-w-[100px]">
+                                        <Badge variant="secondary" className="text-[10px] h-4 md:h-5 px-1.5 md:px-2">
                                           {service.protocol}
                                         </Badge>
                                       )}
+                                      {service.access && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-[10px] h-4 md:h-5 px-1.5 md:px-2"
+                                        >
+                                          {service.access === "Público" ? (
+                                            <Globe className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                                          ) : (
+                                            <Lock className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                                          )}
+                                          <span className="hidden sm:inline">{service.access}</span>
+                                        </Badge>
+                                      )}
+                                      {service.cache && (
+                                        <Badge variant="secondary" className="text-[10px] h-4 md:h-5 px-1.5 md:px-2">
+                                          <Clock className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                                          Cache {service.cache}
+                                        </Badge>
+                                      )}
                                     </div>
-                                    
-                                    {/* Acceso y cache */}
-                                    {(service.access || service.cache) && (
-                                      <div className="flex flex-wrap gap-1.5 mt-2">
-                                        {service.access && (
-                                          <Badge 
-                                            variant={service.access === "Público" ? "default" : "secondary"}
-                                            className="text-[10px] h-5 px-2"
+
+{/* Features - Con variant secondary para consistencia */}
+                                    {service.features && service.features.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-border/50">
+                                        {service.features.slice(0, 3).map((f, i) => (
+                                          <Badge
+                                            key={i}
+                                            variant="secondary"
+                                            className="text-[9px] md:text-[10px] h-4 md:h-5 px-1.5 md:px-2"
                                           >
-                                            {service.access === "Público" ? <Globe className="h-3 w-3 mr-1" /> : <Lock className="h-3 w-3 mr-1" />}
-                                            {service.access}
-                                          </Badge>
-                                        )}
-                                        {service.cache && (
-                                          <Badge variant="outline" className="text-[10px] h-5 px-2">
-                                            <Clock className="h-3 w-3 mr-1" />
-                                            {service.cache}
-                                          </Badge>
-                                        )}
-                                      </div>
-                                    )}
-                                    
-                                    {/* Features */}
-                                    {service.features && (
-                                      <div className="flex flex-wrap gap-1.5 mt-2">
-                                        {service.features.map((f, i) => (
-                                          <Badge 
-                                            key={i} 
-                                            variant="outline" 
-                                            className={`text-[10px] h-5 px-2 ${colors.bg}`}
-                                          >
-                                            <CheckCircle className={`h-3 w-3 mr-1 ${colors.text}`} />
-                                            {f}
+                                            <CheckCircle className="h-2 w-2 md:h-2.5 md:w-2.5 mr-0.5 md:mr-1 text-primary" />
+                                            <span className="truncate max-w-[80px] md:max-w-[100px]">{f}</span>
                                           </Badge>
                                         ))}
                                       </div>
                                     )}
-                                  </CardContent>
-                                </Card>
-                              );
-                            })}
-                          </div>
-                          
-                          {/* Separador entre capas (excepto la última) */}
-                          {layerIdx < architectureData.layers.length - 1 && (
-                            <div className="flex items-center gap-4 mt-8 mb-2 opacity-40">
-                              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                              <ArrowDown className="h-5 w-5 text-muted-foreground" />
-                              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                                      </CardContent>
+                                    </Card>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          )}
+                          </div>
                         </div>
                       );
                     })}
