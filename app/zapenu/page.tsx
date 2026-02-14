@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowDown,
   Server,
   Globe,
   Shield,
@@ -32,7 +33,9 @@ import {
   Workflow,
   GitBranch,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Monitor,
+  HardDrive
 } from "lucide-react";
 
 const navigationItems = [
@@ -41,9 +44,6 @@ const navigationItems = [
   { id: "dataflows", label: "Data Flows" },
   { id: "decisions", label: "Decisions" },
   { id: "costs", label: "Costs" },
-  { id: "security", label: "Security" },
-  { id: "future", label: "Future" },
-  { id: "limitations", label: "Limitations" },
 ];
 
 const overviewData = {
@@ -78,36 +78,36 @@ const overviewData = {
 
 const architectureData = {
   layers: [
-    {
-      name: "Presentation Layer",
+    { 
+      name: "Presentation Layer", 
       services: [
         { name: "Homero", type: "Frontend Público", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Menú digital para clientes", access: "Público", cache: "5 min" },
         { name: "Marge", type: "Frontend Admin", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Dashboard de gestión", access: "Autenticado", cache: "1 min" },
       ]
     },
-    {
-      name: "Edge Layer",
+    { 
+      name: "Edge Layer", 
       services: [
         { name: "Cloudflare Edge", type: "CDN + Functions", stack: "Cloudflare", role: "Cache, Auth, Proxy", features: ["Cache 5min (Homero)", "Auth (Marge)", "Edge Functions"] },
       ]
     },
-    {
-      name: "Backend Layer",
+    { 
+      name: "Backend Layer", 
       services: [
         { name: "Barto", type: "API Principal", stack: "Node.js + Express + TSOA", port: "3001", role: "Gestión de productos, órdenes, usuarios", protocol: "REST + gRPC" },
         { name: "Omnipago", type: "Microservicio de Pagos", stack: "Node.js 16 + Express", port: "4000", role: "Integración con MercadoPago", protocol: "REST" },
       ]
     },
-    {
-      name: "Data Layer",
+    { 
+      name: "Data Layer", 
       services: [
         { name: "PostgreSQL (Supabase)", type: "DB Principal", role: "Datos de operaciones, productos, órdenes" },
         { name: "PostgreSQL (RDS + omnipago)", type: "DB Pagos", role: "Schema payments_gateway" },
         { name: "Cloudflare R2", type: "Object Storage", role: "Almacenamiento de imágenes (S3-compatible)" },
       ]
     },
-    {
-      name: "External Services",
+    { 
+      name: "External Services", 
       services: [
         { name: "MercadoPago", type: "Pasarela de pagos", role: "Procesamiento de transacciones, Webhooks" },
         { name: "WAHA", type: "WhatsApp API", role: "Notificaciones en tiempo real", port: "3000" },
@@ -222,58 +222,7 @@ const costsData = {
   ]
 };
 
-const securityData = {
-  implemented: [
-    { item: "JWT (Supabase Auth)", status: "implemented" },
-    { item: "Refresh automático por Supabase client", status: "implemented" },
-    { item: "Expiración tokens (1h access, 1sem refresh)", status: "implemented" },
-    { item: "RLS en Supabase (profiles)", status: "implemented" },
-    { item: "pg-format para escaping (parcial)", status: "implemented" },
-    { item: "UUID renaming en uploads", status: "implemented" },
-    { item: "Extensión validada en uploads", status: "implemented" },
-    { item: "React DOM escaping (XSS bajo)", status: "implemented" },
-    { item: "CORS configurado", status: "implemented" },
-    { item: "Multer limits (10MB)", status: "implemented" },
-    { item: "HMAC-SHA256 webhooks", status: "implemented" },
-    { item: "Secret por cliente en webhooks", status: "implemented" },
-  ],
-  risks: [
-    { item: "Almacenamiento JWT en LocalStorage", severity: "medium", note: "Vulnerable a XSS" },
-    { item: "RBAC básico (solo scopes)", severity: "medium", note: "Roles diferenciados no claros" },
-    { item: "Ownership manual en interactors", severity: "high", note: "No identificado explícitamente" },
-    { item: "IDOR en /products/{id}, /orders/{id}", severity: "high", note: "Sin verificación de ownership" },
-    { item: "Rate Limiting no identificado", severity: "medium", note: "Endpoints login, pedidos" },
-    { item: "Self-hosted GitHub Runner", severity: "high", note: "Acceso al VPS si se compromete" },
-    { item: "WAHA no oficial", severity: "medium", note: "Susceptible a bans" },
-    { item: "Webhook Replay Attack", severity: "medium", note: "Sin validación de timestamp" },
-    { item: "Race Condition en Pagos", severity: "medium", note: "Procesamiento concurrente" },
-    { item: "Secret hardcodeado en config.json", severity: "medium", note: "Rotación manual requerida" },
-  ],
-  notImplemented: [
-    { item: "MFA", note: "No identificado" },
-    { item: "Admin vs User roles diferenciados", note: "No claro" },
-    { item: "Rate Limiting explícito", note: "Dependería de Cloudflare" },
-    { item: "Retry de webhooks", note: "No identificado" },
-    { item: "Idempotencia garantizada", note: "Webhooks pueden duplicar" },
-    { item: "Circuit breaker en MP", note: "Sin fallback" },
-    { item: "Reconciliación automática", note: "No identificado" },
-  ]
-};
 
-const variantsData = [
-  { name: "Mobile App Nativa", case: "Clientes frecuentes, notificaciones push, offline", complexity: "Alto", status: "future" },
-  { name: "Sistema de Pagos Integrado", case: "Checkout online con tarjetas, wallets", complexity: "Medio-Alto", status: "future" },
-  { name: "Multi-idioma y Multi-moneda", case: "Expansión internacional, turismo", complexity: "Medio", status: "future" },
-  { name: "Arquitectura Microservicios", case: "Escalar equipos independientes, HA", complexity: "Muy Alto", status: "future" },
-  { name: "Real-time con WebSockets", case: "Actualizaciones de pedido en tiempo real", complexity: "Medio", status: "future" },
-  { name: "White-label / SaaS Multi-tenant", case: "Vender plataforma a múltiples negocios", complexity: "Alto", status: "future" },
-];
-
-const limitationsData = [
-  { category: "Capacidades NO implementadas", items: ["Inventario en tiempo real", "Delivery/logística", "Analytics avanzados", "Multi-moneda", "Offline mode", "PWA", "Reservas de mesas", "Chat tiempo real", "API pública documentada"] },
-  { category: "Casos de uso NO cubiertos", items: ["Cadena de restaurantes", "Franquicias", "Marketplace", "Food delivery (Rappi, UberEats)", "Kioscos self-service", "Llamadas telefónicas", "Fidelización", "Multi-idioma simultáneo", "Accesibilidad WCAG", "GDPR/CCPA"] },
-  { category: "Restricciones técnicas", items: ["Single VPS - Single point of failure", "PostgreSQL único - Sin read replicas", "Sin CDN para API", "Sin cola de mensajes", "Sin cache distribuido", "Sin backups automatizados", "Sin monitoreo avanzado", "Sin feature flags", "Sin AB testing"] },
-];
 
 export default function ZapenuProjectPage() {
   const [activeSection, setActiveSection] = useState("overview");
@@ -381,156 +330,163 @@ export default function ZapenuProjectPage() {
               </div>
           </section>
 
-          {/* Architecture Section */}
-          <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">System Architecture</h2>
-              
-              <div className="space-y-8">
-                {architectureData.layers.map((layer, layerIdx) => (
-                  <div key={layerIdx}>
-                    <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-                      <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm">{layerIdx + 1}</span>
-                      {layer.name}
-                    </h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {layer.services.map((service, svcIdx) => (
-                        <Card key={svcIdx} className="hover:border-primary/30 transition-colors">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-semibold">{service.name}</h4>
-                              {service.port && <Badge variant="outline" className="text-xs">{service.port}</Badge>}
+      {/* Architecture Section */}
+      <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-6 py-20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">System Architecture</h2>
+          
+          {/* Mappings de iconos y colores por capa */}
+          {(() => {
+            const layerIcons = [Monitor, Cloud, Server, Database, ExternalLink];
+            const layerColors = [
+              { bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-500', badge: 'bg-blue-500/20 text-blue-600', header: 'border-blue-500' },
+              { bg: 'bg-orange-500/10', border: 'border-orange-500/20', text: 'text-orange-500', badge: 'bg-orange-500/20 text-orange-600', header: 'border-orange-500' },
+              { bg: 'bg-green-500/10', border: 'border-green-500/20', text: 'text-green-500', badge: 'bg-green-500/20 text-green-600', header: 'border-green-500' },
+              { bg: 'bg-purple-500/10', border: 'border-purple-500/20', text: 'text-purple-500', badge: 'bg-purple-500/20 text-purple-600', header: 'border-purple-500' },
+              { bg: 'bg-pink-500/10', border: 'border-pink-500/20', text: 'text-pink-500', badge: 'bg-pink-500/20 text-pink-600', header: 'border-pink-500' },
+            ];
+            const serviceIcons: Record<string, React.ElementType> = {
+              'Homero': Globe, 'Marge': Lock, 'Cloudflare Edge': Cloud,
+              'Barto': Server, 'Omnipago': CreditCard,
+              'PostgreSQL (Supabase)': Database, 'PostgreSQL (RDS + omnipago)': Database, 'Cloudflare R2': HardDrive,
+              'MercadoPago': CreditCard, 'WAHA': MessageSquare, 'Supabase': Database
+            };
+            
+            return (
+              <div className="space-y-12">
+                {architectureData.layers.map((layer, layerIdx) => {
+                  const LayerIcon = layerIcons[layerIdx];
+                  const colors = layerColors[layerIdx];
+                  
+                  return (
+                    <div key={layerIdx}>
+                      {/* Contenedor principal de la capa - Estructura rectangular centrada */}
+                      <div className={`max-w-4xl mx-auto rounded-xl border ${colors.header} bg-card overflow-hidden`}>
+                        {/* Header de la capa */}
+                        <div className={`flex items-center gap-4 p-4 ${colors.bg} border-b ${colors.border}`}>
+                          <div className={`w-10 h-10 rounded-lg bg-background flex items-center justify-center ${colors.text}`}>
+                            <LayerIcon className="h-5 w-5" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-0.5 rounded text-xs font-bold ${colors.badge}`}>
+                                {layerIdx + 1}
+                              </span>
+                              <h3 className={`text-lg font-semibold ${colors.text}`}>{layer.name}</h3>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">{service.type}</p>
-                            <p className="text-sm text-primary mb-2">{service.role}</p>
-                            {service.stack && <Badge variant="secondary" className="text-xs mb-2">{service.stack}</Badge>}
-                            {service.access && (
-                              <div className="flex gap-2 mt-2">
-                                <Badge variant={service.access === "Público" ? "default" : "destructive"} className="text-xs">
-                                  {service.access}
-                                </Badge>
-                                {service.cache && <Badge variant="outline" className="text-xs">Cache: {service.cache}</Badge>}
-                              </div>
-                            )}
-                            {service.protocol && <Badge variant="secondary" className="text-xs mt-2">{service.protocol}</Badge>}
-                            {service.features && (
-                              <ul className="mt-2 space-y-1">
-                                {service.features.map((f, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground flex gap-1">
-                                    <span>•</span> {f}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
+                            <p className="text-xs text-muted-foreground mt-0.5">{layer.services.length} services</p>
+                          </div>
+                        </div>
+                        
+                      {/* Grid de servicios dentro del contenedor - Centrado */}
+                      <div className="p-4">
+                        <div className="flex flex-wrap justify-center gap-3">
+                          {layer.services.map((service, svcIdx) => {
+                              const ServiceIcon = serviceIcons[service.name] || Server;
+                              
+                              return (
+                            <Card 
+                              key={svcIdx} 
+                              className={`group w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.5rem)] max-w-sm border-l-2 ${colors.border.replace('/20', '')} hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 ${colors.bg} bg-background`}
+                            >
+                                  <CardContent className="p-3">
+                                    {/* Header del servicio */}
+                                    <div className="flex items-start gap-2 mb-2">
+                                      <div className={`w-8 h-8 rounded bg-muted flex items-center justify-center ${colors.text} group-hover:scale-105 transition-transform flex-shrink-0`}>
+                                        <ServiceIcon className="h-4 w-4" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-1">
+                                          <h4 className="font-semibold text-foreground text-sm truncate">{service.name}</h4>
+                                          {service.port && (
+                                            <Badge variant="outline" className="text-[9px] whitespace-nowrap flex-shrink-0 h-4 px-1">
+                                              {service.port}
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <p className="text-[11px] text-primary">{service.type}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Descripción */}
+                                    <p className="text-xs text-foreground opacity-80 mb-2 border-t border-border/50 pt-1.5 leading-relaxed">
+                                      {service.role}
+                                    </p>
+                                    
+                                    {/* Badges de tecnología */}
+                                    <div className="flex flex-wrap gap-1">
+                                      {service.stack && (
+                                        <Badge variant="secondary" className={`text-[9px] h-4 px-1.5 ${colors.badge}`}>
+                                          {service.stack}
+                                        </Badge>
+                                      )}
+                                      {service.protocol && (
+                                        <Badge variant="outline" className="text-[9px] h-4 px-1.5">
+                                          {service.protocol}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Acceso y cache */}
+                                    {(service.access || service.cache) && (
+                                      <div className="flex flex-wrap gap-1 mt-1.5">
+                                        {service.access && (
+                                          <Badge 
+                                            variant={service.access === "Público" ? "default" : "secondary"}
+                                            className="text-[9px] h-4 px-1.5"
+                                          >
+                                            {service.access === "Público" ? <Globe className="h-2 w-2 mr-0.5" /> : <Lock className="h-2 w-2 mr-0.5" />}
+                                            {service.access}
+                                          </Badge>
+                                        )}
+                                        {service.cache && (
+                                          <Badge variant="outline" className="text-[9px] h-4 px-1.5">
+                                            <Clock className="h-2 w-2 mr-0.5" />
+                                            {service.cache}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    )}
+                                    
+                                    {/* Features */}
+                                    {service.features && (
+                                      <div className="flex flex-wrap gap-1 mt-1.5">
+                                        {service.features.map((f, i) => (
+                                          <Badge 
+                                            key={i} 
+                                            variant="outline" 
+                                            className={`text-[9px] h-4 px-1.5 ${colors.bg}`}
+                                          >
+                                            <CheckCircle className={`h-2 w-2 mr-0.5 ${colors.text}`} />
+                                            {f}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Separador entre capas (excepto la última) */}
+                      {layerIdx < architectureData.layers.length - 1 && (
+                        <div className="flex items-center gap-4 mt-6 opacity-40">
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                          <ArrowDown className="h-4 w-4 text-muted-foreground" />
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-
-              {/* Architecture Diagram Visual */}
-              <div className="mt-16 p-8 bg-card rounded-xl border border-border">
-                <h3 className="text-xl font-semibold mb-6 text-center">Infrastructure Flow</h3>
-                <div className="flex flex-wrap items-center justify-center gap-4">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                      <Globe className="h-8 w-8 text-blue-500" />
-                    </div>
-                    <span className="text-sm font-medium">Clients</span>
-                    <span className="text-xs text-muted-foreground">Browser, Mobile</span>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                      <Cloud className="h-8 w-8 text-orange-500" />
-                    </div>
-                    <span className="text-sm font-medium">Cloudflare</span>
-                    <span className="text-xs text-muted-foreground">Edge + Cache</span>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-green-500/20 flex items-center justify-center">
-                      <Server className="h-8 w-8 text-green-500" />
-                    </div>
-                    <span className="text-sm font-medium">Barto API</span>
-                    <span className="text-xs text-muted-foreground">Port 3001</span>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                      <CreditCard className="h-8 w-8 text-purple-500" />
-                    </div>
-                    <span className="text-sm font-medium">Omnipago</span>
-                    <span className="text-xs text-muted-foreground">Port 4000</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-4">
-                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                    <div className="flex gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                        <Database className="h-6 w-6 text-yellow-500" />
-                      </div>
-                      <div className="w-16 h-16 rounded-lg bg-pink-500/20 flex items-center justify-center">
-                        <MessageSquare className="h-6 w-6 text-pink-500" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tech Stack */}
-              <div className="mt-16">
-                <h3 className="text-2xl font-bold mb-8 text-center">Tech Stack</h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Globe className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Frontend</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.frontend.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Server className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Backend</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.backend.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Database className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Database</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.database.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Cloud className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Infrastructure</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.infrastructure.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </section>
+            );
+          })()}
+        </div>
+      </section>
 
           {/* Data Flows Section */}
           <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-6 py-20">
@@ -670,139 +626,7 @@ export default function ZapenuProjectPage() {
             </div>
           </section>
 
-          {/* Security Section */}
-          <section id="security" ref={(el) => { sectionRefs.current['security'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Security & Reliability</h2>
-              
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <Card className="border-green-500/30">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-green-500">
-                      <CheckCircle className="h-4 w-4" />
-                      Implemented
-                    </h4>
-                    <ul className="space-y-2">
-                      {securityData.implemented.map((item, idx) => (
-                        <li key={idx} className="text-sm flex gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
-                          <span>{item.item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card className="border-yellow-500/30">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-yellow-500">
-                      <AlertTriangle className="h-4 w-4" />
-                      Known Risks
-                    </h4>
-                    <ul className="space-y-2">
-                      {securityData.risks.map((item, idx) => (
-                        <li key={idx} className="text-sm">
-                          <div className="flex gap-2">
-                            <AlertTriangle className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
-                            <span>{item.item}</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground ml-5">{item.note}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card className="border-red-500/30">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-500">
-                      <XCircle className="h-4 w-4" />
-                      Not Implemented
-                    </h4>
-                    <ul className="space-y-2">
-                      {securityData.notImplemented.map((item, idx) => (
-                        <li key={idx} className="text-sm flex gap-2">
-                          <XCircle className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
-                          <span>{item.item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Critical Issues */}
-              <Card className="border-red-500/50">
-                <CardContent className="p-6">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2 text-red-500">
-                    <AlertCircle className="h-5 w-5" />
-                    Critical Security Concerns
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="p-3 bg-red-500/10 rounded-lg">
-                      <span className="font-medium">IDOR (Insecure Direct Object Reference)</span>
-                      <p className="text-sm text-muted-foreground mt-1">Endpoints como GET /products/{'{'}id{'}'} no muestran verificación explícita de que el usuario tenga acceso a ese recurso.</p>
-                    </div>
-                    <div className="p-3 bg-red-500/10 rounded-lg">
-                      <span className="font-medium">XSS via LocalStorage</span>
-                      <p className="text-sm text-muted-foreground mt-1">Tokens JWT almacenados en LocalStorage son accesibles a JavaScript malicioso (script injection).</p>
-                    </div>
-                    <div className="p-3 bg-red-500/10 rounded-lg">
-                      <span className="font-medium">Self-hosted GitHub Runner</span>
-                      <p className="text-sm text-muted-foreground mt-1">El runner de GitHub Actions en el VPS tiene acceso completo al servidor. Si se compromete, el atacante controla toda la infraestructura.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-
-          {/* Future Section */}
-          <section id="future" ref={(el) => { sectionRefs.current['future'] = el; }} className="min-h-screen px-6 py-20">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Variants & Future Evolution</h2>
-              
-              <div className="grid md:grid-cols-2 gap-4">
-                {variantsData.map((variant, idx) => (
-                  <Card key={idx} className="hover:border-primary/30 transition-colors">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          🔮 {variant.name}
-                        </h4>
-                        <Badge variant="outline">{variant.complexity}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{variant.case}</p>
-                      <Badge className="mt-3 bg-purple-500/20 text-purple-500">Future / Proposed</Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Limitations Section */}
-          <section id="limitations" ref={(el) => { sectionRefs.current['limitations'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Limitations & Non-Goals</h2>
-              
-              <div className="space-y-8">
-                {limitationsData.map((category, idx) => (
-                  <div key={idx}>
-                    <h3 className="text-xl font-semibold mb-4">{category.category}</h3>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {category.items.map((item, itemIdx) => (
-                        <div key={itemIdx} className="flex gap-2 p-3 bg-card rounded-lg border border-border">
-                          <XCircle className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-muted-foreground">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Footer Statement */}
+{/* Footer Statement */}
           <footer className="px-6 py-16 bg-primary/5">
             <div className="max-w-2xl mx-auto text-center">
               <p className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
