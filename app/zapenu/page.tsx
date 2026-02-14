@@ -40,8 +40,11 @@ import {
   Maximize2,
   X,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  LucideIcon,
+  Maximize
 } from "lucide-react";
+import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
 const navigationItems = [
   { id: "overview", label: "Overview" },
@@ -227,7 +230,238 @@ const costsData = {
   ]
 };
 
+// Component for Mermaid Accordion with Expand Modal
+interface MermaidAccordionProps {
+  title: string;
+  icon: LucideIcon;
+  diagram: string;
+  defaultOpen?: boolean;
+}
 
+function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: MermaidAccordionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollPositionRef = useRef<number>(0);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      // Restore scroll position after a brief delay to ensure DOM is updated
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 0);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+    };
+  }, [isModalOpen]);
+
+  return (
+    <>
+      <Card className="overflow-hidden border-l-4 border-l-primary">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex items-center gap-3 p-4 md:p-5 hover:bg-accent/5 transition-colors text-left"
+        >
+          <div className="w-10 h-10 md:w-11 md:h-11 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{title}</h3>
+            <p className="text-xs md:text-sm text-muted-foreground">Click to view diagram</p>
+          </div>
+          <div className={`w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+            <ChevronDown className="h-4 w-4 text-primary" />
+          </div>
+        </button>
+        
+        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="p-4 md:p-6 border-t border-border bg-muted/30">
+            <div className="bg-white rounded-lg p-4 shadow-inner overflow-x-auto relative group">
+              <MermaidDiagram chart={diagram} />
+              
+              {/* Expand Button - Desktop only: hover */}
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="hidden md:block absolute top-2 right-2 p-2 bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
+                aria-label="View full diagram"
+              >
+                <Maximize2 className="h-4 w-4 text-foreground" />
+              </button>
+            </div>
+            
+            {/* Mobile Expand Hint - Only option for mobile */}
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="w-full mt-3 flex items-center justify-center gap-2 py-2 px-4 bg-primary/5 rounded-lg border border-border/50 md:hidden hover:bg-primary/10 transition-colors"
+            >
+              <Maximize2 className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-foreground opacity-80">Tap to view full diagram</span>
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Diagram Modal */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div className="relative max-w-6xl max-h-[90vh] w-full flex flex-col">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute -top-12 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+              aria-label="Close modal"
+            >
+              <X className="h-6 w-6 text-white" />
+            </button>
+            
+            {/* Modal Title */}
+            <h3 className="text-white text-lg font-semibold mb-4 text-center">{title}</h3>
+            
+            {/* Modal Diagram */}
+            <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl p-4 md:p-6 overflow-x-auto">
+              <MermaidDiagram chart={diagram} />
+            </div>
+            
+            {/* Modal Caption */}
+            <p className="text-white/80 text-center mt-4 text-sm">
+              Click anywhere to close
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// Component for Mini Diagram Card with Modal
+interface MiniDiagramCardProps {
+  title: string;
+  diagram: string;
+}
+
+function MiniDiagramCard({ title, diagram }: MiniDiagramCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollPositionRef = useRef<number>(0);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 0);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+    };
+  }, [isModalOpen]);
+
+  return (
+    <>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="group w-full bg-card rounded-lg border-2 border-border hover:border-primary hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-[150px] sm:h-[160px] md:h-[180px]"
+      >
+        {/* Mini Diagram Preview - Fixed height */}
+        <div className="relative flex-1 bg-white h-[110px] sm:h-[120px] md:h-[130px] overflow-hidden p-1">
+          <MiniMermaidDiagram chart={diagram} />
+          
+          {/* Hover overlay with expand icon */}
+          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <Maximize className="h-4 w-4 text-primary" />
+            </div>
+          </div>
+        </div>
+        
+        {/* Title - Fixed height */}
+        <div className="h-[40px] sm:h-[40px] md:h-[50px] p-2 border-t border-border bg-card flex items-center justify-center">
+          <h3 className="text-[10px] sm:text-xs font-semibold text-foreground opacity-80 text-center line-clamp-2 leading-tight">
+            {title}
+          </h3>
+        </div>
+      </button>
+
+      {/* Full Screen Modal - With internal scroll */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-start justify-center p-3 md:p-6 overflow-y-auto"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div 
+            className="relative w-full max-w-5xl my-auto flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute -top-8 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+              aria-label="Close modal"
+            >
+              <X className="h-5 w-5 text-white" />
+            </button>
+            
+            {/* Title */}
+            <h3 className="text-white text-sm md:text-base font-semibold mb-2 text-center">{title}</h3>
+            
+            {/* Diagram - Scrollable */}
+            <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl p-2 md:p-4 overflow-x-auto">
+              <div className="min-w-[800px] md:min-w-0">
+                <MermaidDiagram chart={diagram} />
+              </div>
+            </div>
+            
+            {/* Caption */}
+            <p className="text-white/70 text-center mt-2 text-xs">
+              Click outside to close • Scroll to explore
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function ZapenuProjectPage() {
   const [activeSection, setActiveSection] = useState("overview");
@@ -649,45 +883,93 @@ export default function ZapenuProjectPage() {
         </div>
       </section>
 
-{/* Data Flows Section */}
+{/* Data Flows Section - Mini Diagram Cards */}
       <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Key Data Flows</h2>
-              
-              <div className="space-y-12">
-                {dataFlowsData.map((flow, idx) => (
-                  <div key={flow.id} className="relative">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <flow.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-primary">{flow.title}</h3>
-                    </div>
-                    <div className="grid gap-4">
-                      {flow.steps.map((step, stepIdx) => (
-                        <div key={stepIdx} className="flex gap-4">
-                          <div className="flex flex-col items-center">
-                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                              {step.num}
-                            </div>
-                            {stepIdx < flow.steps.length - 1 && (
-                              <div className="w-0.5 h-12 bg-border" />
-                            )}
-                          </div>
-                          <Card className="flex-1">
-                            <CardContent className="p-4">
-                              <h4 className="font-semibold mb-1">{step.title}</h4>
-                              <p className="text-xs md:text-sm text-muted-foreground font-mono break-words">{step.desc}</p>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold mb-10 text-foreground opacity-80 text-center">Key Data Flows</h2>
+
+          {/* Grid of Mini Cards with Diagram Previews */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+            {/* Card 1: Order Creation with Payment */}
+            <MiniDiagramCard
+              title="Order Creation with Payment"
+              diagram={`sequenceDiagram
+                participant Cliente
+                participant Homero as Homero (Frontend)
+                participant Barto as Barto (Backend)
+                participant Omnipago
+                participant MP as MercadoPago
+                participant WAHA
+                
+                Cliente->>Homero: Navega menú
+                Homero->>Barto: GET /products
+                Barto-->>Homero: Lista productos
+                Cliente->>Homero: Confirma pedido
+                Homero->>Barto: POST /orders
+                Note over Barto: Valida y guarda Estado: PENDING_PAYMENT
+                Barto-->>Homero: {order_id, total}
+                Homero->>Barto: Solicita pago
+                Barto->>Omnipago: POST /payments/create-order
+                Omnipago->>MP: Crea preferencia
+                MP-->>Omnipago: preference_id, init_point
+                Omnipago->>Omnipago: Guarda en DB
+                Omnipago-->>Barto: init_point
+                Barto-->>Homero: init_point
+                Homero->>Cliente: Redirecciona a MP
+                Cliente->>MP: Realiza pago
+                MP->>Omnipago: POST webhook
+                Note over Omnipago: Valida HMAC
+                Omnipago->>MP: GET /payments/{id}
+                MP-->>Omnipago: Estado: approved
+                Omnipago->>Omnipago: Guarda pago
+                Omnipago->>Barto: PUT /orders/{id}/payment-status
+                Barto->>Barto: Actualiza estado PENDING_PAYMENT → CREATED
+                Barto->>WAHA: Envía notificación
+                WAHA->>Cliente: WhatsApp confirmación`}
+            />
+
+            {/* Card 2: Authentication Flow */}
+            <MiniDiagramCard
+              title="Authentication Flow (Marge)"
+              diagram={`sequenceDiagram
+                participant Admin
+                participant Marge
+                participant Supabase
+                participant Barto
+                
+                Admin->>Marge: Accede a /login
+                Marge->>Admin: Formulario email
+                Admin->>Marge: Ingresa email
+                Marge->>Supabase: signInWithOtp(email)
+                Supabase-->>Admin: Envía magic link
+                Admin->>Supabase: Click en magic link
+                Supabase-->>Marge: Callback con sesión
+                Marge->>Marge: Guarda tokens en localStorage
+                Admin->>Marge: Solicita recurso protegido
+                Marge->>Barto: GET /api/protected Authorization: Bearer {jwt}
+                Barto->>Supabase: Valida JWT (JWKS)
+                Supabase-->>Barto: Token válido
+                Barto-->>Marge: Recurso solicitado`}
+            />
+
+            {/* Card 3: Order State Diagram */}
+            <MiniDiagramCard
+              title="Order State Diagram"
+              diagram={`stateDiagram-v2
+                [*] --> PENDING_PAYMENT: Crear pedido (con pago)
+                [*] --> CREATED: Crear pedido (efectivo)
+                PENDING_PAYMENT --> CREATED: Pago aprobado
+                PENDING_PAYMENT --> CANCELLED: Pago rechazado/cancelado
+                CREATED --> CONFIRMED: Negocio confirma
+                CONFIRMED --> FINALIZED: Pedido completado/entregado
+                CREATED --> CANCELLED: Cancelación
+                CONFIRMED --> CANCELLED: Cancelación
+                FINALIZED --> [*]
+                CANCELLED --> [*]`}
+            />
+          </div>
+        </div>
+      </section>
 
 {/* Design Decisions Section */}
       <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
