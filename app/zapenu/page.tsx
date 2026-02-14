@@ -35,7 +35,12 @@ import {
   AlertCircle,
   ExternalLink,
   Monitor,
-  HardDrive
+  HardDrive,
+  Layers,
+  Maximize2,
+  X,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 
 const navigationItems = [
@@ -226,6 +231,8 @@ const costsData = {
 
 export default function ZapenuProjectPage() {
   const [activeSection, setActiveSection] = useState("overview");
+  const [isProblemExpanded, setIsProblemExpanded] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   useEffect(() => {
@@ -261,167 +268,301 @@ export default function ZapenuProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/#projects" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Projects</span>
+    <div className="min-h-screen bg-background overflow-x-hidden" style={{ maxWidth: '100vw' }}>
+      {/* Header - Solo botón de regreso, sin navegación horizontal */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <Link href="/#projects" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+            <span className="text-sm sm:text-base">Back to Projects</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1">
-            {navigationItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                  activeSection === item.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex w-full overflow-x-hidden">
         {/* Main Content */}
-        <main className="flex-1">
-          {/* Hero Section */}
-          <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-8">
-                <h1 className="text-3xl md:text-5xl font-bold text-foreground opacity-80 mb-4">{overviewData.title}</h1>
-                <p className="text-lg md:text-xl text-primary mb-8">{overviewData.description}</p>
-                <div className="grid grid-cols-2 sm:flex gap-2 mb-8">
-                  {overviewData.badges.map((badge, idx) => {
-                    const iconMap: Record<string, React.ElementType> = {
-                      GitBranch,
-                      CreditCard,
-                      DollarSign,
-                      Shield,
-                    };
-                    const Icon = iconMap[badge.icon] || Badge;
-                    return (
-                      <Badge key={idx} className={`${badge.color} flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 text-xs md:text-sm`}>
-                        <Icon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                        <span className="truncate">{badge.label}</span>
-                      </Badge>
-                    );
-                  })}
+        <main className="flex-1 w-full min-w-0">
+{/* Overview Section - Three Panel Layout (Responsive) */}
+      <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="min-h-screen px-3 sm:px-4 md:px-6 py-8 md:py-20 overflow-x-hidden">
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Section Title */}
+          <div className="text-center mb-6 md:mb-10">
+            <h2 className="text-xl md:text-3xl font-bold text-foreground opacity-80">Project Overview</h2>
+            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+          </div>
+          
+          {/* Three Panel Grid Layout */}
+          <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 md:gap-6 min-w-0">
+            {/* Left Column - Two stacked boxes */}
+            <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6 min-w-0">
+              {/* Top Left Box: Project Info */}
+              <Card className="flex-1 border-l-4 border-l-primary border-y border-r border-border bg-card/50 hover:shadow-lg transition-shadow overflow-hidden">
+                <CardContent className="p-3 sm:p-4 md:p-6">
+                  <div className="flex items-start gap-2 sm:gap-3 md:gap-4 mb-3 md:mb-4 min-w-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Zap className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <h3 className="text-lg sm:text-xl md:text-3xl font-bold text-foreground opacity-80 truncate">{overviewData.title}</h3>
+                      <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">Digital Ordering Platform</p>
+                    </div>
+                  </div>
+                  <p className="text-foreground opacity-80 text-xs sm:text-sm md:text-base mb-3 md:mb-5 leading-relaxed break-words">{overviewData.description}</p>
+                  
+                  {/* Badges - Icons only on mobile, with text on desktop */}
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {overviewData.badges.slice(0, 4).map((badge, idx) => {
+                      const iconMap: Record<string, React.ElementType> = {
+                        GitBranch,
+                        CreditCard,
+                        DollarSign,
+                        Shield,
+                      };
+                      const Icon = iconMap[badge.icon] || Badge;
+                      return (
+                        <Badge 
+                          key={idx} 
+                          variant="secondary" 
+                          className="flex items-center justify-center p-1.5 sm:p-2 md:px-2.5 md:py-1.5 transition-all flex-shrink-0"
+                          title={badge.label}
+                        >
+                          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-3 md:w-3 flex-shrink-0" />
+                          <span className="hidden md:inline md:ml-1.5 text-xs font-medium">{badge.label}</span>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Bottom Left Box: Problem Solved - Accordion on mobile */}
+              <Card className="flex-1 border-l-4 border-l-primary/60 border-y border-r border-border bg-card/50 hover:shadow-lg transition-shadow overflow-hidden">
+                <CardContent className="p-0">
+                  {/* Accordion Header - Clickable on mobile */}
+                  <button 
+                    onClick={() => setIsProblemExpanded(!isProblemExpanded)}
+                    className="w-full p-3 sm:p-4 md:p-6 flex items-center justify-between text-left hover:bg-accent/5 transition-colors md:cursor-default min-w-0"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 text-primary" />
+                      </div>
+                      <h4 className="text-sm sm:text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{overviewData.problem.title}</h4>
+                    </div>
+                    <div className="md:hidden flex-shrink-0 ml-2">
+                      {isProblemExpanded ? (
+                        <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  </button>
+                  
+                  {/* Accordion Content - Always visible on desktop, toggle on mobile */}
+                  <div className={`px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 transition-all duration-300 md:block ${isProblemExpanded ? 'block' : 'hidden md:block'}`}>
+                    <ul className="space-y-2 md:space-y-3">
+                      {overviewData.problem.items.map((item, idx) => (
+                        <li key={idx} className="flex gap-2 md:gap-3 text-sm text-foreground opacity-80 items-start min-w-0">
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-[9px] sm:text-[10px] font-bold text-primary">{idx + 1}</span>
+                          </div>
+                          <span className="leading-relaxed text-xs sm:text-sm break-words flex-1 min-w-0">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Right Column - Large Image Box */}
+            <Card className="lg:col-span-3 border border-border bg-card/50 overflow-hidden hover:shadow-lg transition-shadow min-w-0">
+              <CardContent className="p-0">
+                {/* Header */}
+                <div className="px-3 sm:px-4 md:px-5 py-2.5 sm:py-3 md:py-4 border-b border-border bg-primary/5 flex items-center justify-between min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                    <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                    <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-foreground opacity-80 truncate">Infrastructure Architecture</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] sm:text-xs flex-shrink-0 ml-2">5-Layer</Badge>
                 </div>
+                
+                {/* Image Container with Expand Button */}
+                <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-background to-muted/30">
+                  <div className="relative rounded-lg border border-border/50 overflow-hidden shadow-sm bg-white group">
+                    <Image
+                      src="/zapenu-infrastructure-diagram.png"
+                      alt="Zapenu Infrastructure Architecture"
+                      width={900}
+                      height={600}
+                      className="w-full h-auto max-w-full"
+                      priority
+                      style={{ maxWidth: '100%' }}
+                    />
+                    {/* Expand Button Overlay */}
+                    <button
+                      onClick={() => setIsImageModalOpen(true)}
+                      className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 p-1.5 sm:p-2 bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
+                      aria-label="View full image"
+                    >
+                      <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-foreground" />
+                    </button>
+                  </div>
+                  
+                  {/* Mobile Expand Hint */}
+                  <button 
+                    onClick={() => setIsImageModalOpen(true)}
+                    className="w-full mt-2 sm:mt-3 flex items-center justify-center gap-2 py-1.5 sm:py-2 px-3 sm:px-4 bg-primary/5 rounded-lg border border-border/50 md:hidden hover:bg-primary/10 transition-colors"
+                  >
+                    <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                    <span className="text-[10px] sm:text-xs font-medium text-foreground opacity-80">Tap to view full diagram</span>
+                  </button>
+                  
+                  {/* Image Caption */}
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground text-center mt-2 sm:mt-3 px-2 hidden md:block">
+                    Complete system architecture: Client → Edge → Backend → Data → External Services
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        
+        {/* Image Modal/Lightbox */}
+        {isImageModalOpen && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setIsImageModalOpen(false)}
+          >
+            <div className="relative max-w-6xl max-h-[90vh] w-full flex flex-col">
+              {/* Close Button */}
+              <button
+                onClick={() => setIsImageModalOpen(false)}
+                className="absolute -top-12 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+                aria-label="Close modal"
+              >
+                <X className="h-6 w-6 text-white" />
+              </button>
+              
+              {/* Modal Image */}
+              <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl">
+                <Image
+                  src="/zapenu-infrastructure-diagram.png"
+                  alt="Zapenu Infrastructure Architecture - Full View"
+                  width={1200}
+                  height={800}
+                  className="w-full h-auto max-h-[80vh] object-contain"
+                  priority
+                />
               </div>
-              </div>
-
-              {/* Problem Solved */}
-              <div className="mb-12">
-                <h2 className="text-xl md:text-2xl font-bold mb-6 text-foreground opacity-80 text-center">{overviewData.problem.title}</h2>
-                <ul className="space-y-3 max-w-2xl mx-auto">
-                  {overviewData.problem.items.map((item, idx) => (
-                    <li key={idx} className="flex gap-2 md:gap-3 text-sm md:text-base text-primary items-start justify-center">
-                      <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-          </section>
+              
+              {/* Modal Caption */}
+              <p className="text-white/80 text-center mt-4 text-sm">
+                Zapenu Infrastructure Architecture - Click anywhere to close
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* Architecture Section */}
-      <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-6 py-20">
+      <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">System Architecture</h2>
           
-          {/* Mappings de iconos y colores por capa */}
-          {(() => {
-            const layerIcons = [Monitor, Cloud, Server, Database, ExternalLink];
-            const layerColors = [
-              { bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-500', badge: 'bg-blue-500/20 text-blue-600', header: 'border-blue-500' },
-              { bg: 'bg-orange-500/10', border: 'border-orange-500/20', text: 'text-orange-500', badge: 'bg-orange-500/20 text-orange-600', header: 'border-orange-500' },
-              { bg: 'bg-green-500/10', border: 'border-green-500/20', text: 'text-green-500', badge: 'bg-green-500/20 text-green-600', header: 'border-green-500' },
-              { bg: 'bg-purple-500/10', border: 'border-purple-500/20', text: 'text-purple-500', badge: 'bg-purple-500/20 text-purple-600', header: 'border-purple-500' },
-              { bg: 'bg-pink-500/10', border: 'border-pink-500/20', text: 'text-pink-500', badge: 'bg-pink-500/20 text-pink-600', header: 'border-pink-500' },
-            ];
-            const serviceIcons: Record<string, React.ElementType> = {
-              'Homero': Globe, 'Marge': Lock, 'Cloudflare Edge': Cloud,
-              'Barto': Server, 'Omnipago': CreditCard,
-              'PostgreSQL (Supabase)': Database, 'PostgreSQL (RDS + omnipago)': Database, 'Cloudflare R2': HardDrive,
-              'MercadoPago': CreditCard, 'WAHA': MessageSquare, 'Supabase': Database
-            };
+          {/* Contenedor único para todas las capas */}
+          <div className="rounded-xl border-2 border-foreground/80 overflow-hidden bg-transparent">
+{/* Header general del System Architecture */}
+          <div className="flex items-center justify-center gap-3 p-6 bg-primary/5 border-b border-border">
+            <Server className="h-6 w-6 text-primary" />
+            <h3 className="text-xl font-semibold text-foreground opacity-80">Arquitectura de 5 Capas</h3>
+          </div>
             
-            return (
-              <div className="space-y-12">
-                {architectureData.layers.map((layer, layerIdx) => {
-                  const LayerIcon = layerIcons[layerIdx];
-                  const colors = layerColors[layerIdx];
-                  
-                  return (
-                    <div key={layerIdx}>
-                      {/* Contenedor principal de la capa - Estructura rectangular centrada */}
-                      <div className={`max-w-4xl mx-auto rounded-xl border ${colors.header} bg-card overflow-hidden`}>
-                        {/* Header de la capa */}
-                        <div className={`flex items-center gap-4 p-4 ${colors.bg} border-b ${colors.border}`}>
-                          <div className={`w-10 h-10 rounded-lg bg-background flex items-center justify-center ${colors.text}`}>
-                            <LayerIcon className="h-5 w-5" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className={`px-2 py-0.5 rounded text-xs font-bold ${colors.badge}`}>
-                                {layerIdx + 1}
-                              </span>
-                              <h3 className={`text-lg font-semibold ${colors.text}`}>{layer.name}</h3>
+            <div className="p-6 md:p-8">
+              {/* Mappings de iconos y colores por capa */}
+              {(() => {
+                const layerIcons = [Monitor, Cloud, Server, Database, ExternalLink];
+            const layerColors = [
+              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
+              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
+              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
+              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
+              { bg: 'bg-primary/5', border: 'border-primary/20', text: 'text-primary', badge: 'bg-secondary text-secondary-foreground', header: 'border-primary' },
+            ];
+                const serviceIcons: Record<string, React.ElementType> = {
+                  'Homero': Globe, 'Marge': Lock, 'Cloudflare Edge': Cloud,
+                  'Barto': Server, 'Omnipago': CreditCard,
+                  'PostgreSQL (Supabase)': Database, 'PostgreSQL (RDS + omnipago)': Database, 'Cloudflare R2': HardDrive,
+                  'MercadoPago': CreditCard, 'WAHA': MessageSquare, 'Supabase': Database
+                };
+                
+                return (
+                  <div className="space-y-8">
+                    {architectureData.layers.map((layer, layerIdx) => {
+                      const LayerIcon = layerIcons[layerIdx];
+                      const colors = layerColors[layerIdx];
+                      
+                      return (
+                        <div key={layerIdx}>
+                          {/* Header de cada capa */}
+                          <div className={`flex items-center gap-3 p-3 rounded-lg ${colors.bg} border ${colors.border} mb-4`}>
+                            <div className={`w-8 h-8 rounded-lg bg-background flex items-center justify-center ${colors.text}`}>
+                              <LayerIcon className="h-4 w-4" />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-0.5">{layer.services.length} services</p>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${colors.badge}`}>
+                                  {layerIdx + 1}
+                                </span>
+                                <h4 className={`text-base font-semibold ${colors.text}`}>{layer.name}</h4>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground">{layer.services.length} services</p>
+                            </div>
                           </div>
-                        </div>
-                        
-                      {/* Grid de servicios dentro del contenedor - Centrado */}
-                      <div className="p-4">
-                        <div className="flex flex-wrap justify-center gap-3">
-                          {layer.services.map((service, svcIdx) => {
+                          
+                          {/* Grid de servicios - Más anchos */}
+                          <div className="flex flex-wrap justify-center gap-4">
+                            {layer.services.map((service, svcIdx) => {
                               const ServiceIcon = serviceIcons[service.name] || Server;
                               
                               return (
-                            <Card 
-                              key={svcIdx} 
-                              className={`group w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.5rem)] max-w-sm border-l-2 ${colors.border.replace('/20', '')} hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 ${colors.bg} bg-background`}
-                            >
-                                  <CardContent className="p-3">
+                                <Card 
+                                  key={svcIdx} 
+                                  className={`group w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)] xl:w-[calc(25%-0.75rem)] border-l-2 ${colors.border.replace('/20', '')} hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 ${colors.bg} bg-background`}
+                                >
+                                  <CardContent className="p-4">
                                     {/* Header del servicio */}
-                                    <div className="flex items-start gap-2 mb-2">
-                                      <div className={`w-8 h-8 rounded bg-muted flex items-center justify-center ${colors.text} group-hover:scale-105 transition-transform flex-shrink-0`}>
-                                        <ServiceIcon className="h-4 w-4" />
+                                    <div className="flex items-start gap-3 mb-3">
+                                      <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center ${colors.text} group-hover:scale-105 transition-transform flex-shrink-0`}>
+                                        <ServiceIcon className="h-5 w-5" />
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-1">
-                                          <h4 className="font-semibold text-foreground text-sm truncate">{service.name}</h4>
+                                        <div className="flex items-start justify-between gap-2">
+                                          <h4 className="font-semibold text-foreground text-base truncate">{service.name}</h4>
                                           {service.port && (
-                                            <Badge variant="outline" className="text-[9px] whitespace-nowrap flex-shrink-0 h-4 px-1">
+                                            <Badge variant="outline" className="text-[10px] whitespace-nowrap flex-shrink-0 h-5 px-1.5">
                                               {service.port}
                                             </Badge>
                                           )}
                                         </div>
-                                        <p className="text-[11px] text-primary">{service.type}</p>
+                                        <p className="text-xs text-primary">{service.type}</p>
                                       </div>
                                     </div>
                                     
                                     {/* Descripción */}
-                                    <p className="text-xs text-foreground opacity-80 mb-2 border-t border-border/50 pt-1.5 leading-relaxed">
+                                    <p className="text-sm text-foreground opacity-80 mb-3 border-t border-border/50 pt-2 leading-relaxed">
                                       {service.role}
                                     </p>
                                     
                                     {/* Badges de tecnología */}
-                                    <div className="flex flex-wrap gap-1">
+                                    <div className="flex flex-wrap gap-1.5">
                                       {service.stack && (
-                                        <Badge variant="secondary" className={`text-[9px] h-4 px-1.5 ${colors.badge}`}>
+                                        <Badge variant="secondary" className={`text-[10px] h-5 px-2 truncate max-w-[120px] ${colors.badge}`}>
                                           {service.stack}
                                         </Badge>
                                       )}
                                       {service.protocol && (
-                                        <Badge variant="outline" className="text-[9px] h-4 px-1.5">
+                                        <Badge variant="outline" className="text-[10px] h-5 px-2 truncate max-w-[100px]">
                                           {service.protocol}
                                         </Badge>
                                       )}
@@ -429,19 +570,19 @@ export default function ZapenuProjectPage() {
                                     
                                     {/* Acceso y cache */}
                                     {(service.access || service.cache) && (
-                                      <div className="flex flex-wrap gap-1 mt-1.5">
+                                      <div className="flex flex-wrap gap-1.5 mt-2">
                                         {service.access && (
                                           <Badge 
                                             variant={service.access === "Público" ? "default" : "secondary"}
-                                            className="text-[9px] h-4 px-1.5"
+                                            className="text-[10px] h-5 px-2"
                                           >
-                                            {service.access === "Público" ? <Globe className="h-2 w-2 mr-0.5" /> : <Lock className="h-2 w-2 mr-0.5" />}
+                                            {service.access === "Público" ? <Globe className="h-3 w-3 mr-1" /> : <Lock className="h-3 w-3 mr-1" />}
                                             {service.access}
                                           </Badge>
                                         )}
                                         {service.cache && (
-                                          <Badge variant="outline" className="text-[9px] h-4 px-1.5">
-                                            <Clock className="h-2 w-2 mr-0.5" />
+                                          <Badge variant="outline" className="text-[10px] h-5 px-2">
+                                            <Clock className="h-3 w-3 mr-1" />
                                             {service.cache}
                                           </Badge>
                                         )}
@@ -450,14 +591,14 @@ export default function ZapenuProjectPage() {
                                     
                                     {/* Features */}
                                     {service.features && (
-                                      <div className="flex flex-wrap gap-1 mt-1.5">
+                                      <div className="flex flex-wrap gap-1.5 mt-2">
                                         {service.features.map((f, i) => (
                                           <Badge 
                                             key={i} 
                                             variant="outline" 
-                                            className={`text-[9px] h-4 px-1.5 ${colors.bg}`}
+                                            className={`text-[10px] h-5 px-2 ${colors.bg}`}
                                           >
-                                            <CheckCircle className={`h-2 w-2 mr-0.5 ${colors.text}`} />
+                                            <CheckCircle className={`h-3 w-3 mr-1 ${colors.text}`} />
                                             {f}
                                           </Badge>
                                         ))}
@@ -468,30 +609,30 @@ export default function ZapenuProjectPage() {
                               );
                             })}
                           </div>
+                          
+                          {/* Separador entre capas (excepto la última) */}
+                          {layerIdx < architectureData.layers.length - 1 && (
+                            <div className="flex items-center gap-4 mt-8 mb-2 opacity-40">
+                              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                              <ArrowDown className="h-5 w-5 text-muted-foreground" />
+                              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                            </div>
+                          )}
                         </div>
-                      </div>
-                      
-                      {/* Separador entre capas (excepto la última) */}
-                      {layerIdx < architectureData.layers.length - 1 && (
-                        <div className="flex items-center gap-4 mt-6 opacity-40">
-                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                          <ArrowDown className="h-4 w-4 text-muted-foreground" />
-                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })()}
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
         </div>
       </section>
 
-          {/* Data Flows Section */}
-          <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-6 py-20">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Key Data Flows</h2>
+{/* Data Flows Section */}
+      <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Key Data Flows</h2>
               
               <div className="space-y-12">
                 {dataFlowsData.map((flow, idx) => (
@@ -500,7 +641,7 @@ export default function ZapenuProjectPage() {
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <flow.icon className="h-5 w-5 text-primary" />
                       </div>
-                      <h3 className="text-xl font-semibold">{flow.title}</h3>
+                      <h3 className="text-xl font-semibold text-primary">{flow.title}</h3>
                     </div>
                     <div className="grid gap-4">
                       {flow.steps.map((step, stepIdx) => (
@@ -516,7 +657,7 @@ export default function ZapenuProjectPage() {
                           <Card className="flex-1">
                             <CardContent className="p-4">
                               <h4 className="font-semibold mb-1">{step.title}</h4>
-                              <p className="text-sm text-muted-foreground font-mono">{step.desc}</p>
+                              <p className="text-xs md:text-sm text-muted-foreground font-mono break-words">{step.desc}</p>
                             </CardContent>
                           </Card>
                         </div>
@@ -528,10 +669,10 @@ export default function ZapenuProjectPage() {
             </div>
           </section>
 
-          {/* Design Decisions Section */}
-          <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Design Decisions & Trade-offs</h2>
+{/* Design Decisions Section */}
+      <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Design Decisions & Trade-offs</h2>
               
               <div className="space-y-6">
                 {decisionsData.map((decision, idx) => (
@@ -540,11 +681,11 @@ export default function ZapenuProjectPage() {
                       <h3 className="text-lg font-semibold mb-3">{decision.decision}</h3>
                       <div className="grid md:grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="font-semibold text-green-500">Why: </span>
+                          <span className="font-semibold text-primary">Why: </span>
                           <span className="text-muted-foreground">{decision.why}</span>
                         </div>
                         <div>
-                          <span className="font-semibold text-orange-500">Trade-off: </span>
+                          <span className="font-semibold text-foreground opacity-80">Trade-off: </span>
                           <span className="text-muted-foreground">{decision.tradeoff}</span>
                         </div>
                       </div>
@@ -559,10 +700,10 @@ export default function ZapenuProjectPage() {
             </div>
           </section>
 
-          {/* Costs Section */}
-          <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-6 py-20">
+{/* Costs Section */}
+      <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Cost Considerations</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Cost Considerations</h2>
               
               <div className="mb-8 text-center">
                 <div className="inline-block px-8 py-4 bg-primary/10 rounded-xl">
@@ -572,16 +713,16 @@ export default function ZapenuProjectPage() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">Cost Breakdown</h3>
+                <h3 className="text-xl font-semibold mb-4 text-primary">Cost Breakdown</h3>
                 <div className="grid gap-3">
                   {costsData.baseline.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-3 bg-card rounded-lg border border-border">
-                      <div>
-                        <span className="font-medium">{item.component}</span>
-                        <span className="text-xs text-muted-foreground ml-2">({item.provider})</span>
-                      </div>
-                      <Badge variant="outline">{item.estimate}</Badge>
-                    </div>
+<div key={idx} className="flex flex-wrap justify-between items-center gap-2 p-3 bg-card rounded-lg border border-border">
+                                  <div className="min-w-0 flex-1">
+                                    <span className="font-medium truncate block">{item.component}</span>
+                                    <span className="text-xs text-muted-foreground truncate block">({item.provider})</span>
+                                  </div>
+                                  <Badge variant="outline" className="flex-shrink-0">{item.estimate}</Badge>
+                                </div>
                   ))}
                 </div>
               </div>
@@ -590,7 +731,7 @@ export default function ZapenuProjectPage() {
                 <Card>
                   <CardContent className="p-4">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-orange-500" />
+                      <Zap className="h-4 w-4 text-primary" />
                       Main Cost Drivers
                     </h4>
                     <div className="space-y-3">
@@ -609,7 +750,7 @@ export default function ZapenuProjectPage() {
                 <Card>
                   <CardContent className="p-4">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <AlertTriangle className="h-4 w-4 text-foreground opacity-80" />
                       Scaling Risks
                     </h4>
                     <div className="space-y-3">
@@ -627,7 +768,7 @@ export default function ZapenuProjectPage() {
           </section>
 
 {/* Footer Statement */}
-          <footer className="px-6 py-16 bg-primary/5">
+      <footer className="px-4 md:px-6 py-12 md:py-16 bg-primary/5">
             <div className="max-w-2xl mx-auto text-center">
               <p className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
                 "This project reflects how I design systems: pragmatic, cost-aware, and built under real constraints."
