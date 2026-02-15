@@ -204,6 +204,89 @@ const decisionsData = [
   }
 ];
 
+// Component for Decision Accordion
+interface DecisionAccordionProps {
+  decision: {
+    decision: string;
+    why: string;
+    tradeoff: string;
+    alternatives: string;
+  };
+  index: number;
+  icon: React.ElementType;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }: DecisionAccordionProps) {
+  const isEven = index % 2 === 0;
+
+  return (
+    <div className="relative">
+      {/* Node - Positioned on the line */}
+      <div className={`absolute md:left-1/2 md:-translate-x-1/2 left-6 -translate-x-1/2 top-6 z-10`}>
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-card border-2 border-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+          <Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+        </div>
+      </div>
+
+      {/* Card Container - Alternating sides on desktop */}
+      <div className={`md:grid md:grid-cols-2 md:gap-8 pl-16 md:pl-0 ${isEven ? '' : 'md:direction-rtl'}`}>
+        {/* Spacer for alternating layout */}
+        <div className={`hidden md:block ${isEven ? 'md:order-1' : 'md:order-2'}`}></div>
+
+        {/* Card */}
+        <div className={`${isEven ? 'md:order-2 md:pl-8' : 'md:order-1 md:pr-8'}`}>
+          <Card className="border-0 border-l-4 border-l-primary/60 hover:border-l-primary hover:shadow-lg transition-all duration-300 bg-background overflow-hidden">
+            {/* Header - Clickable */}
+            <button
+              onClick={onToggle}
+              className="w-full p-4 md:p-6 flex items-start gap-3 text-left hover:bg-accent/5 transition-colors"
+            >
+              <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xs font-bold text-primary">{index + 1}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 leading-tight pr-8">
+                  {decision.decision}
+                </h3>
+              </div>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                <ChevronDown className="h-4 w-4 text-primary" />
+              </div>
+            </button>
+
+            {/* Expandable Content */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="px-4 md:px-6 pb-4 md:pb-6 border-t border-border/50">
+                {/* Why & Trade-off */}
+                <div className="space-y-3 text-sm pt-4">
+                  <div className="flex gap-2">
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Why:</span>
+                    <span className="text-muted-foreground">{decision.why}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Trade-off:</span>
+                    <span className="text-muted-foreground">{decision.tradeoff}</span>
+                  </div>
+                </div>
+
+                {/* Alternatives */}
+                <div className="mt-4 pt-3 border-t border-border/50">
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Alternatives:</span>
+                    <span className="text-muted-foreground">{decision.alternatives}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const costsData = {
 baseline: [
 { component: "VPS Backend", provider: "AWS/GCP/Otros", model: "Single VPS (barto + omnipago)", estimate: "$5-20/mes", icon: Server },
@@ -574,7 +657,12 @@ export default function ZapenuProjectPage() {
   const [isProblemExpanded, setIsProblemExpanded] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [expandedLayers, setExpandedLayers] = useState<boolean[]>([true, false, false, false, false]);
+  const [expandedDecisions, setExpandedDecisions] = useState<boolean[]>([true, false, false, false, false, false]);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+
+  const toggleDecision = (index: number) => {
+    setExpandedDecisions(prev => prev.map((isExpanded, i) => i === index ? !isExpanded : isExpanded));
+  };
 
   const toggleLayer = (index: number) => {
     setExpandedLayers(prev => prev.map((isExpanded, i) => i === index ? !isExpanded : isExpanded));
@@ -628,7 +716,7 @@ export default function ZapenuProjectPage() {
         {/* Main Content */}
         <main className="flex-1 w-full min-w-0">
 {/* Overview Section - Three Panel Layout (Responsive) */}
-      <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="min-h-screen px-3 sm:px-4 md:px-6 py-8 md:py-20 overflow-x-hidden">
+      <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="px-3 sm:px-4 md:px-6 py-8 md:py-12 overflow-x-hidden">
         <div className="max-w-7xl mx-auto w-full">
           {/* Section Title */}
           <div className="text-center mb-6 md:mb-10">
@@ -811,7 +899,7 @@ export default function ZapenuProjectPage() {
       </section>
 
 {/* Architecture Section - Accordion Style */}
-      <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+      <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="px-4 md:px-6 py-8 md:py-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 md:mb-12">
             <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">System Architecture</h2>
@@ -993,7 +1081,7 @@ export default function ZapenuProjectPage() {
       </section>
 
 {/* Data Flows Section - Asymmetric Layout */}
-<section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+      <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="px-4 md:px-6 py-8 md:py-12">
 <div className="max-w-7xl mx-auto">
 <div className="text-center mb-8 md:mb-10">
 <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Key Data Flows</h2>
@@ -1132,7 +1220,7 @@ WAHA->>Cliente: WhatsApp confirmación`}
 </section>
 
 {/* Design Decisions Section - Timeline Layout */}
-<section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+      <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="px-4 md:px-6 py-8 md:py-12">
 <div className="max-w-5xl mx-auto">
 <div className="text-center mb-10 md:mb-12">
 <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Design Decisions & Trade-offs</h2>
@@ -1148,69 +1236,23 @@ WAHA->>Cliente: WhatsApp confirmación`}
 <div className="md:hidden absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-primary/50 to-primary/30"></div>
 
 {/* Timeline Items */}
-<div className="space-y-8 md:space-y-12">
-{decisionsData.map((decision, idx) => {
-const isEven = idx % 2 === 0;
-const icons = [GitBranch, Database, Workflow, Cloud, MessageSquare, Server];
-const Icon = icons[idx % icons.length];
+          <div className="space-y-8 md:space-y-12">
+            {decisionsData.map((decision, idx) => {
+              const icons = [GitBranch, Database, Workflow, Cloud, MessageSquare, Server];
+              const Icon = icons[idx % icons.length];
 
-return (
-<div key={idx} className="relative">
-{/* Node - Positioned on the line */}
-<div className={`absolute md:left-1/2 md:-translate-x-1/2 left-6 -translate-x-1/2 top-6 z-10`}>
-<div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-card border-2 border-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-<Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-</div>
-</div>
-
-{/* Card Container - Alternating sides on desktop */}
-<div className={`md:grid md:grid-cols-2 md:gap-8 pl-16 md:pl-0 ${isEven ? '' : 'md:direction-rtl'}`}>
-{/* Spacer for alternating layout */}
-<div className={`hidden md:block ${isEven ? 'md:order-1' : 'md:order-2'}`}></div>
-
-{/* Card */}
-<div className={`${isEven ? 'md:order-2 md:pl-8' : 'md:order-1 md:pr-8'}`}>
-<Card className="border-l-4 border-l-primary/60 hover:border-l-primary hover:shadow-lg transition-all duration-300 bg-card/50">
-<CardContent className="p-4 md:p-6">
-{/* Header with number */}
-<div className="flex items-start gap-3 mb-4">
-<div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-<span className="text-xs font-bold text-primary">{idx + 1}</span>
-</div>
-<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 leading-tight">
-{decision.decision}
-</h3>
-</div>
-
-{/* Why & Trade-off */}
-<div className="space-y-3 text-sm">
-<div className="flex gap-2">
-<span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Why:</span>
-<span className="text-muted-foreground">{decision.why}</span>
-</div>
-<div className="flex gap-2">
-<span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Trade-off:</span>
-<span className="text-muted-foreground">{decision.tradeoff}</span>
-</div>
-</div>
-
-{/* Alternatives */}
-<div className="mt-4 pt-3 border-t border-border/50">
-<div className="flex flex-wrap items-center gap-2 text-sm">
-<span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Alternatives:</span>
-<span className="text-muted-foreground">
-{decision.alternatives}
-</span>
-</div>
-</div>
-</CardContent>
-</Card>
-</div>
-</div>
-</div>
-);
-})}
-</div>
+              return (
+                <DecisionAccordion
+                  key={idx}
+                  decision={decision}
+                  index={idx}
+                  icon={Icon}
+                  isExpanded={expandedDecisions[idx]}
+                  onToggle={() => toggleDecision(idx)}
+                />
+              );
+            })}
+          </div>
 
 {/* Timeline End Indicator */}
 <div className="relative mt-8 md:mt-12">
