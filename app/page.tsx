@@ -24,6 +24,7 @@ export default function Portfolio() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
+  const [isProjectExpanded, setIsProjectExpanded] = useState(true);
 
   const homeRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
@@ -432,42 +433,162 @@ const EducationCard = ({ degree, period, institution }: { degree: string, period
           </div>
         </section>
 
-          {/* Projects Section */}
-          <section ref={projectsRef} id="projects" className="min-h-screen px-6 py-20">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Proyectos</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Una selección de proyectos que demuestran mis habilidades en backend, APIs y arquitecturas cloud.
-                </p>
-              </div>
-              
-              {/* Proyectos Generales */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                {projectsData.slice(0, 3).map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onClick={() => handleProjectClick(project)}
-                  />
-                ))}
+{/* Projects Section - Featured Layout */}
+      <section ref={projectsRef} id="projects" className="min-h-screen px-6 py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Proyecto Destacado</h2>
+          </div>
+
+          {/* Featured Project Card */}
+          <Card className="border-0 border-l-4 border-l-primary/60 overflow-hidden bg-background hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-0">
+              {/* Header - Clickable */}
+              <button
+                onClick={() => setIsProjectExpanded(!isProjectExpanded)}
+                className="w-full p-6 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-8 text-left hover:bg-accent/5 transition-colors"
+              >
+                {/* Left: Project Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Server className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-foreground">Zapenu - Startup</h3>
+                      <p className="text-sm text-muted-foreground">Digital Ordering Platform</p>
+                    </div>
+                  </div>
+
+                  <p className="text-foreground/80 text-base mb-4 leading-relaxed">
+                    Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos. Diseñada para manejar miles de items por tienda con microservicios.
+                  </p>
+
+{/* Tech Stack Badges */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                  <FileCode2 className="h-3 w-3 mr-1" />
+                  TypeScript
+                </Badge>
+                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                  <Server className="h-3 w-3 mr-1" />
+                  Node.js
+                </Badge>
+                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                  <Database className="h-3 w-3 mr-1" />
+                  PostgreSQL
+                </Badge>
+                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                  <Cloud className="h-3 w-3 mr-1" />
+                  gRPC
+                </Badge>
+                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                  <Cloud className="h-3 w-3 mr-1" />
+                  Docker
+                </Badge>
               </div>
 
-              {/* Proyectos de Configuración */}
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-primary mb-6">Configuraciones</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {projectsData.slice(3).map((project) => (
-                    <ConfigProjectCard
-                      key={project.id}
-                      project={project}
-                      onClick={() => handleProjectClick(project)}
+                  {/* Expand Indicator */}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>{isProjectExpanded ? 'Ocultar detalles' : 'Ver detalles del proyecto'}</span>
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isProjectExpanded ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
+
+                {/* Right: Architecture Preview */}
+                <div className="lg:w-[400px] xl:w-[500px] flex-shrink-0">
+                  <div className="relative rounded-lg overflow-hidden border border-border/50 bg-white shadow-sm">
+                    <Image
+                      src="/zapenu-infrastructure-diagram.png"
+                      alt="Zapenu Architecture"
+                      width={500}
+                      height={350}
+                      className="w-full h-auto"
+                      priority
                     />
-                  ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    Arquitectura de 5 capas: Client → Edge → Backend → Data → External
+                  </p>
+                </div>
+              </button>
+
+{/* Expandable Content */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isProjectExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="px-6 md:px-8 pb-6 md:pb-8">
+                {/* Divider with margins */}
+                <div className="mx-4 md:mx-6 border-t border-border/50 mb-6" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Challenge */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                          <span className="text-red-600 font-bold text-sm">!</span>
+                        </div>
+                        <h4 className="font-semibold text-foreground">Challenge</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Diseñar una arquitectura escalable para manejar miles de productos por tienda con tiempos de respuesta rápidos y comunicación eficiente entre servicios.
+                      </p>
+                    </div>
+
+                    {/* Solution */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                          <span className="text-blue-600 font-bold text-sm">💡</span>
+                        </div>
+                        <h4 className="font-semibold text-foreground">Solution</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Implementé microservicios con comunicación gRPC, modelo relacional optimizado en PostgreSQL, y sistema de archivos en Cloudflare R2. TSOA/Swagger para documentación automática.
+                      </p>
+                    </div>
+
+                    {/* Results */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                          <span className="text-green-600 font-bold text-sm">✓</span>
+                        </div>
+                        <h4 className="font-semibold text-foreground">Results</h4>
+                      </div>
+                      <ul className="text-sm text-muted-foreground space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">•</span>
+                          <span>-40% latencia entre microservicios</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">•</span>
+                          <span>+10k items por tienda</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">•</span>
+                          <span>-25% tiempos de DB</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">•</span>
+                          <span>Integración con MercadoPago</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+{/* CTA Button */}
+              <div className="mt-8 flex justify-center px-4 sm:px-0">
+                <Link href="/zapenu" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 rounded-lg">
+                    <FileText className="h-4 w-4" />
+                    Ver Documentación Completa
+                  </Button>
+                </Link>
+              </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
           {/* Skills Section */}
           <section ref={skillsRef} id="skills" className="min-h-screen px-6 py-20">
