@@ -9,40 +9,41 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowDown,
-  Server,
-  Globe,
-  Shield,
-  Database,
-  Cloud,
-  MessageSquare,
-  CreditCard,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  DollarSign,
-  Zap,
-  Lock,
-  Key,
-  Clock,
-  Users,
-  ShoppingCart,
-  Package,
-  Workflow,
-  GitBranch,
-  AlertCircle,
-  ExternalLink,
-  Monitor,
-  HardDrive,
-  Layers,
-  Maximize2,
-  X,
-  ChevronDown,
-  ChevronUp,
-  LucideIcon,
-  Maximize
+ArrowLeft,
+ArrowRight,
+ArrowDown,
+Server,
+Globe,
+Shield,
+Database,
+Cloud,
+MessageSquare,
+CreditCard,
+CheckCircle,
+AlertTriangle,
+XCircle,
+DollarSign,
+Zap,
+Lock,
+Key,
+Clock,
+Users,
+ShoppingCart,
+Package,
+Workflow,
+GitBranch,
+AlertCircle,
+ExternalLink,
+Monitor,
+HardDrive,
+Layers,
+Maximize2,
+X,
+ChevronDown,
+ChevronUp,
+LucideIcon,
+Maximize,
+TrendingUp
 } from "lucide-react";
 import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
@@ -204,30 +205,28 @@ const decisionsData = [
 ];
 
 const costsData = {
-  baseline: [
-    { component: "VPS Backend (barto)", provider: "AWS/GCP/Otros", model: "Compute instance (ARM64)", estimate: "$5-20/mes" },
-    { component: "VPS Backend (omnipago)", provider: "AWS/GCP/Otros", model: "Compute instance", estimate: "$5-15/mes" },
-    { component: "Supabase", provider: "Supabase", model: "Free tier / Pro", estimate: "$0-25/mes" },
-    { component: "PostgreSQL (omnipago)", provider: "Self-hosted", model: "Shared con VPS", estimate: "$0 (marginal)" },
-    { component: "Cloudflare R2", provider: "Cloudflare", model: "Storage + Class A/B ops", estimate: "$0-5/mes" },
-    { component: "Cloudflare Pages", provider: "Cloudflare", model: "Free tier", estimate: "$0" },
-    { component: "WhatsApp WAHA", provider: "Self-hosted", model: "Infraestructura propia", estimate: "$0 (marginal)" },
-    { component: "GitHub Actions", provider: "GitHub", model: "Self-hosted", estimate: "$0" },
-    { component: "MercadoPago Fees", provider: "MercadoPago", model: "% por transacción", estimate: "2.99% + IVA" },
-  ],
-  total: "$30-80/mes",
-  drivers: [
-    { label: "MercadoPago Fees", impact: "Variable según volumen", icon: CreditCard },
-    { label: "Supabase Pro si escala", impact: "$25+/mes", icon: Database },
-    { label: "Cloudflare Pages Pro", impact: "$20/mes si 10x tráfico", icon: Cloud },
-  ],
-  risks: [
-    { scenario: "10x tráfico en Homero", risk: "Cloudflare Pages free tier limits", mitigation: "Upgrade a Pro ($20/mes)" },
-    { scenario: "100x imágenes subidas", risk: "R2 storage y operaciones", mitigation: "Límites de tamaño (10MB), compresión previa" },
-    { scenario: "1000x pedidos/día", risk: "Supabase rate limits", mitigation: "Pool tuning, potencial migración" },
-    { scenario: "Viralización WhatsApp", risk: "Ban de número WAHA", mitigation: "No identificado: fallback a email/SMS" },
-    { scenario: "Crecimiento DB", risk: "Supabase storage limits", mitigation: "Archivado, particionamiento no identificado" },
-  ]
+baseline: [
+{ component: "VPS Backend", provider: "AWS/GCP/Otros", model: "Single VPS (barto + omnipago)", estimate: "$5-20/mes", icon: Server },
+{ component: "Supabase", provider: "Supabase", model: "Free tier", estimate: "$0", icon: Database },
+{ component: "Cloudflare R2", provider: "Cloudflare", model: "Storage S3-compatible", estimate: "$0", icon: Cloud },
+{ component: "Cloudflare Pages", provider: "Cloudflare", model: "Free tier", estimate: "$0", icon: Globe },
+{ component: "WhatsApp WAHA", provider: "Self-hosted", model: "Infraestructura propia", estimate: "$0 (marginal)", icon: MessageSquare },
+{ component: "GitHub Actions", provider: "GitHub", model: "Self-hosted", estimate: "$0", icon: GitBranch },
+{ component: "MercadoPago Fees", provider: "MercadoPago", model: "% por transacción", estimate: "2.99% + IVA", icon: CreditCard, variable: true },
+],
+total: "$5-20/mes",
+totalNote: "+ 2.99% + IVA por transacción",
+drivers: [
+{ label: "VPS Upgrade", impact: "Si escala: $20-50/mes", icon: Server, tier: "medium" },
+{ label: "Supabase Pro", impact: "$25+/mes si escala", icon: Database, tier: "high" },
+{ label: "Cloudflare Pro", impact: "$20/mes si 10x tráfico", icon: Cloud, tier: "medium" },
+],
+risks: [
+{ scenario: "10x tráfico en Homero", risk: "Cloudflare Pages free tier limits", mitigation: "Upgrade a Pro ($20/mes)", severity: "medium" },
+{ scenario: "100x imágenes subidas", risk: "R2 storage limits", mitigation: "Compresión previa, límites de tamaño", severity: "low" },
+{ scenario: "1000x pedidos/día", risk: "Supabase rate limits", mitigation: "Pool tuning, migración a Pro", severity: "high" },
+{ scenario: "Viralización WhatsApp", risk: "Ban de número WAHA", mitigation: "Fallback a email/SMS", severity: "medium" },
+]
 };
 
 // Component for Mermaid Accordion with Expand Modal
@@ -459,8 +458,115 @@ function MiniDiagramCard({ title, diagram }: MiniDiagramCardProps) {
           </div>
         </div>
       )}
-    </>
-  );
+  </>
+);
+}
+
+// Component for Large Diagram Card (for main flow) with Modal
+interface LargeDiagramCardProps {
+title: string;
+diagram: string;
+}
+
+function LargeDiagramCard({ title, diagram }: LargeDiagramCardProps) {
+const [isModalOpen, setIsModalOpen] = useState(false);
+const scrollPositionRef = useRef<number>(0);
+
+// Lock body scroll when modal is open
+useEffect(() => {
+if (isModalOpen) {
+scrollPositionRef.current = window.scrollY;
+document.body.style.position = 'fixed';
+document.body.style.top = `-${scrollPositionRef.current}px`;
+document.body.style.left = '0';
+document.body.style.right = '0';
+document.body.style.overflow = 'hidden';
+document.body.style.width = '100%';
+} else {
+document.body.style.position = '';
+document.body.style.top = '';
+document.body.style.left = '';
+document.body.style.right = '';
+document.body.style.overflow = '';
+document.body.style.width = '';
+setTimeout(() => {
+window.scrollTo(0, scrollPositionRef.current);
+}, 0);
+}
+return () => {
+document.body.style.position = '';
+document.body.style.top = '';
+document.body.style.left = '';
+document.body.style.right = '';
+document.body.style.overflow = '';
+document.body.style.width = '';
+};
+}, [isModalOpen]);
+
+return (
+<>
+<button
+onClick={() => setIsModalOpen(true)}
+className="group w-full bg-card rounded-lg border-2 border-border hover:border-primary hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-[316px] sm:h-[336px] md:h-[384px]"
+>
+{/* Large Diagram Preview - Fixed height */}
+<div className="relative flex-1 bg-white overflow-hidden p-1">
+<MiniMermaidDiagram chart={diagram} />
+
+{/* Hover overlay with expand icon */}
+<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+<div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<Maximize className="h-5 w-5 text-primary" />
+</div>
+</div>
+</div>
+
+{/* Title - Fixed height */}
+<div className="h-[50px] p-2 sm:p-3 border-t border-border bg-card flex items-center justify-center">
+<h3 className="text-xs sm:text-sm font-semibold text-foreground opacity-80 text-center line-clamp-2 leading-tight">
+{title}
+</h3>
+</div>
+</button>
+
+{/* Full Screen Modal - With internal scroll */}
+{isModalOpen && (
+<div
+className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-start justify-center p-8 md:p-12 overflow-y-auto"
+onClick={() => setIsModalOpen(false)}
+>
+<div
+className="relative w-full max-w-5xl my-auto flex flex-col pt-8"
+onClick={(e) => e.stopPropagation()}
+>
+{/* Close Button - Lowered position */}
+<button
+onClick={() => setIsModalOpen(false)}
+className="absolute top-2 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+aria-label="Close modal"
+>
+<X className="h-5 w-5 text-white" />
+</button>
+
+{/* Title */}
+<h3 className="text-white text-sm md:text-base font-semibold mb-2 text-center">{title}</h3>
+
+{/* Diagram - Scrollable */}
+<div className="relative rounded-lg overflow-hidden bg-white shadow-2xl p-2 md:p-4 overflow-x-auto">
+<div className="min-w-[800px] md:min-w-0">
+<MermaidDiagram chart={diagram} />
+</div>
+</div>
+
+{/* Caption */}
+<p className="text-white/70 text-center mt-2 text-xs">
+Click outside to close • Scroll to explore
+</p>
+</div>
+</div>
+)}
+</>
+);
 }
 
 export default function ZapenuProjectPage() {
@@ -886,206 +992,423 @@ export default function ZapenuProjectPage() {
         </div>
       </section>
 
-{/* Data Flows Section - Mini Diagram Cards */}
-      <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-8 md:mb-10">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Key Data Flows</h2>
-            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
-          </div>
+{/* Data Flows Section - Asymmetric Layout */}
+<section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+<div className="max-w-7xl mx-auto">
+<div className="text-center mb-8 md:mb-10">
+<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Key Data Flows</h2>
+<div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+</div>
 
-          {/* Grid of Mini Cards with Diagram Previews */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
-            {/* Card 1: Order Creation with Payment */}
-            <MiniDiagramCard
-              title="Order Creation with Payment"
-              diagram={`sequenceDiagram
-                participant Cliente
-                participant Homero as Homero (Frontend)
-                participant Barto as Barto (Backend)
-                participant Omnipago
-                participant MP as MercadoPago
-                participant WAHA
-                
-                Cliente->>Homero: Navega menú
-                Homero->>Barto: GET /products
-                Barto-->>Homero: Lista productos
-                Cliente->>Homero: Confirma pedido
-                Homero->>Barto: POST /orders
-                Note over Barto: Valida y guarda Estado: PENDING_PAYMENT
-                Barto-->>Homero: {order_id, total}
-                Homero->>Barto: Solicita pago
-                Barto->>Omnipago: POST /payments/create-order
-                Omnipago->>MP: Crea preferencia
-                MP-->>Omnipago: preference_id, init_point
-                Omnipago->>Omnipago: Guarda en DB
-                Omnipago-->>Barto: init_point
-                Barto-->>Homero: init_point
-                Homero->>Cliente: Redirecciona a MP
-                Cliente->>MP: Realiza pago
-                MP->>Omnipago: POST webhook
-                Note over Omnipago: Valida HMAC
-                Omnipago->>MP: GET /payments/{id}
-                MP-->>Omnipago: Estado: approved
-                Omnipago->>Omnipago: Guarda pago
-                Omnipago->>Barto: PUT /orders/{id}/payment-status
-                Barto->>Barto: Actualiza estado PENDING_PAYMENT → CREATED
-                Barto->>WAHA: Envía notificación
-                WAHA->>Cliente: WhatsApp confirmación`}
-            />
+{/* Asymmetric Grid Layout */}
+<div className="flex flex-col gap-4 md:gap-6">
+{/* Mobile: Order Creation First (Featured) */}
+<div className="lg:hidden">
+<LargeDiagramCard
+title="Order Creation with Payment"
+diagram={`sequenceDiagram
+participant Cliente
+participant Homero as Homero (Frontend)
+participant Barto as Barto (Backend)
+participant Omnipago
+participant MP as MercadoPago
+participant WAHA
 
-            {/* Card 2: Authentication Flow */}
-            <MiniDiagramCard
-              title="Authentication Flow (Marge)"
-              diagram={`sequenceDiagram
-                participant Admin
-                participant Marge
-                participant Supabase
-                participant Barto
-                
-                Admin->>Marge: Accede a /login
-                Marge->>Admin: Formulario email
-                Admin->>Marge: Ingresa email
-                Marge->>Supabase: signInWithOtp(email)
-                Supabase-->>Admin: Envía magic link
-                Admin->>Supabase: Click en magic link
-                Supabase-->>Marge: Callback con sesión
-                Marge->>Marge: Guarda tokens en localStorage
-                Admin->>Marge: Solicita recurso protegido
-                Marge->>Barto: GET /api/protected Authorization: Bearer {jwt}
-                Barto->>Supabase: Valida JWT (JWKS)
-                Supabase-->>Barto: Token válido
-                Barto-->>Marge: Recurso solicitado`}
-            />
+Cliente->>Homero: Navega menú
+Homero->>Barto: GET /products
+Barto-->>Homero: Lista productos
+Cliente->>Homero: Confirma pedido
+Homero->>Barto: POST /orders
+Note over Barto: Valida y guarda Estado: PENDING_PAYMENT
+Barto-->>Homero: {order_id, total}
+Homero->>Barto: Solicita pago
+Barto->>Omnipago: POST /payments/create-order
+Omnipago->>MP: Crea preferencia
+MP-->>Omnipago: preference_id, init_point
+Omnipago->>Omnipago: Guarda en DB
+Omnipago-->>Barto: init_point
+Barto-->>Homero: init_point
+Homero->>Cliente: Redirecciona a MP
+Cliente->>MP: Realiza pago
+MP->>Omnipago: POST webhook
+Note over Omnipago: Valida HMAC
+Omnipago->>MP: GET /payments/{id}
+MP-->>Omnipago: Estado: approved
+Omnipago->>Omnipago: Guarda pago
+Omnipago->>Barto: PUT /orders/{id}/payment-status
+Barto->>Barto: Actualiza estado PENDING_PAYMENT → CREATED
+Barto->>WAHA: Envía notificación
+WAHA->>Cliente: WhatsApp confirmación`}
+/>
+</div>
 
-            {/* Card 3: Order State Diagram */}
-            <MiniDiagramCard
-              title="Order State Diagram"
-              diagram={`stateDiagram-v2
-                [*] --> PENDING_PAYMENT: Crear pedido (con pago)
-                [*] --> CREATED: Crear pedido (efectivo)
-                PENDING_PAYMENT --> CREATED: Pago aprobado
-                PENDING_PAYMENT --> CANCELLED: Pago rechazado/cancelado
-                CREATED --> CONFIRMED: Negocio confirma
-                CONFIRMED --> FINALIZED: Pedido completado/entregado
-                CREATED --> CANCELLED: Cancelación
-                CONFIRMED --> CANCELLED: Cancelación
-                FINALIZED --> [*]
-                CANCELLED --> [*]`}
-            />
-          </div>
-        </div>
-      </section>
+{/* Desktop: Asymmetric Grid 2+3 / Mobile: Two columns for remaining flows */}
+<div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+{/* Left Column - Two stacked boxes (2 cols on desktop) */}
+<div className="lg:col-span-2 flex flex-col gap-4 md:gap-6">
+{/* Authentication Flow */}
+<MiniDiagramCard
+title="Authentication Flow (Marge)"
+diagram={`sequenceDiagram
+participant Admin
+participant Marge
+participant Supabase
+participant Barto
 
-{/* Design Decisions Section */}
-      <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Design Decisions & Trade-offs</h2>
-              
-              <div className="space-y-6">
-                {decisionsData.map((decision, idx) => (
-                  <Card key={idx} className="hover:border-primary/30 transition-colors">
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-3">{decision.decision}</h3>
-                      <div className="grid md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="font-semibold text-primary">Why: </span>
-                          <span className="text-muted-foreground">{decision.why}</span>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-foreground opacity-80">Trade-off: </span>
-                          <span className="text-muted-foreground">{decision.tradeoff}</span>
-                        </div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-border">
-                        <span className="text-xs text-muted-foreground">Alternatives: </span>
-                        <span className="text-xs text-primary">{decision.alternatives}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
+Admin->>Marge: Accede a /login
+Marge->>Admin: Formulario email
+Admin->>Marge: Ingresa email
+Marge->>Supabase: signInWithOtp(email)
+Supabase-->>Admin: Envía magic link
+Admin->>Supabase: Click en magic link
+Supabase-->>Marge: Callback con sesión
+Marge->>Marge: Guarda tokens en localStorage
+Admin->>Marge: Solicita recurso protegido
+Marge->>Barto: GET /api/protected Authorization: Bearer {jwt}
+Barto->>Supabase: Valida JWT (JWKS)
+Supabase-->>Barto: Token válido
+Barto-->>Marge: Recurso solicitado`}
+/>
 
-{/* Costs Section */}
-      <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Cost Considerations</h2>
-              
-              <div className="mb-8 text-center">
-                <div className="inline-block px-8 py-4 bg-primary/10 rounded-xl">
-                  <span className="text-sm text-muted-foreground">Estimated Monthly Cost</span>
-                  <p className="text-4xl font-bold text-primary">{costsData.total}</p>
-                </div>
-              </div>
+{/* Order State Diagram */}
+<MiniDiagramCard
+title="Order State Diagram"
+diagram={`stateDiagram-v2
+[*] --> PENDING_PAYMENT: Crear pedido (con pago)
+[*] --> CREATED: Crear pedido (efectivo)
+PENDING_PAYMENT --> CREATED: Pago aprobado
+PENDING_PAYMENT --> CANCELLED: Pago rechazado/cancelado
+CREATED --> CONFIRMED: Negocio confirma
+CONFIRMED --> FINALIZED: Pedido completado/entregado
+CREATED --> CANCELLED: Cancelación
+CONFIRMED --> CANCELLED: Cancelación
+FINALIZED --> [*]
+CANCELLED --> [*]`}
+/>
+</div>
 
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-4 text-primary">Cost Breakdown</h3>
-                <div className="grid gap-3">
-                  {costsData.baseline.map((item, idx) => (
-<div key={idx} className="flex flex-wrap justify-between items-center gap-2 p-3 bg-card rounded-lg border border-border">
-                                  <div className="min-w-0 flex-1">
-                                    <span className="font-medium truncate block">{item.component}</span>
-                                    <span className="text-xs text-muted-foreground truncate block">({item.provider})</span>
-                                  </div>
-                                  <Badge variant="outline" className="flex-shrink-0">{item.estimate}</Badge>
-                                </div>
-                  ))}
-                </div>
-              </div>
+{/* Right Column - Large featured card (3 cols on desktop, hidden on mobile) */}
+<div className="hidden lg:block lg:col-span-3">
+<LargeDiagramCard
+title="Order Creation with Payment"
+diagram={`sequenceDiagram
+participant Cliente
+participant Homero as Homero (Frontend)
+participant Barto as Barto (Backend)
+participant Omnipago
+participant MP as MercadoPago
+participant WAHA
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-primary" />
-                      Main Cost Drivers
-                    </h4>
-                    <div className="space-y-3">
-                      {costsData.drivers.map((driver, idx) => (
-                        <div key={idx} className="flex gap-3">
-                          <driver.icon className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-medium text-sm">{driver.label}</span>
-                            <span className="text-xs text-muted-foreground ml-2">{driver.impact}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-foreground opacity-80" />
-                      Scaling Risks
-                    </h4>
-                    <div className="space-y-3">
-                      {costsData.risks.map((risk, idx) => (
-                        <div key={idx}>
-                          <span className="font-medium text-sm">{risk.scenario}</span>
-                          <p className="text-xs text-muted-foreground">Mitigation: {risk.mitigation}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </section>
+Cliente->>Homero: Navega menú
+Homero->>Barto: GET /products
+Barto-->>Homero: Lista productos
+Cliente->>Homero: Confirma pedido
+Homero->>Barto: POST /orders
+Note over Barto: Valida y guarda Estado: PENDING_PAYMENT
+Barto-->>Homero: {order_id, total}
+Homero->>Barto: Solicita pago
+Barto->>Omnipago: POST /payments/create-order
+Omnipago->>MP: Crea preferencia
+MP-->>Omnipago: preference_id, init_point
+Omnipago->>Omnipago: Guarda en DB
+Omnipago-->>Barto: init_point
+Barto-->>Homero: init_point
+Homero->>Cliente: Redirecciona a MP
+Cliente->>MP: Realiza pago
+MP->>Omnipago: POST webhook
+Note over Omnipago: Valida HMAC
+Omnipago->>MP: GET /payments/{id}
+MP-->>Omnipago: Estado: approved
+Omnipago->>Omnipago: Guarda pago
+Omnipago->>Barto: PUT /orders/{id}/payment-status
+Barto->>Barto: Actualiza estado PENDING_PAYMENT → CREATED
+Barto->>WAHA: Envía notificación
+WAHA->>Cliente: WhatsApp confirmación`}
+/>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+{/* Design Decisions Section - Timeline Layout */}
+<section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+<div className="max-w-5xl mx-auto">
+<div className="text-center mb-10 md:mb-12">
+<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Design Decisions & Trade-offs</h2>
+<div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+</div>
+
+{/* Timeline Container */}
+<div className="relative">
+{/* Vertical Line - Hidden on mobile, visible on md+ */}
+<div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-primary/50 to-primary/30"></div>
+
+{/* Mobile Line - Left aligned */}
+<div className="md:hidden absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-primary/50 to-primary/30"></div>
+
+{/* Timeline Items */}
+<div className="space-y-8 md:space-y-12">
+{decisionsData.map((decision, idx) => {
+const isEven = idx % 2 === 0;
+const icons = [GitBranch, Database, Workflow, Cloud, MessageSquare, Server];
+const Icon = icons[idx % icons.length];
+
+return (
+<div key={idx} className="relative">
+{/* Node - Positioned on the line */}
+<div className={`absolute md:left-1/2 md:-translate-x-1/2 left-6 -translate-x-1/2 top-6 z-10`}>
+<div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-card border-2 border-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+<Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+</div>
+</div>
+
+{/* Card Container - Alternating sides on desktop */}
+<div className={`md:grid md:grid-cols-2 md:gap-8 pl-16 md:pl-0 ${isEven ? '' : 'md:direction-rtl'}`}>
+{/* Spacer for alternating layout */}
+<div className={`hidden md:block ${isEven ? 'md:order-1' : 'md:order-2'}`}></div>
+
+{/* Card */}
+<div className={`${isEven ? 'md:order-2 md:pl-8' : 'md:order-1 md:pr-8'}`}>
+<Card className="border-l-4 border-l-primary/60 hover:border-l-primary hover:shadow-lg transition-all duration-300 bg-card/50">
+<CardContent className="p-4 md:p-6">
+{/* Header with number */}
+<div className="flex items-start gap-3 mb-4">
+<div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+<span className="text-xs font-bold text-primary">{idx + 1}</span>
+</div>
+<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 leading-tight">
+{decision.decision}
+</h3>
+</div>
+
+{/* Why & Trade-off */}
+<div className="space-y-3 text-sm">
+<div className="flex gap-2">
+<span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Why:</span>
+<span className="text-muted-foreground">{decision.why}</span>
+</div>
+<div className="flex gap-2">
+<span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Trade-off:</span>
+<span className="text-muted-foreground">{decision.tradeoff}</span>
+</div>
+</div>
+
+{/* Alternatives */}
+<div className="mt-4 pt-3 border-t border-border/50">
+<div className="flex flex-wrap items-center gap-2 text-sm">
+<span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Alternatives:</span>
+<span className="text-muted-foreground">
+{decision.alternatives}
+</span>
+</div>
+</div>
+</CardContent>
+</Card>
+</div>
+</div>
+</div>
+);
+})}
+</div>
+
+{/* Timeline End Indicator */}
+<div className="relative mt-8 md:mt-12">
+<div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 transform -translate-x-1/2">
+<div className="w-4 h-4 rounded-full bg-primary/50"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+{/* Costs Section - Asymmetric Layout */}
+<section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+<div className="max-w-7xl mx-auto">
+<div className="text-center mb-10 md:mb-12">
+<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Cost Considerations</h2>
+<div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+</div>
+
+{/* Asymmetric Grid: 2 cols left + 3 cols right */}
+<div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+{/* Left Column - Total Cost Card (2 cols) */}
+<div className="lg:col-span-2">
+<Card className="border-l-4 border-l-primary h-full bg-card/50 hover:shadow-lg transition-all">
+<CardContent className="p-4 md:p-6 flex flex-col">
+{/* Total Cost Header */}
+<div className="flex items-center gap-3 mb-6">
+<div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<DollarSign className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+</div>
+<div>
+<h3 className="text-lg font-semibold text-foreground opacity-80">Total Cost</h3>
+<p className="text-xs text-muted-foreground">Estimated Monthly</p>
+</div>
+</div>
+
+{/* Cost Display */}
+<div className="text-center py-6 md:py-8 bg-gradient-to-br from-primary/5 to-transparent rounded-lg border border-primary/10 mb-6">
+<p className="text-4xl md:text-5xl font-bold text-primary">{costsData.total}</p>
+<p className="text-sm text-muted-foreground mt-2">{costsData.totalNote}</p>
+</div>
+
+{/* Free Services Summary */}
+<div className="space-y-3 mt-auto">
+<h4 className="text-sm font-semibold text-foreground opacity-80 flex items-center gap-2">
+<CheckCircle className="h-4 w-4 text-green-500" />
+Free Infrastructure
+</h4>
+<div className="space-y-2">
+{costsData.baseline.filter(item => item.estimate === "$0" || item.estimate === "$0 (marginal)").slice(0, 4).map((item, idx) => {
+const Icon = item.icon || Server;
+return (
+<div key={idx} className="flex items-center gap-2 text-sm">
+<Icon className="h-4 w-4 text-muted-foreground" />
+<span className="text-muted-foreground">{item.component}</span>
+<Badge variant="secondary" className="text-xs ml-auto">{item.estimate}</Badge>
+</div>
+);
+})}
+</div>
+</div>
+</CardContent>
+</Card>
+</div>
+
+{/* Right Column - Cost Breakdown (3 cols) */}
+<div className="lg:col-span-3">
+<Card className="border-l-4 border-l-primary/60 h-full bg-card/50 hover:shadow-lg transition-all">
+<CardContent className="p-4 md:p-6">
+{/* Breakdown Header */}
+<div className="flex items-center justify-between mb-6">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<Server className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+</div>
+<h3 className="text-lg font-semibold text-foreground opacity-80">Cost Breakdown</h3>
+</div>
+<Badge variant="outline" className="text-xs">7 Services</Badge>
+</div>
+
+{/* Cost Items */}
+<div className="space-y-3">
+{costsData.baseline.map((item, idx) => {
+const Icon = item.icon || Server;
+const isVariable = item.variable;
+const isFree = item.estimate === "$0" || item.estimate === "$0 (marginal)";
+return (
+<div key={idx} className="flex items-center gap-3 p-3 bg-background rounded-lg border border-border/50 hover:border-primary/30 transition-colors">
+<div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/5 flex items-center justify-center flex-shrink-0">
+<Icon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+</div>
+<div className="flex-1 min-w-0">
+<div className="flex items-center gap-2">
+<span className="font-medium text-sm text-foreground opacity-80 truncate">{item.component}</span>
+{isVariable && (
+<Badge variant="outline" className="text-xs flex-shrink-0 bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
+Variable
+</Badge>
+)}
+{isFree && (
+<Badge variant="outline" className="text-xs flex-shrink-0 bg-green-500/10 text-green-600 border-green-500/20">
+Free
+</Badge>
+)}
+</div>
+<p className="text-xs text-muted-foreground truncate">{item.model}</p>
+</div>
+<Badge 
+variant={isFree ? "secondary" : "default"}
+className={`flex-shrink-0 text-xs ${isVariable ? 'bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20' : ''}`}
+>
+{item.estimate}
+</Badge>
+</div>
+);
+})}
+</div>
+</CardContent>
+</Card>
+</div>
+</div>
+
+{/* Bottom Row - Drivers & Risks */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
+{/* Cost Drivers */}
+<Card className="bg-card/50 hover:shadow-lg transition-all">
+<CardContent className="p-4 md:p-6">
+<div className="flex items-center gap-3 mb-4">
+<div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+</div>
+<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80">Future Cost Drivers</h3>
+</div>
+<div className="space-y-4">
+{costsData.drivers.map((driver, idx) => {
+const Icon = driver.icon || Zap;
+const tierColor = driver.tier === 'high' ? 'text-red-500' : driver.tier === 'medium' ? 'text-yellow-500' : 'text-green-500';
+const tierBg = driver.tier === 'high' ? 'bg-red-500/10' : driver.tier === 'medium' ? 'bg-yellow-500/10' : 'bg-green-500/10';
+return (
+<div key={idx} className="flex gap-3 items-start">
+<div className={`w-8 h-8 rounded-lg ${tierBg} flex items-center justify-center flex-shrink-0`}>
+<Icon className={`h-4 w-4 ${tierColor}`} />
+</div>
+<div className="flex-1">
+<div className="flex items-center justify-between gap-2">
+<span className="font-medium text-sm text-foreground opacity-80">{driver.label}</span>
+<Badge variant="outline" className="text-xs flex-shrink-0">
+{driver.impact}
+</Badge>
+</div>
+</div>
+</div>
+);
+})}
+</div>
+</CardContent>
+</Card>
+
+{/* Scaling Risks */}
+<Card className="bg-card/50 hover:shadow-lg transition-all">
+<CardContent className="p-4 md:p-6">
+<div className="flex items-center gap-3 mb-4">
+<div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+</div>
+<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80">Scaling Risks</h3>
+</div>
+<div className="space-y-4">
+{costsData.risks.map((risk, idx) => {
+const severityColor = risk.severity === 'high' ? 'text-red-500' : risk.severity === 'medium' ? 'text-yellow-500' : 'text-green-500';
+const severityBg = risk.severity === 'high' ? 'bg-red-500/10' : risk.severity === 'medium' ? 'bg-yellow-500/10' : 'bg-green-500/10';
+return (
+<div key={idx} className="border-l-2 border-l-border pl-4 py-1">
+<div className="flex items-center gap-2 mb-1">
+<div className={`w-2 h-2 rounded-full ${severityBg.replace('bg-', 'bg-').replace('/10', '')}`}></div>
+<span className="font-medium text-sm text-foreground opacity-80">{risk.scenario}</span>
+</div>
+<p className="text-xs text-muted-foreground">
+<span className="font-medium text-foreground opacity-60">Mitigation:</span> {risk.mitigation}
+</p>
+</div>
+);
+})}
+</div>
+</CardContent>
+</Card>
+</div>
+</div>
+</section>
 
 {/* Footer Statement */}
-      <footer className="px-4 md:px-6 py-12 md:py-16 bg-primary/5">
-            <div className="max-w-2xl mx-auto text-center">
-              <p className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
-                "This project reflects how I design systems: pragmatic, cost-aware, and built under real constraints."
-              </p>
-              <p className="mt-4 text-muted-foreground">
-                Architecture designed for the Latin American market with focus on operational simplicity and scalability.
-              </p>
-            </div>
-          </footer>
+<footer className="px-4 md:px-6 py-12 md:py-16 bg-primary/5">
+<div className="max-w-2xl mx-auto text-center">
+<p className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
+"This project reflects how I design systems: pragmatic, cost-aware, and built under real constraints."
+</p>
+</div>
+</footer>
         </main>
       </div>
     </div>
