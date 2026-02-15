@@ -426,17 +426,17 @@ function MiniDiagramCard({ title, diagram }: MiniDiagramCardProps) {
       {/* Full Screen Modal - With internal scroll */}
       {isModalOpen && (
         <div 
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-start justify-center p-3 md:p-6 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-start justify-center p-8 md:p-12 overflow-y-auto"
           onClick={() => setIsModalOpen(false)}
         >
           <div 
-            className="relative w-full max-w-5xl my-auto flex flex-col"
+            className="relative w-full max-w-5xl my-auto flex flex-col pt-8"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
+            {/* Close Button - Lowered position */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute -top-8 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+              className="absolute top-2 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
               aria-label="Close modal"
             >
               <X className="h-5 w-5 text-white" />
@@ -707,7 +707,10 @@ export default function ZapenuProjectPage() {
 {/* Architecture Section - Accordion Style */}
       <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">System Architecture</h2>
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">System Architecture</h2>
+            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+          </div>
 
           {/* Contenedor único para todas las capas */}
           <div className="rounded-xl border-2 border-foreground/80 overflow-hidden bg-transparent">
@@ -886,7 +889,10 @@ export default function ZapenuProjectPage() {
 {/* Data Flows Section - Mini Diagram Cards */}
       <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold mb-10 text-foreground opacity-80 text-center">Key Data Flows</h2>
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Key Data Flows</h2>
+            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+          </div>
 
           {/* Grid of Mini Cards with Diagram Previews */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
