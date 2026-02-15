@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowDown,
   Server,
   Globe,
   Shield,
@@ -32,8 +33,18 @@ import {
   Workflow,
   GitBranch,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Monitor,
+  HardDrive,
+  Layers,
+  Maximize2,
+  X,
+  ChevronDown,
+  ChevronUp,
+  LucideIcon,
+  Maximize
 } from "lucide-react";
+import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
 const navigationItems = [
   { id: "overview", label: "Overview" },
@@ -41,9 +52,6 @@ const navigationItems = [
   { id: "dataflows", label: "Data Flows" },
   { id: "decisions", label: "Decisions" },
   { id: "costs", label: "Costs" },
-  { id: "security", label: "Security" },
-  { id: "future", label: "Future" },
-  { id: "limitations", label: "Limitations" },
 ];
 
 const overviewData = {
@@ -78,36 +86,36 @@ const overviewData = {
 
 const architectureData = {
   layers: [
-    {
-      name: "Presentation Layer",
+    { 
+      name: "Presentation Layer", 
       services: [
         { name: "Homero", type: "Frontend Público", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Menú digital para clientes", access: "Público", cache: "5 min" },
         { name: "Marge", type: "Frontend Admin", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Dashboard de gestión", access: "Autenticado", cache: "1 min" },
       ]
     },
-    {
-      name: "Edge Layer",
+    { 
+      name: "Edge Layer", 
       services: [
         { name: "Cloudflare Edge", type: "CDN + Functions", stack: "Cloudflare", role: "Cache, Auth, Proxy", features: ["Cache 5min (Homero)", "Auth (Marge)", "Edge Functions"] },
       ]
     },
-    {
-      name: "Backend Layer",
+    { 
+      name: "Backend Layer", 
       services: [
         { name: "Barto", type: "API Principal", stack: "Node.js + Express + TSOA", port: "3001", role: "Gestión de productos, órdenes, usuarios", protocol: "REST + gRPC" },
         { name: "Omnipago", type: "Microservicio de Pagos", stack: "Node.js 16 + Express", port: "4000", role: "Integración con MercadoPago", protocol: "REST" },
       ]
     },
-    {
-      name: "Data Layer",
+    { 
+      name: "Data Layer", 
       services: [
         { name: "PostgreSQL (Supabase)", type: "DB Principal", role: "Datos de operaciones, productos, órdenes" },
         { name: "PostgreSQL (RDS + omnipago)", type: "DB Pagos", role: "Schema payments_gateway" },
         { name: "Cloudflare R2", type: "Object Storage", role: "Almacenamiento de imágenes (S3-compatible)" },
       ]
     },
-    {
-      name: "External Services",
+    { 
+      name: "External Services", 
       services: [
         { name: "MercadoPago", type: "Pasarela de pagos", role: "Procesamiento de transacciones, Webhooks" },
         { name: "WAHA", type: "WhatsApp API", role: "Notificaciones en tiempo real", port: "3000" },
@@ -222,62 +230,249 @@ const costsData = {
   ]
 };
 
-const securityData = {
-  implemented: [
-    { item: "JWT (Supabase Auth)", status: "implemented" },
-    { item: "Refresh automático por Supabase client", status: "implemented" },
-    { item: "Expiración tokens (1h access, 1sem refresh)", status: "implemented" },
-    { item: "RLS en Supabase (profiles)", status: "implemented" },
-    { item: "pg-format para escaping (parcial)", status: "implemented" },
-    { item: "UUID renaming en uploads", status: "implemented" },
-    { item: "Extensión validada en uploads", status: "implemented" },
-    { item: "React DOM escaping (XSS bajo)", status: "implemented" },
-    { item: "CORS configurado", status: "implemented" },
-    { item: "Multer limits (10MB)", status: "implemented" },
-    { item: "HMAC-SHA256 webhooks", status: "implemented" },
-    { item: "Secret por cliente en webhooks", status: "implemented" },
-  ],
-  risks: [
-    { item: "Almacenamiento JWT en LocalStorage", severity: "medium", note: "Vulnerable a XSS" },
-    { item: "RBAC básico (solo scopes)", severity: "medium", note: "Roles diferenciados no claros" },
-    { item: "Ownership manual en interactors", severity: "high", note: "No identificado explícitamente" },
-    { item: "IDOR en /products/{id}, /orders/{id}", severity: "high", note: "Sin verificación de ownership" },
-    { item: "Rate Limiting no identificado", severity: "medium", note: "Endpoints login, pedidos" },
-    { item: "Self-hosted GitHub Runner", severity: "high", note: "Acceso al VPS si se compromete" },
-    { item: "WAHA no oficial", severity: "medium", note: "Susceptible a bans" },
-    { item: "Webhook Replay Attack", severity: "medium", note: "Sin validación de timestamp" },
-    { item: "Race Condition en Pagos", severity: "medium", note: "Procesamiento concurrente" },
-    { item: "Secret hardcodeado en config.json", severity: "medium", note: "Rotación manual requerida" },
-  ],
-  notImplemented: [
-    { item: "MFA", note: "No identificado" },
-    { item: "Admin vs User roles diferenciados", note: "No claro" },
-    { item: "Rate Limiting explícito", note: "Dependería de Cloudflare" },
-    { item: "Retry de webhooks", note: "No identificado" },
-    { item: "Idempotencia garantizada", note: "Webhooks pueden duplicar" },
-    { item: "Circuit breaker en MP", note: "Sin fallback" },
-    { item: "Reconciliación automática", note: "No identificado" },
-  ]
-};
+// Component for Mermaid Accordion with Expand Modal
+interface MermaidAccordionProps {
+  title: string;
+  icon: LucideIcon;
+  diagram: string;
+  defaultOpen?: boolean;
+}
 
-const variantsData = [
-  { name: "Mobile App Nativa", case: "Clientes frecuentes, notificaciones push, offline", complexity: "Alto", status: "future" },
-  { name: "Sistema de Pagos Integrado", case: "Checkout online con tarjetas, wallets", complexity: "Medio-Alto", status: "future" },
-  { name: "Multi-idioma y Multi-moneda", case: "Expansión internacional, turismo", complexity: "Medio", status: "future" },
-  { name: "Arquitectura Microservicios", case: "Escalar equipos independientes, HA", complexity: "Muy Alto", status: "future" },
-  { name: "Real-time con WebSockets", case: "Actualizaciones de pedido en tiempo real", complexity: "Medio", status: "future" },
-  { name: "White-label / SaaS Multi-tenant", case: "Vender plataforma a múltiples negocios", complexity: "Alto", status: "future" },
-];
+function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: MermaidAccordionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollPositionRef = useRef<number>(0);
 
-const limitationsData = [
-  { category: "Capacidades NO implementadas", items: ["Inventario en tiempo real", "Delivery/logística", "Analytics avanzados", "Multi-moneda", "Offline mode", "PWA", "Reservas de mesas", "Chat tiempo real", "API pública documentada"] },
-  { category: "Casos de uso NO cubiertos", items: ["Cadena de restaurantes", "Franquicias", "Marketplace", "Food delivery (Rappi, UberEats)", "Kioscos self-service", "Llamadas telefónicas", "Fidelización", "Multi-idioma simultáneo", "Accesibilidad WCAG", "GDPR/CCPA"] },
-  { category: "Restricciones técnicas", items: ["Single VPS - Single point of failure", "PostgreSQL único - Sin read replicas", "Sin CDN para API", "Sin cola de mensajes", "Sin cache distribuido", "Sin backups automatizados", "Sin monitoreo avanzado", "Sin feature flags", "Sin AB testing"] },
-];
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      // Restore scroll position after a brief delay to ensure DOM is updated
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 0);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+    };
+  }, [isModalOpen]);
+
+  return (
+    <>
+      <Card className="overflow-hidden border-l-4 border-l-primary">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex items-center gap-3 p-4 md:p-5 hover:bg-accent/5 transition-colors text-left"
+        >
+          <div className="w-10 h-10 md:w-11 md:h-11 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{title}</h3>
+            <p className="text-xs md:text-sm text-muted-foreground">Click to view diagram</p>
+          </div>
+          <div className={`w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+            <ChevronDown className="h-4 w-4 text-primary" />
+          </div>
+        </button>
+        
+        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="p-4 md:p-6 border-t border-border bg-muted/30">
+            <div className="bg-white rounded-lg p-4 shadow-inner overflow-x-auto relative group">
+              <MermaidDiagram chart={diagram} />
+              
+              {/* Expand Button - Desktop only: hover */}
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="hidden md:block absolute top-2 right-2 p-2 bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
+                aria-label="View full diagram"
+              >
+                <Maximize2 className="h-4 w-4 text-foreground" />
+              </button>
+            </div>
+            
+            {/* Mobile Expand Hint - Only option for mobile */}
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="w-full mt-3 flex items-center justify-center gap-2 py-2 px-4 bg-primary/5 rounded-lg border border-border/50 md:hidden hover:bg-primary/10 transition-colors"
+            >
+              <Maximize2 className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-foreground opacity-80">Tap to view full diagram</span>
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Diagram Modal */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div className="relative max-w-6xl max-h-[90vh] w-full flex flex-col">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute -top-12 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+              aria-label="Close modal"
+            >
+              <X className="h-6 w-6 text-white" />
+            </button>
+            
+            {/* Modal Title */}
+            <h3 className="text-white text-lg font-semibold mb-4 text-center">{title}</h3>
+            
+            {/* Modal Diagram */}
+            <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl p-4 md:p-6 overflow-x-auto">
+              <MermaidDiagram chart={diagram} />
+            </div>
+            
+            {/* Modal Caption */}
+            <p className="text-white/80 text-center mt-4 text-sm">
+              Click anywhere to close
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// Component for Mini Diagram Card with Modal
+interface MiniDiagramCardProps {
+  title: string;
+  diagram: string;
+}
+
+function MiniDiagramCard({ title, diagram }: MiniDiagramCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollPositionRef = useRef<number>(0);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 0);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+    };
+  }, [isModalOpen]);
+
+  return (
+    <>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="group w-full bg-card rounded-lg border-2 border-border hover:border-primary hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-[150px] sm:h-[160px] md:h-[180px]"
+      >
+        {/* Mini Diagram Preview - Fixed height */}
+        <div className="relative flex-1 bg-white h-[110px] sm:h-[120px] md:h-[130px] overflow-hidden p-1">
+          <MiniMermaidDiagram chart={diagram} />
+          
+          {/* Hover overlay with expand icon */}
+          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <Maximize className="h-4 w-4 text-primary" />
+            </div>
+          </div>
+        </div>
+        
+        {/* Title - Fixed height */}
+        <div className="h-[40px] sm:h-[40px] md:h-[50px] p-2 border-t border-border bg-card flex items-center justify-center">
+          <h3 className="text-[10px] sm:text-xs font-semibold text-foreground opacity-80 text-center line-clamp-2 leading-tight">
+            {title}
+          </h3>
+        </div>
+      </button>
+
+      {/* Full Screen Modal - With internal scroll */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-start justify-center p-8 md:p-12 overflow-y-auto"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div 
+            className="relative w-full max-w-5xl my-auto flex flex-col pt-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button - Lowered position */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+              aria-label="Close modal"
+            >
+              <X className="h-5 w-5 text-white" />
+            </button>
+            
+            {/* Title */}
+            <h3 className="text-white text-sm md:text-base font-semibold mb-2 text-center">{title}</h3>
+            
+            {/* Diagram - Scrollable */}
+            <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl p-2 md:p-4 overflow-x-auto">
+              <div className="min-w-[800px] md:min-w-0">
+                <MermaidDiagram chart={diagram} />
+              </div>
+            </div>
+            
+            {/* Caption */}
+            <p className="text-white/70 text-center mt-2 text-xs">
+              Click outside to close • Scroll to explore
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function ZapenuProjectPage() {
   const [activeSection, setActiveSection] = useState("overview");
+  const [isProblemExpanded, setIsProblemExpanded] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [expandedLayers, setExpandedLayers] = useState<boolean[]>([true, false, false, false, false]);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+
+  const toggleLayer = (index: number) => {
+    setExpandedLayers(prev => prev.map((isExpanded, i) => i === index ? !isExpanded : isExpanded));
+  };
 
   useEffect(() => {
     const observerOptions = {
@@ -312,270 +507,480 @@ export default function ZapenuProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/#projects" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Projects</span>
+    <div className="min-h-screen bg-background overflow-x-hidden" style={{ maxWidth: '100vw' }}>
+      {/* Header - Solo botón de regreso, sin navegación horizontal */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <Link href="/#projects" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+            <span className="text-sm sm:text-base">Back to Projects</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1">
-            {navigationItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                  activeSection === item.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex w-full overflow-x-hidden">
         {/* Main Content */}
-        <main className="flex-1">
-          {/* Hero Section */}
-          <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-8">
-                <h1 className="text-3xl md:text-5xl font-bold text-foreground opacity-80 mb-4">{overviewData.title}</h1>
-                <p className="text-lg md:text-xl text-primary mb-8">{overviewData.description}</p>
-                <div className="grid grid-cols-2 sm:flex gap-2 mb-8">
-                  {overviewData.badges.map((badge, idx) => {
-                    const iconMap: Record<string, React.ElementType> = {
-                      GitBranch,
-                      CreditCard,
-                      DollarSign,
-                      Shield,
-                    };
-                    const Icon = iconMap[badge.icon] || Badge;
-                    return (
-                      <Badge key={idx} className={`${badge.color} flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 text-xs md:text-sm`}>
-                        <Icon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                        <span className="truncate">{badge.label}</span>
-                      </Badge>
-                    );
-                  })}
-                </div>
-              </div>
-              </div>
-
-              {/* Problem Solved */}
-              <div className="mb-12">
-                <h2 className="text-xl md:text-2xl font-bold mb-6 text-foreground opacity-80 text-center">{overviewData.problem.title}</h2>
-                <ul className="space-y-3 max-w-2xl mx-auto">
-                  {overviewData.problem.items.map((item, idx) => (
-                    <li key={idx} className="flex gap-2 md:gap-3 text-sm md:text-base text-primary items-start justify-center">
-                      <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-          </section>
-
-          {/* Architecture Section */}
-          <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">System Architecture</h2>
+        <main className="flex-1 w-full min-w-0">
+{/* Overview Section - Three Panel Layout (Responsive) */}
+      <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="min-h-screen px-3 sm:px-4 md:px-6 py-8 md:py-20 overflow-x-hidden">
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Section Title */}
+          <div className="text-center mb-6 md:mb-10">
+            <h2 className="text-xl md:text-3xl font-bold text-foreground opacity-80">Project Overview</h2>
+            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+          </div>
+          
+          {/* Three Panel Grid Layout */}
+          <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 md:gap-6 min-w-0">
+            {/* Left Column - Two stacked boxes */}
+            <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6 min-w-0">
+              {/* Top Left Box: Project Info */}
+              <Card className="flex-1 border-l-4 border-l-primary border-y border-r border-border bg-card/50 hover:shadow-lg transition-shadow overflow-hidden">
+                <CardContent className="p-3 sm:p-4 md:p-6">
+                  <div className="flex items-start gap-2 sm:gap-3 md:gap-4 mb-3 md:mb-4 min-w-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Zap className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <h3 className="text-lg sm:text-xl md:text-3xl font-bold text-foreground opacity-80 truncate">{overviewData.title}</h3>
+                      <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">Digital Ordering Platform</p>
+                    </div>
+                  </div>
+                  <p className="text-foreground opacity-80 text-xs sm:text-sm md:text-base mb-3 md:mb-5 leading-relaxed break-words">{overviewData.description}</p>
+                  
+                  {/* Badges - Icons only on mobile, with text on desktop */}
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {overviewData.badges.slice(0, 4).map((badge, idx) => {
+                      const iconMap: Record<string, React.ElementType> = {
+                        GitBranch,
+                        CreditCard,
+                        DollarSign,
+                        Shield,
+                      };
+                      const Icon = iconMap[badge.icon] || Badge;
+                      return (
+                        <Badge 
+                          key={idx} 
+                          variant="secondary" 
+                          className="flex items-center justify-center p-1.5 sm:p-2 md:px-2.5 md:py-1.5 transition-all flex-shrink-0"
+                          title={badge.label}
+                        >
+                          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-3 md:w-3 flex-shrink-0" />
+                          <span className="hidden md:inline md:ml-1.5 text-xs font-medium">{badge.label}</span>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
               
-              <div className="space-y-8">
-                {architectureData.layers.map((layer, layerIdx) => (
-                  <div key={layerIdx}>
-                    <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-                      <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm">{layerIdx + 1}</span>
-                      {layer.name}
-                    </h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {layer.services.map((service, svcIdx) => (
-                        <Card key={svcIdx} className="hover:border-primary/30 transition-colors">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-semibold">{service.name}</h4>
-                              {service.port && <Badge variant="outline" className="text-xs">{service.port}</Badge>}
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-2">{service.type}</p>
-                            <p className="text-sm text-primary mb-2">{service.role}</p>
-                            {service.stack && <Badge variant="secondary" className="text-xs mb-2">{service.stack}</Badge>}
-                            {service.access && (
-                              <div className="flex gap-2 mt-2">
-                                <Badge variant={service.access === "Público" ? "default" : "destructive"} className="text-xs">
-                                  {service.access}
-                                </Badge>
-                                {service.cache && <Badge variant="outline" className="text-xs">Cache: {service.cache}</Badge>}
-                              </div>
-                            )}
-                            {service.protocol && <Badge variant="secondary" className="text-xs mt-2">{service.protocol}</Badge>}
-                            {service.features && (
-                              <ul className="mt-2 space-y-1">
-                                {service.features.map((f, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground flex gap-1">
-                                    <span>•</span> {f}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
+              {/* Bottom Left Box: Problem Solved - Accordion on mobile */}
+              <Card className="flex-1 border-l-4 border-l-primary/60 border-y border-r border-border bg-card/50 hover:shadow-lg transition-shadow overflow-hidden">
+                <CardContent className="p-0">
+                  {/* Accordion Header - Clickable on mobile */}
+                  <button 
+                    onClick={() => setIsProblemExpanded(!isProblemExpanded)}
+                    className="w-full p-3 sm:p-4 md:p-6 flex items-center justify-between text-left hover:bg-accent/5 transition-colors md:cursor-default min-w-0"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 text-primary" />
+                      </div>
+                      <h4 className="text-sm sm:text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{overviewData.problem.title}</h4>
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Architecture Diagram Visual */}
-              <div className="mt-16 p-8 bg-card rounded-xl border border-border">
-                <h3 className="text-xl font-semibold mb-6 text-center">Infrastructure Flow</h3>
-                <div className="flex flex-wrap items-center justify-center gap-4">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                      <Globe className="h-8 w-8 text-blue-500" />
+                    <div className="md:hidden flex-shrink-0 ml-2">
+                      {isProblemExpanded ? (
+                        <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      )}
                     </div>
-                    <span className="text-sm font-medium">Clients</span>
-                    <span className="text-xs text-muted-foreground">Browser, Mobile</span>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                      <Cloud className="h-8 w-8 text-orange-500" />
-                    </div>
-                    <span className="text-sm font-medium">Cloudflare</span>
-                    <span className="text-xs text-muted-foreground">Edge + Cache</span>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-green-500/20 flex items-center justify-center">
-                      <Server className="h-8 w-8 text-green-500" />
-                    </div>
-                    <span className="text-sm font-medium">Barto API</span>
-                    <span className="text-xs text-muted-foreground">Port 3001</span>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                      <CreditCard className="h-8 w-8 text-purple-500" />
-                    </div>
-                    <span className="text-sm font-medium">Omnipago</span>
-                    <span className="text-xs text-muted-foreground">Port 4000</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-4">
-                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                    <div className="flex gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                        <Database className="h-6 w-6 text-yellow-500" />
-                      </div>
-                      <div className="w-16 h-16 rounded-lg bg-pink-500/20 flex items-center justify-center">
-                        <MessageSquare className="h-6 w-6 text-pink-500" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tech Stack */}
-              <div className="mt-16">
-                <h3 className="text-2xl font-bold mb-8 text-center">Tech Stack</h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Globe className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Frontend</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.frontend.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Server className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Backend</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.backend.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Database className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Database</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.database.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Cloud className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Infrastructure</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {overviewData.stack.infrastructure.map(tech => <Badge key={tech} variant="secondary">{tech}</Badge>)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Data Flows Section */}
-          <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-6 py-20">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Key Data Flows</h2>
-              
-              <div className="space-y-12">
-                {dataFlowsData.map((flow, idx) => (
-                  <div key={flow.id} className="relative">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <flow.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <h3 className="text-xl font-semibold">{flow.title}</h3>
-                    </div>
-                    <div className="grid gap-4">
-                      {flow.steps.map((step, stepIdx) => (
-                        <div key={stepIdx} className="flex gap-4">
-                          <div className="flex flex-col items-center">
-                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                              {step.num}
-                            </div>
-                            {stepIdx < flow.steps.length - 1 && (
-                              <div className="w-0.5 h-12 bg-border" />
-                            )}
+                  </button>
+                  
+                  {/* Accordion Content - Always visible on desktop, toggle on mobile */}
+                  <div className={`px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 transition-all duration-300 md:block ${isProblemExpanded ? 'block' : 'hidden md:block'}`}>
+                    <ul className="space-y-2 md:space-y-3">
+                      {overviewData.problem.items.map((item, idx) => (
+                        <li key={idx} className="flex gap-2 md:gap-3 text-sm text-foreground opacity-80 items-start min-w-0">
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-[9px] sm:text-[10px] font-bold text-primary">{idx + 1}</span>
                           </div>
-                          <Card className="flex-1">
-                            <CardContent className="p-4">
-                              <h4 className="font-semibold mb-1">{step.title}</h4>
-                              <p className="text-sm text-muted-foreground font-mono">{step.desc}</p>
-                            </CardContent>
-                          </Card>
-                        </div>
+                          <span className="leading-relaxed text-xs sm:text-sm break-words flex-1 min-w-0">{item}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
-                ))}
-              </div>
+                </CardContent>
+              </Card>
             </div>
-          </section>
+            
+            {/* Right Column - Large Image Box */}
+            <Card className="lg:col-span-3 border border-border bg-card/50 overflow-hidden hover:shadow-lg transition-shadow min-w-0">
+              <CardContent className="p-0">
+                {/* Header */}
+                <div className="px-3 sm:px-4 md:px-5 py-2.5 sm:py-3 md:py-4 border-b border-border bg-primary/5 flex items-center justify-between min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                    <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                    <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-foreground opacity-80 truncate">Infrastructure Architecture</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] sm:text-xs flex-shrink-0 ml-2">5-Layer</Badge>
+                </div>
+                
+                {/* Image Container with Expand Button */}
+                <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-background to-muted/30">
+                  <div className="relative rounded-lg border border-border/50 overflow-hidden shadow-sm bg-white group">
+                    <Image
+                      src="/zapenu-infrastructure-diagram.png"
+                      alt="Zapenu Infrastructure Architecture"
+                      width={900}
+                      height={600}
+                      className="w-full h-auto max-w-full"
+                      priority
+                      style={{ maxWidth: '100%' }}
+                    />
+                    {/* Expand Button Overlay */}
+                    <button
+                      onClick={() => setIsImageModalOpen(true)}
+                      className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 p-1.5 sm:p-2 bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
+                      aria-label="View full image"
+                    >
+                      <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-foreground" />
+                    </button>
+                  </div>
+                  
+                  {/* Mobile Expand Hint */}
+                  <button 
+                    onClick={() => setIsImageModalOpen(true)}
+                    className="w-full mt-2 sm:mt-3 flex items-center justify-center gap-2 py-1.5 sm:py-2 px-3 sm:px-4 bg-primary/5 rounded-lg border border-border/50 md:hidden hover:bg-primary/10 transition-colors"
+                  >
+                    <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                    <span className="text-[10px] sm:text-xs font-medium text-foreground opacity-80">Tap to view full diagram</span>
+                  </button>
+                  
+                  {/* Image Caption */}
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground text-center mt-2 sm:mt-3 px-2 hidden md:block">
+                    Complete system architecture: Client → Edge → Backend → Data → External Services
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        
+        {/* Image Modal/Lightbox */}
+        {isImageModalOpen && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setIsImageModalOpen(false)}
+          >
+            <div className="relative max-w-6xl max-h-[90vh] w-full flex flex-col">
+              {/* Close Button */}
+              <button
+                onClick={() => setIsImageModalOpen(false)}
+                className="absolute -top-12 right-0 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-10"
+                aria-label="Close modal"
+              >
+                <X className="h-6 w-6 text-white" />
+              </button>
+              
+              {/* Modal Image */}
+              <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl">
+                <Image
+                  src="/zapenu-infrastructure-diagram.png"
+                  alt="Zapenu Infrastructure Architecture - Full View"
+                  width={1200}
+                  height={800}
+                  className="w-full h-auto max-h-[80vh] object-contain"
+                  priority
+                />
+              </div>
+              
+              {/* Modal Caption */}
+              <p className="text-white/80 text-center mt-4 text-sm">
+                Zapenu Infrastructure Architecture - Click anywhere to close
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
 
-          {/* Design Decisions Section */}
-          <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Design Decisions & Trade-offs</h2>
+{/* Architecture Section - Accordion Style */}
+      <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">System Architecture</h2>
+            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+          </div>
+
+          {/* Contenedor único para todas las capas */}
+          <div className="rounded-xl border-2 border-foreground/80 overflow-hidden bg-transparent">
+            {/* Header general del System Architecture */}
+            <div className="flex items-center justify-center gap-3 p-4 md:p-6 bg-primary/5 border-b border-border">
+              <Server className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">5-Layer Architecture</h3>
+              <Badge variant="secondary" className="text-xs">{architectureData.layers.reduce((acc, layer) => acc + layer.services.length, 0)} Services</Badge>
+            </div>
+
+            <div className="p-4 md:p-6">
+              {/* Acordeones de capas */}
+              {(() => {
+                const layerIcons = [Monitor, Cloud, Server, Database, ExternalLink];
+                const serviceIcons: Record<string, React.ElementType> = {
+                  'Homero': Globe, 'Marge': Lock, 'Cloudflare Edge': Cloud,
+                  'Barto': Server, 'Omnipago': CreditCard,
+                  'PostgreSQL (Supabase)': Database, 'PostgreSQL (RDS + omnipago)': Database, 'Cloudflare R2': HardDrive,
+                  'MercadoPago': CreditCard, 'WAHA': MessageSquare, 'Supabase': Database
+                };
+
+                return (
+                  <div className="space-y-0">
+                    {architectureData.layers.map((layer, layerIdx) => {
+                      const LayerIcon = layerIcons[layerIdx];
+                      const isExpanded = expandedLayers[layerIdx];
+                      const isLast = layerIdx === architectureData.layers.length - 1;
+
+                      return (
+                        <div key={layerIdx} className={`${!isLast ? 'border-b border-border' : ''}`}>
+                          {/* Header clickeable del acordeón */}
+                          <button
+                            onClick={() => toggleLayer(layerIdx)}
+                            className="w-full flex items-center gap-3 p-3 md:p-4 hover:bg-accent/5 transition-colors text-left group"
+                          >
+                            {/* Icono de la capa */}
+                            <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <LayerIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                            </div>
+                            
+                            {/* Info de la capa */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs md:text-sm font-bold text-primary">
+                                  {layerIdx + 1}.
+                                </span>
+                                <h4 className="text-sm md:text-base font-semibold text-foreground opacity-80 truncate">
+                                  {layer.name}
+                                </h4>
+                              </div>
+                              <p className="text-[10px] md:text-xs text-muted-foreground truncate">
+                                {layer.services.map(s => s.name).join(' • ')}
+                              </p>
+                            </div>
+
+                            {/* Contador y toggle */}
+                            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                              <Badge variant="secondary" className="text-[10px] md:text-xs h-5 md:h-6">
+                                {layer.services.length}
+                              </Badge>
+                              <div className={`w-6 h-6 md:w-7 md:h-7 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                                <ChevronDown className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                              </div>
+                            </div>
+                          </button>
+
+                          {/* Contenido expandible */}
+                          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <div className="p-3 md:p-4 pt-0 md:pt-0">
+                              {/* Grid de servicios */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                                {layer.services.map((service, svcIdx) => {
+                                  const ServiceIcon = serviceIcons[service.name] || Server;
+
+                                  return (
+<Card
+                                  key={svcIdx}
+                                  className="group border-0 border-l-2 border-l-primary/40 hover:border-l-primary hover:shadow-md transition-all duration-200 bg-background"
+                                >
+                                      <CardContent className="p-3 md:p-4">
+                                        {/* Header del servicio */}
+                                        <div className="flex items-start gap-2.5 md:gap-3 mb-2.5 md:mb-3">
+                                          <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                            <ServiceIcon className="h-4 w-4 md:h-4.5 md:w-4.5 text-primary" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2">
+                                              <h5 className="text-sm md:text-base font-semibold text-foreground opacity-80 truncate">
+                                                {service.name}
+                                              </h5>
+                                              {service.port && typeof service.port === 'string' && service.port.length < 10 && (
+                                                <Badge variant="outline" className="text-[10px] h-4 md:h-5 px-1 md:px-1.5 flex-shrink-0">
+                                                  {service.port}
+                                                </Badge>
+                                              )}
+                                            </div>
+                                            <p className="text-[10px] md:text-xs text-primary truncate">{service.type}</p>
+                                          </div>
+                                        </div>
+
+                                        {/* Descripción */}
+                                        <p className="text-xs text-foreground opacity-70 mb-2.5 md:mb-3 leading-relaxed line-clamp-2">
+                                          {service.role}
+                                        </p>
+
+                                        {/* Stack */}
+                                        {service.stack && (
+                                          <div className="mb-2">
+                                            <Badge variant="secondary" className="text-[10px] h-5 px-2">
+                                              {service.stack}
+                                            </Badge>
+                                          </div>
+                                        )}
+
+{/* Badges de tecnología - Todos con variant secondary para consistencia */}
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {service.protocol && (
+                                        <Badge variant="secondary" className="text-[10px] h-4 md:h-5 px-1.5 md:px-2">
+                                          {service.protocol}
+                                        </Badge>
+                                      )}
+                                      {service.access && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-[10px] h-4 md:h-5 px-1.5 md:px-2"
+                                        >
+                                          {service.access === "Público" ? (
+                                            <Globe className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                                          ) : (
+                                            <Lock className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                                          )}
+                                          <span className="hidden sm:inline">{service.access}</span>
+                                        </Badge>
+                                      )}
+                                      {service.cache && (
+                                        <Badge variant="secondary" className="text-[10px] h-4 md:h-5 px-1.5 md:px-2">
+                                          <Clock className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                                          Cache {service.cache}
+                                        </Badge>
+                                      )}
+                                    </div>
+
+{/* Features - Con variant secondary para consistencia */}
+                                    {service.features && service.features.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-border/50">
+                                        {service.features.slice(0, 3).map((f, i) => (
+                                          <Badge
+                                            key={i}
+                                            variant="secondary"
+                                            className="text-[9px] md:text-[10px] h-4 md:h-5 px-1.5 md:px-2"
+                                          >
+                                            <CheckCircle className="h-2 w-2 md:h-2.5 md:w-2.5 mr-0.5 md:mr-1 text-primary" />
+                                            <span className="truncate max-w-[80px] md:max-w-[100px]">{f}</span>
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                      </CardContent>
+                                    </Card>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      </section>
+
+{/* Data Flows Section - Mini Diagram Cards */}
+      <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Key Data Flows</h2>
+            <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
+          </div>
+
+          {/* Grid of Mini Cards with Diagram Previews */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+            {/* Card 1: Order Creation with Payment */}
+            <MiniDiagramCard
+              title="Order Creation with Payment"
+              diagram={`sequenceDiagram
+                participant Cliente
+                participant Homero as Homero (Frontend)
+                participant Barto as Barto (Backend)
+                participant Omnipago
+                participant MP as MercadoPago
+                participant WAHA
+                
+                Cliente->>Homero: Navega menú
+                Homero->>Barto: GET /products
+                Barto-->>Homero: Lista productos
+                Cliente->>Homero: Confirma pedido
+                Homero->>Barto: POST /orders
+                Note over Barto: Valida y guarda Estado: PENDING_PAYMENT
+                Barto-->>Homero: {order_id, total}
+                Homero->>Barto: Solicita pago
+                Barto->>Omnipago: POST /payments/create-order
+                Omnipago->>MP: Crea preferencia
+                MP-->>Omnipago: preference_id, init_point
+                Omnipago->>Omnipago: Guarda en DB
+                Omnipago-->>Barto: init_point
+                Barto-->>Homero: init_point
+                Homero->>Cliente: Redirecciona a MP
+                Cliente->>MP: Realiza pago
+                MP->>Omnipago: POST webhook
+                Note over Omnipago: Valida HMAC
+                Omnipago->>MP: GET /payments/{id}
+                MP-->>Omnipago: Estado: approved
+                Omnipago->>Omnipago: Guarda pago
+                Omnipago->>Barto: PUT /orders/{id}/payment-status
+                Barto->>Barto: Actualiza estado PENDING_PAYMENT → CREATED
+                Barto->>WAHA: Envía notificación
+                WAHA->>Cliente: WhatsApp confirmación`}
+            />
+
+            {/* Card 2: Authentication Flow */}
+            <MiniDiagramCard
+              title="Authentication Flow (Marge)"
+              diagram={`sequenceDiagram
+                participant Admin
+                participant Marge
+                participant Supabase
+                participant Barto
+                
+                Admin->>Marge: Accede a /login
+                Marge->>Admin: Formulario email
+                Admin->>Marge: Ingresa email
+                Marge->>Supabase: signInWithOtp(email)
+                Supabase-->>Admin: Envía magic link
+                Admin->>Supabase: Click en magic link
+                Supabase-->>Marge: Callback con sesión
+                Marge->>Marge: Guarda tokens en localStorage
+                Admin->>Marge: Solicita recurso protegido
+                Marge->>Barto: GET /api/protected Authorization: Bearer {jwt}
+                Barto->>Supabase: Valida JWT (JWKS)
+                Supabase-->>Barto: Token válido
+                Barto-->>Marge: Recurso solicitado`}
+            />
+
+            {/* Card 3: Order State Diagram */}
+            <MiniDiagramCard
+              title="Order State Diagram"
+              diagram={`stateDiagram-v2
+                [*] --> PENDING_PAYMENT: Crear pedido (con pago)
+                [*] --> CREATED: Crear pedido (efectivo)
+                PENDING_PAYMENT --> CREATED: Pago aprobado
+                PENDING_PAYMENT --> CANCELLED: Pago rechazado/cancelado
+                CREATED --> CONFIRMED: Negocio confirma
+                CONFIRMED --> FINALIZED: Pedido completado/entregado
+                CREATED --> CANCELLED: Cancelación
+                CONFIRMED --> CANCELLED: Cancelación
+                FINALIZED --> [*]
+                CANCELLED --> [*]`}
+            />
+          </div>
+        </div>
+      </section>
+
+{/* Design Decisions Section */}
+      <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Design Decisions & Trade-offs</h2>
               
               <div className="space-y-6">
                 {decisionsData.map((decision, idx) => (
@@ -584,11 +989,11 @@ export default function ZapenuProjectPage() {
                       <h3 className="text-lg font-semibold mb-3">{decision.decision}</h3>
                       <div className="grid md:grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="font-semibold text-green-500">Why: </span>
+                          <span className="font-semibold text-primary">Why: </span>
                           <span className="text-muted-foreground">{decision.why}</span>
                         </div>
                         <div>
-                          <span className="font-semibold text-orange-500">Trade-off: </span>
+                          <span className="font-semibold text-foreground opacity-80">Trade-off: </span>
                           <span className="text-muted-foreground">{decision.tradeoff}</span>
                         </div>
                       </div>
@@ -603,10 +1008,10 @@ export default function ZapenuProjectPage() {
             </div>
           </section>
 
-          {/* Costs Section */}
-          <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-6 py-20">
+{/* Costs Section */}
+      <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Cost Considerations</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-12 text-foreground opacity-80 text-center">Cost Considerations</h2>
               
               <div className="mb-8 text-center">
                 <div className="inline-block px-8 py-4 bg-primary/10 rounded-xl">
@@ -616,16 +1021,16 @@ export default function ZapenuProjectPage() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">Cost Breakdown</h3>
+                <h3 className="text-xl font-semibold mb-4 text-primary">Cost Breakdown</h3>
                 <div className="grid gap-3">
                   {costsData.baseline.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-3 bg-card rounded-lg border border-border">
-                      <div>
-                        <span className="font-medium">{item.component}</span>
-                        <span className="text-xs text-muted-foreground ml-2">({item.provider})</span>
-                      </div>
-                      <Badge variant="outline">{item.estimate}</Badge>
-                    </div>
+<div key={idx} className="flex flex-wrap justify-between items-center gap-2 p-3 bg-card rounded-lg border border-border">
+                                  <div className="min-w-0 flex-1">
+                                    <span className="font-medium truncate block">{item.component}</span>
+                                    <span className="text-xs text-muted-foreground truncate block">({item.provider})</span>
+                                  </div>
+                                  <Badge variant="outline" className="flex-shrink-0">{item.estimate}</Badge>
+                                </div>
                   ))}
                 </div>
               </div>
@@ -634,7 +1039,7 @@ export default function ZapenuProjectPage() {
                 <Card>
                   <CardContent className="p-4">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-orange-500" />
+                      <Zap className="h-4 w-4 text-primary" />
                       Main Cost Drivers
                     </h4>
                     <div className="space-y-3">
@@ -653,7 +1058,7 @@ export default function ZapenuProjectPage() {
                 <Card>
                   <CardContent className="p-4">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <AlertTriangle className="h-4 w-4 text-foreground opacity-80" />
                       Scaling Risks
                     </h4>
                     <div className="space-y-3">
@@ -670,140 +1075,8 @@ export default function ZapenuProjectPage() {
             </div>
           </section>
 
-          {/* Security Section */}
-          <section id="security" ref={(el) => { sectionRefs.current['security'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Security & Reliability</h2>
-              
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <Card className="border-green-500/30">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-green-500">
-                      <CheckCircle className="h-4 w-4" />
-                      Implemented
-                    </h4>
-                    <ul className="space-y-2">
-                      {securityData.implemented.map((item, idx) => (
-                        <li key={idx} className="text-sm flex gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
-                          <span>{item.item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card className="border-yellow-500/30">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-yellow-500">
-                      <AlertTriangle className="h-4 w-4" />
-                      Known Risks
-                    </h4>
-                    <ul className="space-y-2">
-                      {securityData.risks.map((item, idx) => (
-                        <li key={idx} className="text-sm">
-                          <div className="flex gap-2">
-                            <AlertTriangle className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
-                            <span>{item.item}</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground ml-5">{item.note}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card className="border-red-500/30">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-500">
-                      <XCircle className="h-4 w-4" />
-                      Not Implemented
-                    </h4>
-                    <ul className="space-y-2">
-                      {securityData.notImplemented.map((item, idx) => (
-                        <li key={idx} className="text-sm flex gap-2">
-                          <XCircle className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
-                          <span>{item.item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Critical Issues */}
-              <Card className="border-red-500/50">
-                <CardContent className="p-6">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2 text-red-500">
-                    <AlertCircle className="h-5 w-5" />
-                    Critical Security Concerns
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="p-3 bg-red-500/10 rounded-lg">
-                      <span className="font-medium">IDOR (Insecure Direct Object Reference)</span>
-                      <p className="text-sm text-muted-foreground mt-1">Endpoints como GET /products/{'{'}id{'}'} no muestran verificación explícita de que el usuario tenga acceso a ese recurso.</p>
-                    </div>
-                    <div className="p-3 bg-red-500/10 rounded-lg">
-                      <span className="font-medium">XSS via LocalStorage</span>
-                      <p className="text-sm text-muted-foreground mt-1">Tokens JWT almacenados en LocalStorage son accesibles a JavaScript malicioso (script injection).</p>
-                    </div>
-                    <div className="p-3 bg-red-500/10 rounded-lg">
-                      <span className="font-medium">Self-hosted GitHub Runner</span>
-                      <p className="text-sm text-muted-foreground mt-1">El runner de GitHub Actions en el VPS tiene acceso completo al servidor. Si se compromete, el atacante controla toda la infraestructura.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-
-          {/* Future Section */}
-          <section id="future" ref={(el) => { sectionRefs.current['future'] = el; }} className="min-h-screen px-6 py-20">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Variants & Future Evolution</h2>
-              
-              <div className="grid md:grid-cols-2 gap-4">
-                {variantsData.map((variant, idx) => (
-                  <Card key={idx} className="hover:border-primary/30 transition-colors">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          🔮 {variant.name}
-                        </h4>
-                        <Badge variant="outline">{variant.complexity}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{variant.case}</p>
-                      <Badge className="mt-3 bg-purple-500/20 text-purple-500">Future / Proposed</Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Limitations Section */}
-          <section id="limitations" ref={(el) => { sectionRefs.current['limitations'] = el; }} className="min-h-screen px-6 py-20 bg-card/30">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-12 text-center">Limitations & Non-Goals</h2>
-              
-              <div className="space-y-8">
-                {limitationsData.map((category, idx) => (
-                  <div key={idx}>
-                    <h3 className="text-xl font-semibold mb-4">{category.category}</h3>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {category.items.map((item, itemIdx) => (
-                        <div key={itemIdx} className="flex gap-2 p-3 bg-card rounded-lg border border-border">
-                          <XCircle className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-muted-foreground">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Footer Statement */}
-          <footer className="px-6 py-16 bg-primary/5">
+{/* Footer Statement */}
+      <footer className="px-4 md:px-6 py-12 md:py-16 bg-primary/5">
             <div className="max-w-2xl mx-auto text-center">
               <p className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
                 "This project reflects how I design systems: pragmatic, cost-aware, and built under real constraints."
