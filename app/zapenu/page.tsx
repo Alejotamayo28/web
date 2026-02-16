@@ -695,6 +695,39 @@ export default function ZapenuProjectPage() {
     return () => observer.disconnect();
   }, []);
 
+  // Lock body scroll when image modal is open
+  const imageScrollPositionRef = useRef<number>(0);
+  useEffect(() => {
+    if (isImageModalOpen) {
+      imageScrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${imageScrollPositionRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      // Restore scroll position after a brief delay to ensure DOM is updated
+      setTimeout(() => {
+        window.scrollTo(0, imageScrollPositionRef.current);
+      }, 0);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+    };
+  }, [isImageModalOpen]);
+
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
     sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth' });
@@ -705,10 +738,10 @@ export default function ZapenuProjectPage() {
       {/* Header - Solo botón de regreso, sin navegación horizontal */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <Link href="/#projects" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="h-4 w-4 flex-shrink-0" />
-            <span className="text-sm sm:text-base">Back to Projects</span>
-          </Link>
+<Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+              <span className="text-sm sm:text-base">Home</span>
+            </Link>
         </div>
       </header>
 
