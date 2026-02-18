@@ -9,41 +9,42 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-ArrowLeft,
-ArrowRight,
-ArrowDown,
-Server,
-Globe,
-Shield,
-Database,
-Cloud,
-MessageSquare,
-CreditCard,
-CheckCircle,
-AlertTriangle,
-XCircle,
-DollarSign,
-Zap,
-Lock,
-Key,
-Clock,
-Users,
-ShoppingCart,
-Package,
-Workflow,
-GitBranch,
-AlertCircle,
-ExternalLink,
-Monitor,
-HardDrive,
-Layers,
-Maximize2,
-X,
-ChevronDown,
-ChevronUp,
-LucideIcon,
-Maximize,
-TrendingUp
+  ArrowLeft,
+  ArrowRight,
+  ArrowDown,
+  Server,
+  Globe,
+  Shield,
+  Database,
+  Cloud,
+  MessageSquare,
+  CreditCard,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  DollarSign,
+  Zap,
+  Lock,
+  Key,
+  Clock,
+  Users,
+  ShoppingCart,
+  Package,
+  Workflow,
+  GitBranch,
+  AlertCircle,
+  ExternalLink,
+  Monitor,
+  HardDrive,
+  Layers,
+  Maximize2,
+  X,
+  ChevronDown,
+  ChevronUp,
+  LucideIcon,
+  Maximize,
+  TrendingUp,
+  Menu
 } from "lucide-react";
 import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
@@ -656,6 +657,7 @@ export default function ZapenuProjectPage() {
   const [activeSection, setActiveSection] = useState("overview");
   const [isProblemExpanded, setIsProblemExpanded] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedLayers, setExpandedLayers] = useState<boolean[]>([true, false, false, false, false]);
   const [expandedDecisions, setExpandedDecisions] = useState<boolean[]>([true, false, false, false, false, false]);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
@@ -731,22 +733,99 @@ export default function ZapenuProjectPage() {
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
     sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth' });
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden" style={{ maxWidth: '100vw' }}>
-      {/* Header - Solo botón de regreso, sin navegación horizontal */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-<Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-4 w-4 flex-shrink-0" />
-              <span className="text-sm sm:text-base">Home</span>
-            </Link>
+    <div className="min-h-screen bg-background pt-[57px]" style={{ maxWidth: '100vw' }}>
+{/* Topbar Navigation */}
+      <header className="fixed top-0 left-0 right-0 z-[70] bg-background/95 backdrop-blur-sm border-b border-border w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          {/* Home Link */}
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+            <span className="text-sm sm:text-base">Home</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeSection === item.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+{/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6 text-foreground" />
+          ) : (
+            <Menu className="h-6 w-6 text-foreground" />
+          )}
+        </button>
         </div>
       </header>
 
-      <div className="flex w-full overflow-x-hidden">
-        {/* Main Content */}
+      {/* Mobile Navigation Menu */}
+      <aside
+        className={`md:hidden fixed inset-y-0 left-0 z-[60] w-full bg-primary/5 border-r border-border transform transition-transform duration-300 ease-in-out ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{ top: '57px' }}
+      >
+        {/* Code Background Image */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage: 'url(/ejemplo-codigo-2.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'left top',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="p-6 relative z-10">
+          <nav className="flex flex-col space-y-1">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                  activeSection === item.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      {/* Overlay for mobile menu */}
+      {isMobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[55]"
+          style={{ top: '57px' }}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <div className="flex w-full">
+        {/* Main Content - with margin for mobile sidebar */}
         <main className="flex-1 w-full min-w-0">
 {/* Overview Section - Three Panel Layout (Responsive) */}
       <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="px-3 sm:px-4 md:px-6 py-8 md:py-12 overflow-x-hidden">
@@ -773,7 +852,7 @@ export default function ZapenuProjectPage() {
                       <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">Digital Ordering Platform</p>
                     </div>
                   </div>
-                  <p className="text-foreground opacity-80 text-xs sm:text-sm md:text-base mb-3 md:mb-5 leading-relaxed break-words">{overviewData.description}</p>
+                  <p className="text-foreground opacity-80 text-sm md:text-base mb-3 md:mb-5 leading-relaxed break-words">{overviewData.description}</p>
                   
                   {/* Badges - Icons only on mobile, with text on desktop */}
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -832,7 +911,7 @@ export default function ZapenuProjectPage() {
                           <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                             <span className="text-[9px] sm:text-[10px] font-bold text-primary">{idx + 1}</span>
                           </div>
-                          <span className="leading-relaxed text-xs sm:text-sm break-words flex-1 min-w-0">{item}</span>
+                          <span className="leading-relaxed text-sm break-words flex-1 min-w-0">{item}</span>
                         </li>
                       ))}
                     </ul>
@@ -1039,7 +1118,7 @@ export default function ZapenuProjectPage() {
                                         </div>
 
                                         {/* Descripción */}
-                                        <p className="text-xs text-foreground opacity-70 mb-2.5 md:mb-3 leading-relaxed line-clamp-2">
+                                        <p className="text-sm text-foreground opacity-70 mb-2.5 md:mb-3 leading-relaxed line-clamp-2">
                                           {service.role}
                                         </p>
 

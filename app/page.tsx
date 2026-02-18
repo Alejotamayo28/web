@@ -17,13 +17,15 @@ import {
 } from "lucide-react";
 
 export default function Portfolio() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
-  const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
-  const [isProjectExpanded, setIsProjectExpanded] = useState(true);
+const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const [activeSection, setActiveSection] = useState("home");
+const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
+const [isProjectExpanded, setIsProjectExpanded] = useState(true);
+const [isProjectsMenuOpen, setIsProjectsMenuOpen] = useState(false);
 
-  const homeRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
+const homeRef = useRef<HTMLDivElement>(null);
+const projectsRef = useRef<HTMLDivElement>(null);
+const personalProjectsRef = useRef<HTMLDivElement>(null);
 
   // Scroll spy to detect active section
   useEffect(() => {
@@ -44,10 +46,11 @@ export default function Portfolio() {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    const sections = [
-      { ref: homeRef, id: 'home' },
-      { ref: projectsRef, id: 'projects' }
-    ];
+const sections = [
+  { ref: homeRef, id: 'home' },
+  { ref: projectsRef, id: 'projects' },
+  { ref: personalProjectsRef, id: 'personal-projects' }
+];
 
     sections.forEach(({ ref, id }) => {
       if (ref.current) {
@@ -59,11 +62,13 @@ export default function Portfolio() {
     return () => observer.disconnect();
   }, []);
 
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>, sectionId: string) => {
-    setActiveSection(sectionId);
-    ref.current?.scrollIntoView({ behavior: 'smooth' });
-    setIsSidebarOpen(false);
-  };
+const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>, sectionId: string) => {
+  setActiveSection(sectionId);
+  ref.current?.scrollIntoView({ behavior: 'smooth' });
+  setIsSidebarOpen(false);
+};
+
+const isProjectsActive = activeSection === 'projects' || activeSection === 'personal-projects';
 
   const handleViewCV = () => {
     window.open('https://assets.alejotamayo.com/cv/Alejandro_Vergara_Tamayo_CV.docx.pdf', '_blank');
@@ -195,24 +200,51 @@ export default function Portfolio() {
             }}
           />
 
-          <div className="p-6 space-y-2 pt-16 lg:pt-6 relative z-10">
-            {/* Navigation */}
-            <div className="space-y-1">
+<div className="p-6 space-y-1 pt-16 lg:pt-6 relative z-10">
+          {/* Navigation */}
+          <div className="space-y-0">
               <SidebarNavItem
                 icon={Home}
                 label="Home"
                 isActive={activeSection === 'home'}
                 onClick={() => scrollToSection(homeRef, 'home')}
               />
-              <SidebarNavItem
-                icon={Briefcase}
-                label="Proyectos"
-                isActive={activeSection === 'projects'}
+<SidebarNavItem
+              icon={Briefcase}
+              label="Proyectos"
+              isActive={isProjectsActive}
+              isExpandable={true}
+              isExpanded={isProjectsMenuOpen}
+              onClick={() => setIsProjectsMenuOpen(!isProjectsMenuOpen)}
+            />
+            <div className={`ml-4 pl-4 border-l-2 border-border space-y-0.5 py-1 overflow-hidden transition-all duration-300 ${isProjectsMenuOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+              <button
                 onClick={() => scrollToSection(projectsRef, 'projects')}
-              />
-              <SidebarNavItem
-                icon={Mail}
-                label="Contacto"
+                className={`w-full flex items-center gap-2 text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                  activeSection === 'projects'
+                    ? 'text-primary font-medium bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/5'
+                }`}
+              >
+                <Briefcase className="h-4 w-4" />
+                Proyectos Profesionales
+              </button>
+              <button
+                onClick={() => scrollToSection(personalProjectsRef, 'personal-projects')}
+                className={`w-full flex items-center gap-2 text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                  activeSection === 'personal-projects'
+                    ? 'text-primary font-medium bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/5'
+                }`}
+              >
+                <Briefcase className="h-4 w-4" />
+                Proyectos Personales
+              </button>
+</div>
+            <div className="h-2"></div>
+            <SidebarNavItem
+              icon={Mail}
+              label="Contacto"
                 isActive={false}
                 isExpanded={true}
                 onClick={() => {}}
@@ -332,12 +364,16 @@ export default function Portfolio() {
             </div>
           </section>
 
-          {/* Projects Section - Featured Layout */}
-          <section ref={projectsRef} id="projects" className="min-h-screen px-6 py-20">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Proyecto Destacado</h2>
-              </div>
+{/* Projects Section - Professional Projects */}
+      <section ref={projectsRef} id="projects" className="min-h-screen px-6 py-16 pb-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary">Proyectos</h2>
+          </div>
+          <div className="text-center mb-12">
+            <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">Proyectos Profesionales</h3>
+            <div className="w-24 h-1 bg-primary/30 mx-auto mt-3 rounded-full"></div>
+          </div>
 
               {/* Featured Project Card */}
               <Card className="border-0 border-l-4 border-l-primary/60 overflow-hidden bg-background hover:shadow-xl transition-all duration-300">
@@ -359,9 +395,9 @@ export default function Portfolio() {
                         </div>
                       </div>
 
-                      <p className="text-foreground/80 text-base mb-4 leading-relaxed">
-                        Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos. Diseñada para manejar miles de items por tienda con microservicios.
-                      </p>
+<p className="text-foreground/80 text-base mb-4 leading-relaxed hidden md:block">
+            Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos. Diseñada para manejar miles de items por tienda con microservicios.
+          </p>
 
                       {/* Tech Stack Badges */}
                       <div className="flex flex-wrap gap-2 mb-4">
@@ -486,6 +522,19 @@ export default function Portfolio() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </section>
+
+          {/* Personal Projects Section */}
+          <section ref={personalProjectsRef} id="personal-projects" className="min-h-[30vh] px-6 py-10">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">Proyectos Personales</h3>
+                <div className="w-24 h-1 bg-primary/30 mx-auto mt-3 rounded-full"></div>
+              </div>
+              <div className="text-center py-12">
+                <span className="text-muted-foreground text-lg">Working...</span>
+              </div>
             </div>
           </section>
         </div>
