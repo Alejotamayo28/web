@@ -841,7 +841,7 @@ export default function ZapenuProjectPage() {
             {/* Left Column - Two stacked boxes */}
             <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6 min-w-0">
               {/* Top Left Box: Project Info */}
-              <Card className="flex-1 border-l-4 border-l-primary border-y border-r border-border bg-card/50 hover:shadow-lg transition-shadow overflow-hidden">
+              <Card className="flex-1 border-0 border-l-4 border-l-primary/60 bg-transparent hover:shadow-lg transition-shadow overflow-hidden">
                 <CardContent className="p-3 sm:p-4 md:p-6">
                   <div className="flex items-start gap-2 sm:gap-3 md:gap-4 mb-3 md:mb-4 min-w-0">
                     <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -881,7 +881,7 @@ export default function ZapenuProjectPage() {
               </Card>
               
               {/* Bottom Left Box: Problem Solved - Accordion on mobile */}
-              <Card className="flex-1 border-l-4 border-l-primary/60 border-y border-r border-border bg-card/50 hover:shadow-lg transition-shadow overflow-hidden">
+              <Card className="flex-1 border-0 border-l-4 border-l-primary/60 bg-transparent hover:shadow-lg transition-shadow overflow-hidden">
                 <CardContent className="p-0">
                   {/* Accordion Header - Clickable on mobile */}
                   <button 
