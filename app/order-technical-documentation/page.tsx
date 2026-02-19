@@ -787,7 +787,7 @@ export default function OrderTechnicalDocumentation() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-[70] bg-background/95 backdrop-blur-sm border-b border-border w-full">
+      <header className={`fixed top-0 left-0 right-0 z-[70] w-full transition-all duration-300 ${isMobileMenuOpen ? 'bg-transparent border-none' : 'bg-background/95 backdrop-blur-sm border-b border-border'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           {/* Home Link */}
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -819,7 +819,7 @@ export default function OrderTechnicalDocumentation() {
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
-              <X className="h-6 w-6 text-foreground" />
+              <X className="h-6 w-6 text-white" />
             ) : (
               <Menu className="h-6 w-6 text-foreground" />
             )}
@@ -827,13 +827,30 @@ export default function OrderTechnicalDocumentation() {
         </div>
       </header>
 
+      {/* Mobile Navigation Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 z-[55] bg-black/80 backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Mobile Navigation Menu */}
       <aside
-        className={`md:hidden fixed inset-y-0 left-0 z-[60] w-full bg-background border-r border-border transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-y-0 left-0 z-[60] w-full bg-primary/5 border-r border-border transform transition-transform duration-300 ease-in-out pt-16 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ top: '57px' }}
       >
+        {/* Code Background Image */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage: 'url(/ejemplo-codigo-2.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'left top',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
         <div className="p-6 relative z-10">
           <nav className="flex flex-col space-y-1">
             {navigationItems.map((item) => (
