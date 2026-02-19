@@ -719,7 +719,7 @@ export default function OrderTechnicalDocumentation() {
   const [expandedInfrastructure, setExpandedInfrastructure] = useState<number[]>([0]); // First layer expanded by default
   const [expandedSubcategories, setExpandedSubcategories] = useState<Record<number, number[]>>({}); // layerIdx -> subcategory indexes (collapsed by default)
   const [showOrderServiceComponents, setShowOrderServiceComponents] = useState(false); // Accordion for Order Service Internal Components
-  const [expandedPatterns, setExpandedPatterns] = useState<number[]>([]); // Patterns accordion - collapsed by default
+  const [expandedPatterns, setExpandedPatterns] = useState<number[]>([0]); // First pattern expanded by default
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 

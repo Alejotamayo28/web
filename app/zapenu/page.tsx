@@ -739,7 +739,7 @@ export default function ZapenuProjectPage() {
   return (
     <div className="min-h-screen bg-background pt-[57px]" style={{ maxWidth: '100vw' }}>
 {/* Topbar Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-[70] bg-background/95 backdrop-blur-sm border-b border-border w-full">
+      <header className={`fixed top-0 left-0 right-0 z-[70] w-full transition-all duration-300 ${isMobileMenuOpen ? 'bg-transparent border-none' : 'bg-background/95 backdrop-blur-sm border-b border-border'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           {/* Home Link */}
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -771,7 +771,7 @@ export default function ZapenuProjectPage() {
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? (
-            <X className="h-6 w-6 text-foreground" />
+            <X className="h-6 w-6 text-white" />
           ) : (
             <Menu className="h-6 w-6 text-foreground" />
           )}
@@ -781,10 +781,9 @@ export default function ZapenuProjectPage() {
 
       {/* Mobile Navigation Menu */}
       <aside
-        className={`md:hidden fixed inset-y-0 left-0 z-[60] w-full bg-primary/5 border-r border-border transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-y-0 left-0 z-[60] w-full bg-primary/5 border-r border-border transform transition-transform duration-300 ease-in-out pt-16 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ top: '57px' }}
       >
         {/* Code Background Image */}
         <div
@@ -817,9 +816,8 @@ export default function ZapenuProjectPage() {
 
       {/* Overlay for mobile menu */}
       {isMobileMenuOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[55]"
-          style={{ top: '57px' }}
+        <div 
+          className="md:hidden fixed inset-0 z-[55] bg-black/80 backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
