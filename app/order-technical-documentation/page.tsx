@@ -21,6 +21,7 @@ import {
   Workflow,
   ChevronDown,
   X,
+  Menu,
   Maximize2,
   AlertTriangle,
   CheckCircle,
@@ -36,7 +37,13 @@ import {
   HardDrive,
   Scale,
   Users,
-  FileKey
+  FileKey,
+  Terminal,
+  FileCode,
+  Cpu,
+  Network,
+  Blocks,
+  BookOpen
 } from "lucide-react";
 import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
@@ -69,13 +76,6 @@ const overviewData = {
       "Compensación distribuida ante fallos",
       "Auditabilidad completa del sistema de pedidos"
     ]
-  },
-  stack: {
-    runtime: ["Node.js 20+", "TypeScript 5.3+"],
-    framework: ["Express.js", "TSOA (OpenAPI)", "Hexagonal Architecture"],
-    database: ["PostgreSQL 15+", "Redis 7"],
-    messaging: ["RabbitMQ"],
-    infrastructure: ["AWS (ECS, RDS, ElastiCache)", "Docker", "Terraform"],
   }
 };
 
@@ -134,13 +134,37 @@ const architectureData = {
       features: ["2 particiones", "DLQ support", "Deduplicación Redis"]
     }
   ],
-  infrastructure: [
-    { name: "RabbitMQ", type: "Message Broker", role: "Event Bus", port: "5672" },
-    { name: "PostgreSQL (Order)", type: "Database", role: "Event Store + Outbox", features: ["orders", "events", "outbox_events"] },
-    { name: "PostgreSQL (Inventory)", type: "Database", role: "Inventario y reservas" },
-    { name: "PostgreSQL (Payment)", type: "Database", role: "Pagos y clientes" },
-    { name: "Redis", type: "Cache", role: "Deduplicación de mensajes", port: "6379" },
-    { name: "AWS ECS", type: "Container Orchestration", role: "Servicios" },
+  patterns: [
+    { 
+      name: "Event Sourcing", 
+      icon: GitBranch,
+      description: "Almacena el estado como secuencia de eventos en lugar de estado actual",
+      benefits: ["Audit trail completo", "Replay de estado", "Debugging temporal"]
+    },
+    { 
+      name: "Outbox Pattern", 
+      icon: RefreshCw,
+      description: "Publica eventos de forma confiable usando tabla outbox",
+      benefits: ["Garantía de entrega", "Sin CDC externo", "Transaccional"]
+    },
+    { 
+      name: "Saga (Coreografía)", 
+      icon: Workflow,
+      description: "Orquestación distribuida mediante mensajes entre servicios",
+      benefits: ["Desacoplamiento total", "Escalabilidad horizontal", "Fault isolation"]
+    },
+    { 
+      name: "Deduplicación", 
+      icon: Layers,
+      description: "Prevención de procesamiento duplicado con Redis",
+      benefits: ["Idempotencia", "Exactly-once semantics", "Recovery"]
+    },
+    { 
+      name: "Consistent Hashing", 
+      icon: Globe,
+      description: "Distribución uniforme de eventos entre workers",
+      benefits: ["Balanceo de carga", "Escalabilidad", "Minimize reshuffling"]
+    }
   ]
 };
 
@@ -691,26 +715,44 @@ const serviceIcons: Record<string, LucideIcon> = {
 
 export default function OrderTechnicalDocumentation() {
   const [activeSection, setActiveSection] = useState("overview");
-  const [expandedDecisions, setExpandedDecisions] = useState<number[]>([]);
+  const [expandedDecisions, setExpandedDecisions] = useState<number[]>([0]); // First decision expanded by default
   const [expandedInfrastructure, setExpandedInfrastructure] = useState<number[]>([0]); // First layer expanded by default
   const [expandedSubcategories, setExpandedSubcategories] = useState<Record<number, number[]>>({}); // layerIdx -> subcategory indexes (collapsed by default)
   const [showOrderServiceComponents, setShowOrderServiceComponents] = useState(false); // Accordion for Order Service Internal Components
+  const [expandedPatterns, setExpandedPatterns] = useState<number[]>([]); // Patterns accordion - collapsed by default
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Detect visible section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 170;
+      
+      for (const item of navigationItems) {
+        const element = sectionRefs.current[item.id];
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetHeight = element.offsetHeight;
+          
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            if (activeSection !== item.id) {
+              setActiveSection(item.id);
+            }
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeSection]);
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
     const element = sectionRefs.current[sectionId];
     if (element) {
-      const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -745,34 +787,76 @@ export default function OrderTechnicalDocumentation() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 hover:text-primary transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="font-medium">Back to Portfolio</span>
-            </Link>
-            
-            <nav className="hidden md:flex items-center gap-1">
-              {navigationItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                    activeSection === item.id
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          </div>
+      <header className="fixed top-0 left-0 right-0 z-[70] bg-background/95 backdrop-blur-sm border-b border-border w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          {/* Home Link */}
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+            <span className="text-sm sm:text-base">Home</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeSection === item.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6 text-foreground" />
+            ) : (
+              <Menu className="h-6 w-6 text-foreground" />
+            )}
+          </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      {/* Mobile Navigation Menu */}
+      <aside
+        className={`md:hidden fixed inset-y-0 left-0 z-[60] w-full bg-background border-r border-border transform transition-transform duration-300 ease-in-out ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{ top: '57px' }}
+      >
+        <div className="p-6 relative z-10">
+          <nav className="flex flex-col space-y-1">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  scrollToSection(item.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                  activeSection === item.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 pt-[80px] md:pt-[100px]">
         {/* Overview Section */}
         <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-8 md:mb-12">
@@ -813,24 +897,6 @@ export default function OrderTechnicalDocumentation() {
                 </ul>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Stack Grid */}
-          <div className="max-w-4xl mx-auto mt-8">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {Object.entries(overviewData.stack).map(([category, items]) => (
-                <Card key={category} className="border border-border/50 bg-card/50">
-                  <CardContent className="p-4">
-                    <h3 className="text-xs font-semibold text-primary uppercase mb-2">{category}</h3>
-                    <ul className="space-y-1">
-                      {items.map((item, idx) => (
-                        <li key={idx} className="text-xs text-muted-foreground">{item}</li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -891,8 +957,8 @@ export default function OrderTechnicalDocumentation() {
                         <ServiceIcon className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground">{service.name}</h3>
-                        <p className="text-xs text-primary">{service.type}</p>
+                        <h3 className="text-base font-semibold text-foreground">{service.name}</h3>
+                        <p className="text-sm text-primary">{service.type}</p>
                       </div>
                       <Badge variant="outline" className="text-xs">{service.port}</Badge>
                     </div>
@@ -935,13 +1001,13 @@ export default function OrderTechnicalDocumentation() {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <Server className="h-4 w-4 text-primary" />
-                          <h4 className="text-sm font-semibold text-foreground">{component.name}</h4>
+                          <h4 className="text-base font-semibold text-foreground">{component.name}</h4>
                         </div>
-                        <p className="text-xs text-muted-foreground mb-2">{component.type}</p>
-                        <p className="text-xs text-primary mb-2">{component.role}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{component.type}</p>
+                        <p className="text-sm text-primary mb-2">{component.role}</p>
                         <div className="flex flex-wrap gap-1">
                           {component.features.map((feature, fIdx) => (
-                            <Badge key={fIdx} variant="secondary" className="text-[10px]">{feature}</Badge>
+                            <Badge key={fIdx} variant="secondary" className="text-xs">{feature}</Badge>
                           ))}
                         </div>
                       </CardContent>
@@ -952,21 +1018,40 @@ export default function OrderTechnicalDocumentation() {
             </Card>
           </div>
 
-          {/* Infrastructure */}
+          {/* Design Patterns */}
           <div className="max-w-4xl mx-auto mt-8">
-            <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Infrastructure</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {architectureData.infrastructure.map((item, idx) => {
-                const InfraIcon = serviceIcons[item.name] || Server;
+            <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Design Patterns Implemented</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {architectureData.patterns.map((pattern, idx) => {
+                const isExpanded = expandedPatterns.includes(idx);
                 return (
-                  <Card key={idx} className="border border-border/50 bg-card/50">
-                    <CardContent className="p-4 flex items-center gap-3">
-                      <InfraIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-medium text-foreground truncate">{item.name}</h4>
-                        <p className="text-xs text-muted-foreground truncate">{item.role}</p>
+                  <Card key={idx} className={`border-0 border-l-4 hover:shadow-lg transition-all bg-background ${isExpanded ? 'border-l-primary' : 'border-l-primary/40'}`}>
+                    <button
+                      onClick={() => setExpandedPatterns(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx])}
+                      className="w-full p-4 hover:bg-accent/5 transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-base font-semibold text-foreground">{pattern.name}</h4>
+                          <p className="text-sm text-primary mb-2">{pattern.description}</p>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                          <ChevronDown className="h-3.5 w-3.5 text-primary" />
+                        </div>
                       </div>
-                    </CardContent>
+                    </button>
+                    
+                    <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[150px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <div className="px-4 pb-4 pt-0">
+                        <div className="pt-3 border-t border-border/50">
+                          <div className="flex flex-wrap gap-1">
+                            {pattern.benefits.map((benefit, bIdx) => (
+                              <Badge key={bIdx} variant="secondary" className="text-xs">{benefit}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </Card>
                 );
               })}
@@ -1218,12 +1303,13 @@ export default function OrderTechnicalDocumentation() {
           </div>
 
           <div className="max-w-4xl mx-auto space-y-6">
-            {dataFlowsData.map((flow) => (
+            {dataFlowsData.map((flow, idx) => (
               <MermaidAccordion
                 key={flow.id}
                 title={flow.title}
                 icon={flow.icon}
                 diagram={flow.diagram}
+                defaultOpen={idx === 0}
               />
             ))}
           </div>
