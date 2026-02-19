@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { cvData } from "@/lib/cv-data";
 import { projectsData } from "@/lib/projects-data";
 import { Project } from "@/types/cv";
+import { OrderDocCard } from "@/components/order-doc-card";
+import { PersonalProjectItem } from "@/components/personal-project-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -525,18 +527,18 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
             </div>
           </section>
 
-          {/* Personal Projects Section */}
-          <section ref={personalProjectsRef} id="personal-projects" className="min-h-[30vh] px-6 py-10">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">Proyectos Personales</h3>
-                <div className="w-24 h-1 bg-primary/30 mx-auto mt-3 rounded-full"></div>
-              </div>
-              <div className="text-center py-12">
-                <span className="text-muted-foreground text-lg">Working...</span>
-              </div>
-            </div>
-          </section>
+{/* Personal Projects Section */}
+      <section ref={personalProjectsRef} id="personal-projects" className="min-h-[30vh] px-6 py-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">Proyectos Personales</h3>
+            <div className="w-24 h-1 bg-primary/30 mx-auto mt-3 rounded-full"></div>
+          </div>
+          <div className="max-w-3xl mx-auto space-y-2">
+            <PersonalProjectItem project={projectsData.find(p => p.id === "order-technical-documentation")!} />
+          </div>
+        </div>
+      </section>
         </div>
       </div>
     </main>

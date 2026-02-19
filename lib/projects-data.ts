@@ -95,5 +95,24 @@ export const projectsData: Project[] = [
         "Integración con herramientas de linting y formatting"
       ]
     }
+  },
+  {
+    id: "order-technical-documentation",
+    title: "Distributed Commerce Platform",
+    description: "Plataforma de comercio electrónico distribuida con Event Sourcing y Saga Pattern",
+    fullDescription: "Sistema completo de gestión de órdenes con arquitectura de microservicios, implementando Event Sourcing, Saga Pattern para compensación distribuida, y Outbox Pattern para publicación confiable de eventos.",
+    image: "/order-doc-preview.png",
+    tags: ["TypeScript", "Node.js", "PostgreSQL", "RabbitMQ", "Redis", "AWS", "Microservices", "Event Sourcing"],
+    link: "/order-technical-documentation",
+    details: {
+      challenge: "Diseñar una arquitectura distribuida que mantenga consistencia eventual entre microservicios sin transacciones ACID distribuidas, garantizando auditabilidad completa y resiliencia ante fallos.",
+      solution: "Implementé arquitectura hexagonal con Event Sourcing para auditabilidad completa, Saga Pattern (coreografía) para compensación distribuida, y Outbox Pattern con polling para publicación confiable de eventos.",
+      results: [
+        "Consistencia eventual garantizada con Saga Pattern",
+        "Auditabilidad completa mediante Event Sourcing",
+        "Resiliencia con retries, DLQ y tolerancia a fallos",
+        "Escalabilidad horizontal con workers particionados"
+      ]
+    }
   }
 ];
