@@ -719,7 +719,6 @@ export default function OrderTechnicalDocumentation() {
   const [expandedInfrastructure, setExpandedInfrastructure] = useState<number[]>([0]); // First layer expanded by default
   const [expandedSubcategories, setExpandedSubcategories] = useState<Record<number, number[]>>({}); // layerIdx -> subcategory indexes (collapsed by default)
   const [showOrderServiceComponents, setShowOrderServiceComponents] = useState(false); // Accordion for Order Service Internal Components
-  const [expandedPatterns, setExpandedPatterns] = useState<number[]>([0]); // First pattern expanded by default
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -1035,43 +1034,44 @@ export default function OrderTechnicalDocumentation() {
             </Card>
           </div>
 
-          {/* Design Patterns */}
-          <div className="max-w-4xl mx-auto mt-8">
-            <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Design Patterns Implemented</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {architectureData.patterns.map((pattern, idx) => {
-                const isExpanded = expandedPatterns.includes(idx);
-                return (
-                  <Card key={idx} className={`border-0 border-l-4 hover:shadow-lg transition-all bg-background ${isExpanded ? 'border-l-primary' : 'border-l-primary/40'}`}>
-                    <button
-                      onClick={() => setExpandedPatterns(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx])}
-                      className="w-full p-4 hover:bg-accent/5 transition-colors text-left"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-base font-semibold text-foreground">{pattern.name}</h4>
-                          <p className="text-sm text-primary mb-2">{pattern.description}</p>
-                        </div>
-                        <div className={`w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
-                          <ChevronDown className="h-3.5 w-3.5 text-primary" />
-                        </div>
-                      </div>
-                    </button>
-                    
-                    <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[150px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                      <div className="px-4 pb-4 pt-0">
-                        <div className="pt-3 border-t border-border/50">
-                          <div className="flex flex-wrap gap-1">
-                            {pattern.benefits.map((benefit, bIdx) => (
-                              <Badge key={bIdx} variant="secondary" className="text-xs">{benefit}</Badge>
-                            ))}
+          {/* Design Patterns Container */}
+          <div className="max-w-6xl mx-auto mt-8">
+            {/* Header */}
+            <div className="flex items-center justify-center gap-3 p-4 md:p-6 bg-primary/5 border-2 border-foreground/80 rounded-t-xl">
+              <Workflow className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">Design Patterns Implemented</h3>
+              <Badge variant="secondary" className="text-xs">
+                {architectureData.patterns.length} Patterns
+              </Badge>
+            </div>
+
+            {/* Patterns Grid */}
+            <div className="rounded-b-xl border-2 border-t-0 border-foreground/80 overflow-hidden bg-transparent">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 md:p-6">
+                {architectureData.patterns.map((pattern, idx) => {
+                  const PatternIcon = pattern.icon;
+                  return (
+                    <Card key={idx} className="border-0 border-l-4 hover:shadow-lg transition-all bg-background border-l-primary">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <PatternIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-base font-semibold text-foreground">{pattern.name}</h4>
+                            <p className="text-sm text-primary mb-3">{pattern.description}</p>
+                            <div className="flex flex-wrap gap-1">
+                              {pattern.benefits.map((benefit, bIdx) => (
+                                <Badge key={bIdx} variant="secondary" className="text-xs">{benefit}</Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>
