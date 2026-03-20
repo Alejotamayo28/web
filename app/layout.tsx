@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Libre_Baskerville, Inconsolata } from 'next/font/google'
 
 import './globals.css'
+import { LanguageProvider } from './context/LanguageContext'
 
 const libreBaskerville = Libre_Baskerville({ 
   weight: ['400', '700'],
@@ -28,7 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${libreBaskerville.variable} ${inconsolata.variable} dark`}>
-      <body className="font-serif antialiased">{children}</body>
+      <body className="font-serif antialiased">
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   )
 }

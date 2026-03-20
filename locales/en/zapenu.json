@@ -1,0 +1,139 @@
+{
+  "overview": {
+    "title": "Project Overview",
+    "digitalOrderingPlatform": "Digital Ordering Platform",
+    "problemTitle": "Problem Solved",
+    "problemItems": [
+      "Menu digitization with customizable options",
+      "Multi-tenant management of multiple commercial locations",
+      "Order processing with state flows",
+      "Online payment processing through MercadoPago integration",
+      "Real-time notifications through WhatsApp"
+    ],
+    "badges": [
+      "Architecture-focused",
+      "Real payments integration",
+      "Cost-aware design",
+      "Security-conscious"
+    ]
+  },
+  "architecture": {
+    "title": "System Architecture",
+    "fiveLayerArchitecture": "5-Layer Architecture",
+    "services": "Services",
+    "layers": {
+      "presentation": "Presentation Layer",
+      "edge": "Edge Layer",
+      "backend": "Backend Layer",
+      "data": "Data Layer",
+      "external": "External Services"
+    },
+    "serviceTypes": {
+      "frontendPublic": "Public Frontend",
+      "frontendAdmin": "Admin Frontend",
+      "cdn": "CDN + Functions",
+      "api": "Main API",
+      "payment": "Payment Microservice",
+      "dbMain": "Main DB",
+      "dbPayments": "Payments DB",
+      "storage": "Object Storage"
+    }
+  },
+  "dataflows": {
+    "title": "Data Flows",
+    "orderCreation": "Order Creation",
+    "authentication": "Administrative Authentication",
+    "paymentFlow": "Payment Flow",
+    "steps": {
+      "customerBrowsing": "Customer browses menu",
+      "selectProducts": "Select products",
+      "confirmOrder": "Confirm order",
+      "backendProcessing": "Backend processing",
+      "asyncNotification": "Async notification",
+      "adminOpens": "Admin opens Marge",
+      "enterEmail": "Enter email",
+      "magicLink": "Magic link",
+      "tokenStorage": "Token storage",
+      "protectedRequests": "Protected requests",
+      "confirmOrderPending": "Confirm order",
+      "createPreference": "Create preference",
+      "redirectMP": "Redirect to MP",
+      "webhook": "Webhook",
+      "updateStatus": "Update status"
+    }
+  },
+  "decisions": {
+    "title": "Technical Decisions",
+    "why": "Why:",
+    "tradeoff": "Trade-off:",
+    "alternatives": "Alternatives:",
+    "items": [
+      {
+        "decision": "Frontend Separation (Homero vs Marge)",
+        "why": "Public Homero with aggressive cache, Marge with auth and sensitive data",
+        "tradeoff": "Code duplication, maintenance overhead vs. Deploy independence, bundle optimization, security by separation",
+        "alternatives": "Single SPA with code-splitting"
+      },
+      {
+        "decision": "Supabase as Backend-as-a-Service",
+        "why": "Less infrastructure, predictable pricing, built-in RLS",
+        "tradeoff": "Vendor lock-in, connection limits, latency in uncovered regions",
+        "alternatives": "Auth0 + independent RDS, Firebase"
+      },
+      {
+        "decision": "TSOA for API Generation",
+        "why": "End-to-end type safety, automatic OpenAPI, integrated validation",
+        "tradeoff": "Learning curve, less flexible than pure Express, tooling dependency",
+        "alternatives": "Manual Express, NestJS, Fastify"
+      },
+      {
+        "decision": "Cloudflare R2 vs AWS S3",
+        "why": "Cost: $0 egress fees (vs AWS), S3-compatible",
+        "tradeoff": "Less mature, fewer native integrations, Cloudflare dependency",
+        "alternatives": "AWS S3, MinIO self-hosted"
+      },
+      {
+        "decision": "WhatsApp (WAHA) Self-Hosted",
+        "why": "Zero cost (uses unofficial WhatsApp Business API), total control",
+        "tradeoff": "Unofficial, can break, requires maintaining active session",
+        "alternatives": "Twilio, MessageBird, WATI"
+      },
+      {
+        "decision": "Payment Microservice (Omnipago)",
+        "why": "Separation of concerns, failure isolation for payments",
+        "tradeoff": "Deployment complexity, additional latency (HTTP between services)",
+        "alternatives": "Integrated in barto (monolith)"
+      }
+    ]
+  },
+  "costs": {
+    "title": "Costs",
+    "baseline": "Baseline",
+    "total": "Total",
+    "totalNote": "+ 2.99% + VAT per transaction",
+    "drivers": "Cost Drivers",
+    "risks": "Risks",
+    "components": {
+      "vps": "VPS Backend",
+      "supabase": "Supabase",
+      "r2": "Cloudflare R2",
+      "pages": "Cloudflare Pages",
+      "waha": "WhatsApp WAHA",
+      "github": "GitHub Actions",
+      "mercadopago": "MercadoPago Fees"
+    },
+    "scenarios": {
+      "traffic10x": "10x traffic in Homero",
+      "images100x": "100x images uploaded",
+      "orders1000x": "1000x orders/day",
+      "viralWhatsapp": "WhatsApp viralization"
+    }
+  },
+  "nav": {
+    "overview": "Overview",
+    "architecture": "Architecture",
+    "dataflows": "Data Flows",
+    "decisions": "Decisions",
+    "costs": "Costs"
+  }
+}

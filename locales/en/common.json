@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "professionalProjects": "Professional Projects",
+    "personalProjects": "Personal Projects",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "Backend Developer",
+    "subtitle": "Specialized in microservices, REST/gRPC/RabbitMQ APIs, and scalable cloud architectures with Node.js and AWS",
+    "location": "Location",
+    "viewCV": "View",
+    "downloadCV": "Download",
+    "curriculum": "Resume"
+  },
+  "project": {
+    "challenge": "Challenge",
+    "solution": "Solution",
+    "results": "Results",
+    "viewDetails": "View project details",
+    "hideDetails": "Hide details",
+    "viewDocumentation": "View Full Documentation"
+  },
+  "projects": {
+    "title": "Projects",
+    "professionalTitle": "Professional Projects",
+    "personalTitle": "Personal Projects",
+    "digitalOrderingPlatform": "Digital Ordering Platform",
+    "distributedCommercePlatform": "Distributed Commerce Platform",
+    "architecture": "Architecture",
+    "architectureOf5Layers": "5-Layer Architecture: Client → Edge → Backend → Data → External"
+  },
+  "contact": {
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "email": "Email"
+  },
+  "flags": {
+    "es": "Español",
+    "en": "English"
+  }
+}

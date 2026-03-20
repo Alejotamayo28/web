@@ -1,0 +1,22 @@
+{
+  "zapenuTitle": "Zapenu - Startup",
+  "zapenuSubtitle": "Digital Ordering Platform",
+  "zapenuDescription": "Complete backend platform for delivery startup supporting +10k items per store with microservices architecture.",
+  "zapenuChallenge": "Design a scalable architecture to handle thousands of products per store with fast response times and efficient communication between services.",
+  "zapenuSolution": "Implemented microservices with gRPC communication, optimized relational model in PostgreSQL, and file system in Cloudflare R2. TSOA/Swagger for automatic documentation.",
+  "deployBotTitle": "Automated Deployment Platform",
+  "deployBotDescription": "Telegram bot to automate Docker deployments on AWS EC2",
+  "deployBotFullDescription": "Automated system that reduces Docker application deployment time on AWS from 20 minutes to 3 minutes via Telegram bot.",
+  "fittrackerTitle": "FitTracker - Gym Assistant",
+  "fittrackerDescription": "Telegram bot for personal workout tracking and monitoring",
+  "fittrackerFullDescription": "Complete exercise tracking application with multi-user authentication system and progress analysis.",
+  "tmuxConfigTitle": "Tmux Config",
+  "tmuxConfigDescription": "Custom tmux configuration for terminal productivity",
+  "tmuxConfigFullDescription": "Optimized tmux configuration file for backend development workflows with custom keyboard shortcuts.",
+  "nvimConfigTitle": "Neovim Config",
+  "nvimConfigDescription": "Complete Neovim configuration for backend development",
+  "nvimConfigFullDescription": "Neovim setup with LSP, tree-sitter, autocomplete, and essential plugins for modern development.",
+  "orderPlatformTitle": "Distributed Commerce Platform",
+  "orderPlatformDescription": "Distributed e-commerce platform with Event Sourcing and Saga Pattern",
+  "orderPlatformFullDescription": "Complete order management system with microservices architecture, implementing Event Sourcing, Saga Pattern for distributed compensation, and Outbox Pattern for reliable event publishing."
+}

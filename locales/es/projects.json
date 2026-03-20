@@ -1,0 +1,22 @@
+{
+  "zapenuTitle": "Zapenu - Startup",
+  "zapenuSubtitle": "Plataforma de Pedidos Digitales",
+  "zapenuDescription": "Plataforma backend completa para startup de delivery que soporta +10k items por tienda con arquitectura de microservicios.",
+  "zapenuChallenge": "Diseñar una arquitectura escalable para manejar miles de productos por tienda con tiempos de respuesta rápidos y comunicación eficiente entre servicios.",
+  "zapenuSolution": "Implementé microservicios con comunicación gRPC, modelo relacional optimizado en PostgreSQL, y sistema de archivos en Cloudflare R2. TSOA/Swagger para documentación automática.",
+  "deployBotTitle": "Plataforma de Despliegue Automatizado",
+  "deployBotDescription": "Bot de Telegram para automatizar despliegues Docker en AWS EC2",
+  "deployBotFullDescription": "Sistema automatizado que reduce el tiempo de despliegue de aplicaciones Docker en AWS de 20 minutos a 3 minutos mediante bot de Telegram.",
+  "fittrackerTitle": "FitTracker - Asistente de Gimnasio",
+  "fittrackerDescription": "Bot de Telegram para registro y seguimiento de entrenamientos personales",
+  "fittrackerFullDescription": "Aplicación completa para tracking de ejercicios con sistema de autenticación multi-usuario y análisis de progreso.",
+  "tmuxConfigTitle": "Tmux Config",
+  "tmuxConfigDescription": "Configuración personalizada de tmux para productividad en terminal",
+  "tmuxConfigFullDescription": "Archivo de configuración de tmux optimizado para flujos de trabajo de desarrollo backend con atajos de teclado personalizados.",
+  "nvimConfigTitle": "Neovim Config",
+  "nvimConfigDescription": "Configuración completa de Neovim para desarrollo backend",
+  "nvimConfigFullDescription": "Setup de Neovim con LSP, tree-sitter, autocompletado y plugins esenciales para desarrollo moderno.",
+  "orderPlatformTitle": "Distributed Commerce Platform",
+  "orderPlatformDescription": "Plataforma de comercio electrónico distribuida con Event Sourcing y Saga Pattern",
+  "orderPlatformFullDescription": "Sistema completo de gestión de órdenes con arquitectura de microservicios, implementando Event Sourcing, Saga Pattern para compensación distribuida, y Outbox Pattern para publicación confiable de eventos."
+}

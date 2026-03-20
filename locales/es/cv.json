@@ -1,0 +1,42 @@
+{
+  "name": "Alejandro Vergara Tamayo",
+  "title": "Desarrollador Backend (Node.js | TypeScript | SQL | Docker | AWS)",
+  "summary": "Desarrollador Backend con experiencia en sistemas en producción (Node.js, TypeScript, PostgreSQL, Docker, AWS, RabbitMQ). He diseñado y optimizado APIs REST/gRPC, bases de datos relacionales y flujos de despliegue automatizados. Busco aportar mis habilidades en microservicios y cloud a equipos dinámicos de alto impacto",
+  "experience": [
+    {
+      "role": "Desarrollador Backend",
+      "period": "2025 - 2025",
+      "company": "Zapenu (startup)",
+      "location": "Remoto"
+    },
+    {
+      "role": "Desarrollador Backend - Proyecto Personal",
+      "period": "2024 - 2025",
+      "company": "Plataforma de Despliegue Automatizado",
+      "location": "Remoto"
+    },
+    {
+      "role": "Desarrollador Backend - Proyecto Personal",
+      "period": "2024 - 2024",
+      "company": "FitTracker: Asistente de Gimnasio",
+      "location": "Remoto"
+    }
+  ],
+  "education": [
+    {
+      "degree": "Tecnología en Desarrollo de Software",
+      "period": "2024 - Actualidad",
+      "institution": "Universidad del Valle"
+    },
+    {
+      "degree": "Bachiller Académico",
+      "period": "2022",
+      "institution": "Institución Educativa Cárdenas Centro"
+    },
+    {
+      "degree": "Inglés Avanzado (B2/C1 certificado)",
+      "period": "2019",
+      "institution": "English Now Institute"
+    }
+  ]
+}

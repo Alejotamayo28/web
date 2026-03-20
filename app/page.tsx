@@ -4,11 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import { cvData } from "@/lib/cv-data";
 import { projectsData } from "@/lib/projects-data";
 import { Project } from "@/types/cv";
-import { OrderDocCard } from "@/components/order-doc-card";
 import { PersonalProjectItem } from "@/components/personal-project-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/hooks/useTranslation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -19,7 +20,9 @@ import {
 } from "lucide-react";
 
 export default function Portfolio() {
-const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { t } = useTranslation('common');
+  const { t: tProjects } = useTranslation('projects');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 const [activeSection, setActiveSection] = useState("home");
 const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
 const [isProjectExpanded, setIsProjectExpanded] = useState(true);
@@ -213,7 +216,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
               />
 <SidebarNavItem
               icon={Briefcase}
-              label="Proyectos"
+              label={t('nav.projects')}
               isActive={isProjectsActive}
               isExpandable={true}
               isExpanded={isProjectsMenuOpen}
@@ -229,7 +232,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                 }`}
               >
                 <Briefcase className="h-4 w-4" />
-                Proyectos Profesionales
+                {t('nav.professionalProjects')}
               </button>
               <button
                 onClick={() => scrollToSection(personalProjectsRef, 'personal-projects')}
@@ -240,13 +243,13 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                 }`}
               >
                 <Briefcase className="h-4 w-4" />
-                Proyectos Personales
+                {t('nav.personalProjects')}
               </button>
 </div>
             <div className="h-2"></div>
             <SidebarNavItem
               icon={Mail}
-              label="Contacto"
+              label={t('nav.contact')}
                 isActive={false}
                 isExpanded={true}
                 onClick={() => {}}
@@ -259,7 +262,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                   className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
                 >
                   <Github className="h-4 w-4" />
-                  GitHub
+                  {t('contact.github')}
                 </a>
                 <a
                   href="https://www.linkedin.com/in/alejandro-vergara-tamayo-/"
@@ -268,15 +271,18 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                   className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
                 >
                   <Linkedin className="h-4 w-4" />
-                  LinkedIn
+                  {t('contact.linkedin')}
                 </a>
                 <a
                   href={`mailto:${cvData.contact.email}`}
                   className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-md transition-colors"
                 >
                   <Mail className="h-4 w-4" />
-                  Email
+                  {t('contact.email')}
                 </a>
+              </div>
+              <div className="mt-2">
+                <LanguageSwitcher />
               </div>
             </div>
           </div>
@@ -305,10 +311,10 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                     {cvData.name}
                   </h1>
                   <p className="text-xl md:text-2xl text-foreground/80 leading-relaxed">
-                    Desarrollador Backend
+                    {t('home.title')}
                   </p>
                   <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                    Especializado en microservicios, APIs REST/gRPC/RabbitMQ, y arquitecturas cloud escalables con Node.js y AWS
+                    {t('home.subtitle')}
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center lg:justify-start items-center pt-4">
                     <div className="relative">
@@ -317,7 +323,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                         className="flex items-center gap-2"
                         onClick={() => setIsCvMenuOpen(!isCvMenuOpen)}
                       >
-                        Curriculum
+                        {t('home.curriculum')}
                         <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isCvMenuOpen ? 'rotate-180' : ''}`} />
                       </Button>
                       {isCvMenuOpen && (
@@ -327,21 +333,21 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                             className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 transition-colors"
                           >
                             <FileText className="h-4 w-4" />
-                            Visualizar
+                            {t('home.viewCV')}
                           </button>
                           <button
                             onClick={handleDownloadCV}
                             className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/5 transition-colors"
                           >
                             <Download className="h-4 w-4" />
-                            Descargar
+                            {t('home.downloadCV')}
                           </button>
                         </div>
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      <span>{cvData.contact.location}</span>
+                      <span>{cvData.contact.location} ({t('home.location')})</span>
                     </div>
                   </div>
                 </div>
@@ -370,10 +376,10 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
       <section ref={projectsRef} id="projects" className="min-h-screen px-6 py-16 pb-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary">Proyectos</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary">{t('projects.title')}</h2>
           </div>
           <div className="text-center mb-12">
-            <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">Proyectos Profesionales</h3>
+            <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">{t('projects.professionalTitle')}</h3>
             <div className="w-24 h-1 bg-primary/30 mx-auto mt-3 rounded-full"></div>
           </div>
 
@@ -392,13 +398,13 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                           <Server className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">Zapenu - Startup</h3>
-                          <p className="text-sm text-muted-foreground">Digital Ordering Platform</p>
+                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">{tProjects('zapenuTitle')}</h3>
+                          <p className="text-sm text-muted-foreground">{tProjects('zapenuSubtitle')}</p>
                         </div>
                       </div>
 
 <p className="text-foreground/80 text-base mb-4 leading-relaxed hidden md:block">
-            Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos. Diseñada para manejar miles de items por tienda con microservicios.
+            {tProjects('zapenuDescription')}
           </p>
 
                       {/* Tech Stack Badges */}
@@ -427,7 +433,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
 
                       {/* Expand Indicator */}
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{isProjectExpanded ? 'Ocultar detalles' : 'Ver detalles del proyecto'}</span>
+                        <span>{isProjectExpanded ? t('project.hideDetails') : t('project.viewDetails')}</span>
                         <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isProjectExpanded ? 'rotate-180' : ''}`} />
                       </div>
                     </div>
@@ -445,7 +451,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                         />
                       </div>
                       <p className="text-xs text-muted-foreground text-center mt-2">
-                        Arquitectura de 5 capas: Client → Edge → Backend → Data → External
+                        {t('projects.architectureOf5Layers')}
                       </p>
                     </div>
                   </button>
@@ -462,10 +468,10 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                             <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
                               <span className="text-red-600 font-bold text-sm">!</span>
                             </div>
-                            <h4 className="font-semibold text-foreground">Challenge</h4>
+                            <h4 className="font-semibold text-foreground">{t('project.challenge')}</h4>
                           </div>
                           <p className="text-sm text-muted-foreground leading-relaxed">
-                            Diseñar una arquitectura escalable para manejar miles de productos por tienda con tiempos de respuesta rápidos y comunicación eficiente entre servicios.
+                            {tProjects('zapenuChallenge')}
                           </p>
                         </div>
 
@@ -475,10 +481,10 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                             <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
                               <span className="text-blue-600 font-bold text-sm">💡</span>
                             </div>
-                            <h4 className="font-semibold text-foreground">Solution</h4>
+                            <h4 className="font-semibold text-foreground">{t('project.solution')}</h4>
                           </div>
                           <p className="text-sm text-muted-foreground leading-relaxed">
-                            Implementé microservicios con comunicación gRPC, modelo relacional optimizado en PostgreSQL, y sistema de archivos en Cloudflare R2. TSOA/Swagger para documentación automática.
+                            {tProjects('zapenuSolution')}
                           </p>
                         </div>
 
@@ -488,7 +494,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                             <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                               <span className="text-green-600 font-bold text-sm">✓</span>
                             </div>
-                            <h4 className="font-semibold text-foreground">Results</h4>
+                            <h4 className="font-semibold text-foreground">{t('project.results')}</h4>
                           </div>
                           <ul className="text-sm text-muted-foreground space-y-2">
                             <li className="flex items-start gap-2">
@@ -516,7 +522,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                         <Link href="/zapenu" className="w-full sm:w-auto">
                           <Button size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 rounded-lg">
                             <FileText className="h-4 w-4" />
-                            Ver Documentación Completa
+                            {t('project.viewDocumentation')}
                           </Button>
                         </Link>
                       </div>
@@ -531,7 +537,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
       <section ref={personalProjectsRef} id="personal-projects" className="min-h-[30vh] px-6 py-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">Proyectos Personales</h3>
+            <h3 className="text-xl md:text-2xl font-semibold text-foreground/80">{t('projects.personalTitle')}</h3>
             <div className="w-24 h-1 bg-primary/30 mx-auto mt-3 rounded-full"></div>
           </div>
           <div className="max-w-3xl mx-auto space-y-2">

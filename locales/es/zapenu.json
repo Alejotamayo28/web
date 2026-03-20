@@ -1,0 +1,139 @@
+{
+  "overview": {
+    "title": "Resumen del Proyecto",
+    "digitalOrderingPlatform": "Plataforma de Pedidos Digitales",
+    "problemTitle": "Problema Resuelto",
+    "problemItems": [
+      "Digitalización de menús con opciones personalizables",
+      "Gestión multi-tenant de múltiples locales comerciales",
+      "Procesamiento de pedidos con flujos de estado",
+      "Procesamiento de pagos en línea mediante integración con MercadoPago",
+      "Notificaciones en tiempo real a través de WhatsApp"
+    ],
+    "badges": [
+      "Enfocado en arquitectura",
+      "Integración de pagos reales",
+      "Diseño consciente de costos",
+      "Seguridad primero"
+    ]
+  },
+  "architecture": {
+    "title": "Arquitectura del Sistema",
+    "fiveLayerArchitecture": "Arquitectura de 5 Capas",
+    "services": "Servicios",
+    "layers": {
+      "presentation": "Capa de Presentación",
+      "edge": "Capa de Borde",
+      "backend": "Capa de Backend",
+      "data": "Capa de Datos",
+      "external": "Servicios Externos"
+    },
+    "serviceTypes": {
+      "frontendPublic": "Frontend Público",
+      "frontendAdmin": "Frontend Admin",
+      "cdn": "CDN + Functions",
+      "api": "API Principal",
+      "payment": "Microservicio de Pagos",
+      "dbMain": "DB Principal",
+      "dbPayments": "DB de Pagos",
+      "storage": "Almacenamiento de Objetos"
+    }
+  },
+  "dataflows": {
+    "title": "Flujos de Datos",
+    "orderCreation": "Creación de Pedido",
+    "authentication": "Autenticación Administrativa",
+    "paymentFlow": "Flujo de Pagos",
+    "steps": {
+      "customerBrowsing": "Cliente navega menú",
+      "selectProducts": "Selecciona productos",
+      "confirmOrder": "Confirma pedido",
+      "backendProcessing": "Procesamiento backend",
+      "asyncNotification": "Notificación async",
+      "adminOpens": "Admin abre Marge",
+      "enterEmail": "Ingresa email",
+      "magicLink": "Magic link",
+      "tokenStorage": "Token storage",
+      "protectedRequests": "Requests protegidos",
+      "confirmOrderPending": "Confirmar pedido",
+      "createPreference": "Crear preferencia",
+      "redirectMP": "Redirect a MP",
+      "webhook": "Webhook",
+      "updateStatus": "Actualizar estado"
+    }
+  },
+  "decisions": {
+    "title": "Decisiones Técnicas",
+    "why": "Por qué:",
+    "tradeoff": "Trade-off:",
+    "alternatives": "Alternativas:",
+    "items": [
+      {
+        "decision": "Separación de Frontends (Homero vs Marge)",
+        "why": "Homero público con cache agresivo, Marge con auth y datos sensibles",
+        "tradeoff": "Duplicación de código, overhead de mantenimiento vs. Independencia de deploy, optimización de bundle, seguridad por separación",
+        "alternatives": "Single SPA with code-splitting"
+      },
+      {
+        "decision": "Supabase como Backend-as-a-Service",
+        "why": "Menor infraestructura, precio predictivo, RLS incorporado",
+        "tradeoff": "Vendor lock-in, límites de conexiones, latencia en regiones no cubiertas",
+        "alternatives": "Auth0 + RDS independiente, Firebase"
+      },
+      {
+        "decision": "TSOA para Generación de API",
+        "why": "Type safety end-to-end, OpenAPI automático, validación integrada",
+        "tradeoff": "Curva de aprendizaje, menos flexible que Express puro, dependencia de tooling",
+        "alternatives": "Express manual, NestJS, Fastify"
+      },
+      {
+        "decision": "Cloudflare R2 vs AWS S3",
+        "why": "Costo: $0 egress fees (vs AWS), S3-compatible",
+        "tradeoff": "Menos maduro, menos integraciones nativas, dependencia de Cloudflare",
+        "alternatives": "AWS S3, MinIO self-hosted"
+      },
+      {
+        "decision": "WhatsApp (WAHA) Self-Hosted",
+        "why": "Costo cero (usa WhatsApp Business API no oficial), control total",
+        "tradeoff": "No oficial, puede romperse, requiere mantener sesión activa",
+        "alternatives": "Twilio, MessageBird, WATI"
+      },
+      {
+        "decision": "Microservicio de Pagos (Omnipago)",
+        "why": "Separación de responsabilidades, aislamiento de fallas de pagos",
+        "tradeoff": "Complejidad de deployment, latencia adicional (HTTP entre servicios)",
+        "alternatives": "Integrado en barto (monolito)"
+      }
+    ]
+  },
+  "costs": {
+    "title": "Costos",
+    "baseline": "Línea Base",
+    "total": "Total",
+    "totalNote": "+ 2.99% + IVA por transacción",
+    "drivers": "Drivers de Costo",
+    "risks": "Riesgos",
+    "components": {
+      "vps": "VPS Backend",
+      "supabase": "Supabase",
+      "r2": "Cloudflare R2",
+      "pages": "Cloudflare Pages",
+      "waha": "WhatsApp WAHA",
+      "github": "GitHub Actions",
+      "mercadopago": "MercadoPago Fees"
+    },
+    "scenarios": {
+      "traffic10x": "10x tráfico en Homero",
+      "images100x": "100x imágenes subidas",
+      "orders1000x": "1000x pedidos/día",
+      "viralWhatsapp": "Viralización WhatsApp"
+    }
+  },
+  "nav": {
+    "overview": "Resumen",
+    "architecture": "Arquitectura",
+    "dataflows": "Flujos de Datos",
+    "decisions": "Decisiones",
+    "costs": "Costos"
+  }
+}

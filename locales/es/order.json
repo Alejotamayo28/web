@@ -1,0 +1,77 @@
+{
+  "overview": {
+    "title": "Resumen del Proyecto",
+    "subtitle": "Sistema de Gestión de Órdenes Basado en Eventos",
+    "problemTitle": "Problema Resuelto",
+    "problemItems": [
+      "Gestión del ciclo de vida completo de órdenes de compra",
+      "Consistencia eventual en entorno de microservicios",
+      "Comunicación confiable entre servicios descentralizados",
+      "Compensación distribuida ante fallos",
+      "Auditabilidad completa del sistema de pedidos"
+    ],
+    "badges": [
+      "Orientado a Eventos",
+      "Event Sourcing",
+      "Saga Pattern",
+      "Microservicios"
+    ]
+  },
+  "architecture": {
+    "title": "Arquitectura del Sistema",
+    "services": "Servicios",
+    "components": "Componentes",
+    "patterns": "Patrones",
+    "layers": {
+      "compute": "Computación",
+      "messaging": "Mensajería",
+      "storage": "Almacenamiento",
+      "networking": "Redes",
+      "security": "Seguridad"
+    }
+  },
+  "infrastructure": {
+    "title": "Infraestructura AWS",
+    "clusters": "Clusters ECS",
+    "services": "Servicios ECS",
+    "databases": "Bases de Datos",
+    "queues": "Colas"
+  },
+  "dataflows": {
+    "title": "Flujos de Datos",
+    "orderCreation": "Creación de Orden",
+    "paymentProcessing": "Procesamiento de Pago",
+    "inventoryUpdate": "Actualización de Inventario",
+    "compensation": "Compensación"
+  },
+  "patterns": {
+    "eventSourcing": "Event Sourcing",
+    "eventSourcingDesc": "Almacena el estado como secuencia de eventos en lugar de estado actual",
+    "outboxPattern": "Outbox Pattern",
+    "outboxPatternDesc": "Publica eventos de forma confiable usando tabla outbox",
+    "sagaChoreography": "Saga (Coreografía)",
+    "sagaChoreographyDesc": "Orquestación distribuida mediante mensajes entre servicios",
+    "deduplication": "Deduplicación",
+    "deduplicationDesc": "Prevención de procesamiento duplicado con Redis",
+    "consistentHashing": "Consistent Hashing",
+    "consistentHashingDesc": "Distribución uniforme de eventos entre workers"
+  },
+  "decisions": {
+    "title": "Decisiones Técnicas"
+  },
+  "security": {
+    "title": "Seguridad"
+  },
+  "limitations": {
+    "title": "Limitaciones y Mejoras Futuras"
+  },
+  "nav": {
+    "overview": "Resumen",
+    "architecture": "Arquitectura",
+    "infrastructure": "Infraestructura AWS",
+    "dataflows": "Flujos de Datos",
+    "decisions": "Decisiones",
+    "security": "Seguridad",
+    "limitations": "Limitaciones"
+  }
+}

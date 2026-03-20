@@ -1,0 +1,77 @@
+{
+  "overview": {
+    "title": "Project Overview",
+    "subtitle": "Event-Driven Order Management System",
+    "problemTitle": "Problem Solved",
+    "problemItems": [
+      "Complete order lifecycle management",
+      "Eventual consistency in microservices environment",
+      "Reliable communication between decentralized services",
+      "Distributed compensation for failures",
+      "Complete auditability of the order system"
+    ],
+    "badges": [
+      "Event-Driven",
+      "Event Sourcing",
+      "Saga Pattern",
+      "Microservices"
+    ]
+  },
+  "architecture": {
+    "title": "System Architecture",
+    "services": "Services",
+    "components": "Components",
+    "patterns": "Patterns",
+    "layers": {
+      "compute": "Compute",
+      "messaging": "Messaging",
+      "storage": "Storage",
+      "networking": "Networking",
+      "security": "Security"
+    }
+  },
+  "infrastructure": {
+    "title": "AWS Infrastructure",
+    "clusters": "ECS Clusters",
+    "services": "ECS Services",
+    "databases": "Databases",
+    "queues": "Queues"
+  },
+  "dataflows": {
+    "title": "Data Flows",
+    "orderCreation": "Order Creation",
+    "paymentProcessing": "Payment Processing",
+    "inventoryUpdate": "Inventory Update",
+    "compensation": "Compensation"
+  },
+  "patterns": {
+    "eventSourcing": "Event Sourcing",
+    "eventSourcingDesc": "Stores state as a sequence of events instead of current state",
+    "outboxPattern": "Outbox Pattern",
+    "outboxPatternDesc": "Reliably publishes events using outbox table",
+    "sagaChoreography": "Saga (Choreography)",
+    "sagaChoreographyDesc": "Distributed orchestration through messages between services",
+    "deduplication": "Deduplication",
+    "deduplicationDesc": "Prevention of duplicate processing with Redis",
+    "consistentHashing": "Consistent Hashing",
+    "consistentHashingDesc": "Uniform distribution of events between workers"
+  },
+  "decisions": {
+    "title": "Technical Decisions"
+  },
+  "security": {
+    "title": "Security"
+  },
+  "limitations": {
+    "title": "Limitations & Future Improvements"
+  },
+  "nav": {
+    "overview": "Overview",
+    "architecture": "Architecture",
+    "infrastructure": "AWS Infra",
+    "dataflows": "Data Flows",
+    "decisions": "Decisions",
+    "security": "Security",
+    "limitations": "Limitations"
+  }
+}
