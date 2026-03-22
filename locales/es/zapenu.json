@@ -1,7 +1,57 @@
 {
+  "nav": {
+    "overview": "Resumen",
+    "architecture": "Arquitectura",
+    "dataflows": "Flujos de Datos",
+    "decisions": "Decisiones",
+    "costs": "Costos"
+  },
+  "sections": {
+    "overview": {
+      "title": "Resumen del Proyecto",
+      "subtitle": "Plataforma de Pedidos Digitales"
+    },
+    "architecture": {
+      "title": "Arquitectura del Sistema",
+      "subtitle": "Arquitectura de 5 capas",
+      "infrastructureArchitecture": "Arquitectura de Infraestructura",
+      "fiveLayer": "5 capas",
+      "architectureDescription": "Arquitectura completa del sistema: Cliente → Borde → Backend → Datos → Servicios Externos",
+      "fullView": "Vista Completa"
+    },
+    "dataflows": {
+      "title": "Flujos de Datos Clave",
+      "subtitle": "Diagramas de Flujo de Datos",
+      "orderCreationWithPayment": "Creación de Pedido con Pago",
+      "authenticationFlow": "Flujo de Autenticación (Marge)",
+      "orderStateDiagram": "Diagrama de Estados de Pedido"
+    },
+    "decisions": {
+      "title": "Decisiones de Diseño y Trade-offs"
+    },
+    "costs": {
+      "title": "Consideraciones de Costos",
+      "totalCost": "Costo Total",
+      "estimatedMonthly": "Estimado Mensual",
+      "freeInfrastructure": "Infraestructura Gratuita",
+      "costBreakdown": "Desglose de Costos",
+      "servicesCount": "7 Servicios",
+      "variable": "Variable",
+      "free": "Gratuito",
+      "futureCostDrivers": "Drivers de Costo Futuros",
+      "scalingRisks": "Riesgos de Escalamiento"
+    }
+  },
   "overview": {
-    "title": "Resumen del Proyecto",
-    "digitalOrderingPlatform": "Plataforma de Pedidos Digitales",
+    "title": "Zapenu",
+    "subtitle": "Plataforma de Pedidos Digitales",
+    "description": "Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos",
+    "badges": {
+      "architectureFocused": "Enfocado en arquitectura",
+      "realPayments": "Integración de pagos reales",
+      "costAware": "Diseño consciente de costos",
+      "securityConscious": "Seguridad primero"
+    },
     "problemTitle": "Problema Resuelto",
     "problemItems": [
       "Digitalización de menús con opciones personalizables",
@@ -9,18 +59,9 @@
       "Procesamiento de pedidos con flujos de estado",
       "Procesamiento de pagos en línea mediante integración con MercadoPago",
       "Notificaciones en tiempo real a través de WhatsApp"
-    ],
-    "badges": [
-      "Enfocado en arquitectura",
-      "Integración de pagos reales",
-      "Diseño consciente de costos",
-      "Seguridad primero"
     ]
   },
   "architecture": {
-    "title": "Arquitectura del Sistema",
-    "fiveLayerArchitecture": "Arquitectura de 5 Capas",
-    "services": "Servicios",
     "layers": {
       "presentation": "Capa de Presentación",
       "edge": "Capa de Borde",
@@ -31,31 +72,50 @@
     "serviceTypes": {
       "frontendPublic": "Frontend Público",
       "frontendAdmin": "Frontend Admin",
-      "cdn": "CDN + Functions",
-      "api": "API Principal",
-      "payment": "Microservicio de Pagos",
+      "cdnFunctions": "CDN + Functions",
+      "mainAPI": "API Principal",
+      "paymentMicroservice": "Microservicio de Pagos",
       "dbMain": "DB Principal",
       "dbPayments": "DB de Pagos",
-      "storage": "Almacenamiento de Objetos"
+      "objectStorage": "Almacenamiento de Objetos",
+      "paymentGateway": "Pasarela de pagos",
+      "whatsappApi": "WhatsApp API",
+      "authStorage": "Auth + Storage"
+    },
+    "roles": {
+      "menuDigital": "Menú digital para clientes",
+      "dashboardGestion": "Dashboard de gestión",
+      "gestionProductos": "Gestión de productos, órdenes, usuarios",
+      "edgeFunctions": "Cache, Auth, Proxy",
+      "paymentIntegration": "Integración con MercadoPago",
+      "operationalData": "Datos de operaciones, productos, órdenes",
+      "schemaPayments": "Schema payments_gateway",
+      "imageStorage": "Almacenamiento de imágenes (S3-compatible)",
+      "transactions": "Procesamiento de transacciones, Webhooks",
+      "realTimeNotifications": "Notificaciones en tiempo real",
+      "jwtAuth": "Autenticación JWT, Row Level Security"
+    },
+    "accessTypes": {
+      "public": "Público",
+      "authenticated": "Autenticado"
     }
   },
   "dataflows": {
-    "title": "Flujos de Datos",
     "orderCreation": "Creación de Pedido",
     "authentication": "Autenticación Administrativa",
     "paymentFlow": "Flujo de Pagos",
     "steps": {
-      "customerBrowsing": "Cliente navega menú",
+      "customerBrowses": "Cliente navega menú",
       "selectProducts": "Selecciona productos",
       "confirmOrder": "Confirma pedido",
       "backendProcessing": "Procesamiento backend",
       "asyncNotification": "Notificación async",
-      "adminOpens": "Admin abre Marge",
+      "adminOpensMarge": "Admin abre Marge",
       "enterEmail": "Ingresa email",
       "magicLink": "Magic link",
       "tokenStorage": "Token storage",
       "protectedRequests": "Requests protegidos",
-      "confirmOrderPending": "Confirmar pedido",
+      "confirmOrderPending": "Confirmar pedido pendiente",
       "createPreference": "Crear preferencia",
       "redirectMP": "Redirect a MP",
       "webhook": "Webhook",
@@ -64,44 +124,44 @@
   },
   "decisions": {
     "title": "Decisiones Técnicas",
-    "why": "Por qué:",
-    "tradeoff": "Trade-off:",
-    "alternatives": "Alternativas:",
+    "whyLabel": "Por qué:",
+    "tradeoffLabel": "Trade-off:",
+    "alternativesLabel": "Alternativas:",
     "items": [
       {
-        "decision": "Separación de Frontends (Homero vs Marge)",
+        "title": "Separación de Frontends (Homero vs Marge)",
         "why": "Homero público con cache agresivo, Marge con auth y datos sensibles",
-        "tradeoff": "Duplicación de código, overhead de mantenimiento vs. Independencia de deploy, optimización de bundle, seguridad por separación",
+        "tradeoff": "Duplicación de código vs. Independencia de deploy, optimización de bundle, seguridad por separación",
         "alternatives": "Single SPA with code-splitting"
       },
       {
-        "decision": "Supabase como Backend-as-a-Service",
-        "why": "Menor infraestructura, precio predictivo, RLS incorporado",
-        "tradeoff": "Vendor lock-in, límites de conexiones, latencia en regiones no cubiertas",
+        "title": "Supabase como Backend-as-a-Service",
+        "why": "Menos infraestructura, precio predictivo, RLS incorporado",
+        "tradeoff": "Vendor lock-in vs. Rápido para MVP, bajo mantenimiento inicial",
         "alternatives": "Auth0 + RDS independiente, Firebase"
       },
       {
-        "decision": "TSOA para Generación de API",
+        "title": "TSOA para Generación de API",
         "why": "Type safety end-to-end, OpenAPI automático, validación integrada",
-        "tradeoff": "Curva de aprendizaje, menos flexible que Express puro, dependencia de tooling",
+        "tradeoff": "Menos flexible vs. Menos código repetitivo, mejor DX",
         "alternatives": "Express manual, NestJS, Fastify"
       },
       {
-        "decision": "Cloudflare R2 vs AWS S3",
+        "title": "Cloudflare R2 vs AWS S3",
         "why": "Costo: $0 egress fees (vs AWS), S3-compatible",
-        "tradeoff": "Menos maduro, menos integraciones nativas, dependencia de Cloudflare",
+        "tradeoff": "Menos maduro vs. Ahorro significativo en costos de salida",
         "alternatives": "AWS S3, MinIO self-hosted"
       },
       {
-        "decision": "WhatsApp (WAHA) Self-Hosted",
-        "why": "Costo cero (usa WhatsApp Business API no oficial), control total",
-        "tradeoff": "No oficial, puede romperse, requiere mantener sesión activa",
+        "title": "WhatsApp (WAHA) Self-Hosted",
+        "why": "Costo cero (usa WhatsApp no oficial), control total",
+        "tradeoff": "No oficial, puede romperse vs. Sin costo de licenciamiento",
         "alternatives": "Twilio, MessageBird, WATI"
       },
       {
-        "decision": "Microservicio de Pagos (Omnipago)",
+        "title": "Microservicio de Pagos (Omnipago)",
         "why": "Separación de responsabilidades, aislamiento de fallas de pagos",
-        "tradeoff": "Complejidad de deployment, latencia adicional (HTTP entre servicios)",
+        "tradeoff": "Complejidad de deployment vs. Aislamiento de fallas, escalabilidad independiente",
         "alternatives": "Integrado en barto (monolito)"
       }
     ]
@@ -114,7 +174,7 @@
     "drivers": "Drivers de Costo",
     "risks": "Riesgos",
     "components": {
-      "vps": "VPS Backend",
+      "vpsBackend": "VPS Backend",
       "supabase": "Supabase",
       "r2": "Cloudflare R2",
       "pages": "Cloudflare Pages",
@@ -122,18 +182,35 @@
       "github": "GitHub Actions",
       "mercadopago": "MercadoPago Fees"
     },
+    "models": {
+      "infraOwn": "Infraestructura propia",
+      "transaction": "% por transacción",
+      "transactionNote": "2.99% + IVA por transacción exitosa"
+    },
     "scenarios": {
       "traffic10x": "10x tráfico en Homero",
       "images100x": "100x imágenes subidas",
       "orders1000x": "1000x pedidos/día",
       "viralWhatsapp": "Viralización WhatsApp"
+    },
+    "risksList": {
+      "cloudflareLimits": "Cloudflare Pages free tier limits",
+      "r2Limits": "R2 storage limits",
+      "supabaseLimits": "Supabase rate limits",
+      "whatsappBan": "Ban de número WAHA",
+      "upgradePro": "Upgrade a Pro",
+      "compressionLimits": "Compresión previa, límites de tamaño",
+      "poolTuning": "Pool tuning, migración a Pro",
+      "fallbackEmail": "Fallback a email/SMS"
     }
   },
-  "nav": {
-    "overview": "Resumen",
-    "architecture": "Arquitectura",
-    "dataflows": "Flujos de Datos",
-    "decisions": "Decisiones",
-    "costs": "Costos"
+  "components": {
+    "mermaid": {
+      "clickToView": "Click to view diagram",
+      "viewFull": "View full diagram",
+      "tapToView": "Tap to view full diagram",
+      "clickToClose": "Click anywhere to close",
+      "scrollToExplore": "Scroll to explore"
+    }
   }
 }

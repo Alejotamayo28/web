@@ -1,70 +1,4 @@
 {
-  "overview": {
-    "title": "Project Overview",
-    "subtitle": "Event-Driven Order Management System",
-    "problemTitle": "Problem Solved",
-    "problemItems": [
-      "Complete order lifecycle management",
-      "Eventual consistency in microservices environment",
-      "Reliable communication between decentralized services",
-      "Distributed compensation for failures",
-      "Complete auditability of the order system"
-    ],
-    "badges": [
-      "Event-Driven",
-      "Event Sourcing",
-      "Saga Pattern",
-      "Microservices"
-    ]
-  },
-  "architecture": {
-    "title": "System Architecture",
-    "services": "Services",
-    "components": "Components",
-    "patterns": "Patterns",
-    "layers": {
-      "compute": "Compute",
-      "messaging": "Messaging",
-      "storage": "Storage",
-      "networking": "Networking",
-      "security": "Security"
-    }
-  },
-  "infrastructure": {
-    "title": "AWS Infrastructure",
-    "clusters": "ECS Clusters",
-    "services": "ECS Services",
-    "databases": "Databases",
-    "queues": "Queues"
-  },
-  "dataflows": {
-    "title": "Data Flows",
-    "orderCreation": "Order Creation",
-    "paymentProcessing": "Payment Processing",
-    "inventoryUpdate": "Inventory Update",
-    "compensation": "Compensation"
-  },
-  "patterns": {
-    "eventSourcing": "Event Sourcing",
-    "eventSourcingDesc": "Stores state as a sequence of events instead of current state",
-    "outboxPattern": "Outbox Pattern",
-    "outboxPatternDesc": "Reliably publishes events using outbox table",
-    "sagaChoreography": "Saga (Choreography)",
-    "sagaChoreographyDesc": "Distributed orchestration through messages between services",
-    "deduplication": "Deduplication",
-    "deduplicationDesc": "Prevention of duplicate processing with Redis",
-    "consistentHashing": "Consistent Hashing",
-    "consistentHashingDesc": "Uniform distribution of events between workers"
-  },
-  "decisions": {
-    "title": "Technical Decisions"
-  },
-  "security": {
-    "title": "Security"
-  },
-  "limitations": {
-    "title": "Limitations & Future Improvements"
-  },
   "nav": {
     "overview": "Overview",
     "architecture": "Architecture",
@@ -73,5 +7,215 @@
     "decisions": "Decisions",
     "security": "Security",
     "limitations": "Limitations"
+  },
+  "sections": {
+    "overview": {
+      "title": "Project Overview",
+      "subtitle": "Event-Driven Order Management System",
+      "description": "Distributed e-commerce platform that manages the complete purchase order lifecycle with eventual consistency guarantees in a microservices environment.",
+      "problemTitle": "Problem Solved",
+      "problemItems": {
+        "0": "Complete order lifecycle management",
+        "1": "Eventual consistency in microservices environment",
+        "2": "Reliable communication between decentralized services",
+        "3": "Distributed compensation for failures",
+        "4": "Complete auditability of the order system"
+      },
+      "badges": {
+        "eventDriven": "Event-Driven",
+        "eventSourcing": "Event Sourcing",
+        "sagaPattern": "Saga Pattern",
+        "microservices": "Microservices"
+      }
+    },
+    "architecture": {
+      "title": "System Architecture",
+      "servicesTitle": "Services",
+      "componentsTitle": "Components",
+      "patternsTitle": "Design Patterns",
+      "internalComponents": "Order Service - Internal Components",
+      "internalComponentsSubtitle": "Patterns: Outbox Pattern + Consistent Hashing + Partitions",
+      "designPatternsTitle": "Design Patterns Implemented",
+      "systemOverview": "System Architecture Overview",
+      "patternsCount": "{{count}} Patterns"
+    },
+    "infrastructure": {
+      "title": "AWS Infrastructure",
+      "diagramTitle": "AWS Cloud Architecture",
+      "componentsTitle": "AWS Infrastructure Components"
+    },
+    "dataflows": {
+      "title": "Data Flows",
+      "orderCreation": "Order Creation Flow",
+      "sagaCompensation": "Saga Compensation Flow",
+      "stateMachine": "Order State Machine"
+    },
+    "decisions": {
+      "title": "Design Decisions & Trade-offs",
+      "why": "Why:",
+      "tradeoff": "Trade-off:",
+      "alternatives": "Alternatives:"
+    },
+    "security": {
+      "title": "Security Considerations",
+      "authentication": "Authentication",
+      "authorization": "Authorization",
+      "secretsManagement": "Secrets Management",
+      "vulnerabilities": "Vulnerabilities Identified",
+      "status": "Status",
+      "notImplemented": "NOT IMPLEMENTED",
+      "detail": "Detail",
+      "mitigation": "Mitigation"
+    },
+    "limitations": {
+      "title": "Limitations & Non-Goals",
+      "notImplementedTitle": "What the System Does NOT Do",
+      "restrictionsTitle": "Technical Restrictions"
+    }
+  },
+  "architecture": {
+    "services": {
+      "orderService": {
+        "role": "Order management, Event Sourcing, Outbox Worker"
+      },
+      "inventoryService": {
+        "role": "Stock reservations, inventory management"
+      },
+      "paymentService": {
+        "role": "Payment processing, validation"
+      }
+    },
+    "components": {
+      "restApi": {
+        "role": "HTTP endpoints for clients"
+      },
+      "outboxWorker": {
+        "role": "Publishes outbox events to RabbitMQ",
+        "features": "Polling every 5s, Reliable publishing"
+      },
+      "router": {
+        "role": "Routes events using Consistent Hashing",
+        "features": "Distribution by orderId"
+      },
+      "workers": {
+        "role": "Process order events",
+        "features": "2 partitions, DLQ support, Redis deduplication"
+      }
+    },
+    "patterns": {
+      "eventSourcing": {
+        "description": "Stores state as a sequence of events instead of current state",
+        "benefits": "Complete audit trail, State replay, Temporal debugging"
+      },
+      "outboxPattern": {
+        "description": "Reliably publishes events using outbox table",
+        "benefits": "Delivery guarantee, No external CDC, Transactional"
+      },
+      "sagaChoreography": {
+        "description": "Distributed orchestration through messages between services",
+        "benefits": "Total decoupling, Horizontal scalability, Fault isolation"
+      },
+      "deduplication": {
+        "description": "Prevention of duplicate processing with Redis",
+        "benefits": "Idempotency, Exactly-once semantics, Recovery"
+      },
+      "consistentHashing": {
+        "description": "Uniform distribution of events between workers",
+        "benefits": "Load balancing, Scalability, Minimize reshuffling"
+      }
+    }
+  },
+  "decisions": {
+    "items": {
+      "eventSourcing": {
+        "why": "Complete auditability, event replay, detailed state debugging",
+        "tradeoff": "Implementation complexity, learning curve, requires projections for efficient reads",
+        "alternatives": "Traditional CRUD"
+      },
+      "outboxPattern": {
+        "why": "Reliable event publishing without external CDC, simple to implement",
+        "tradeoff": "5s latency (polling), not real-time, requires additional workers",
+        "alternatives": "Transaction Outbox with Debezium"
+      },
+      "sagaChoreography": {
+        "why": "Total decoupling between services, horizontal scalability",
+        "tradeoff": "Hard to trace, complex debugging, risk of infinite loops",
+        "alternatives": "Orchestrated Saga (central orchestrator)"
+      },
+      "hexagonalArchitecture": {
+        "why": "Testability, framework independence, ease to change technology",
+        "tradeoff": "Additional boilerplate, learning curve, more files",
+        "alternatives": "MVC, Layered Architecture"
+      },
+      "postgresqlPerService": {
+        "why": "Fault isolation, team independence, microservices compliance",
+        "tradeoff": "Complex eventual consistency, impossible distributed joins, more operational",
+        "alternatives": "Shared database (monolith)"
+      }
+    }
+  },
+  "security": {
+    "authentication": {
+      "detail": "No JWT, API keys, or OAuth observed",
+      "mitigation": "Implement JWT tokens, API keys"
+    },
+    "authorization": {
+      "detail": "Any client can query any order",
+      "mitigation": "Authorization by customerId"
+    }
+  },
+  "limitations": {
+    "notImplemented": {
+      "auth": {
+        "item": "Authentication/Authorization",
+        "detail": "Any client can access any resource"
+      },
+      "catalog": {
+        "item": "Product catalog",
+        "detail": "Assumes existing productIds"
+      },
+      "users": {
+        "item": "User management",
+        "detail": "Assumes existing customerIds"
+      },
+      "notifications": {
+        "item": "Notifications (email/SMS)",
+        "detail": "Could be extended with webhook"
+      },
+      "analytics": {
+        "item": "Reporting/Analytics",
+        "detail": "Requires additional projections"
+      }
+    },
+    "restrictions": {
+      "workers": {
+        "item": "Fixed workers (2 partitions)",
+        "detail": "Limited throughput, requires reconfiguration"
+      },
+      "polling": {
+        "item": "5s Polling in Outbox",
+        "detail": "Minimum 5s latency for events"
+      },
+      "singleNode": {
+        "item": "PostgreSQL single-node",
+        "detail": "Single point of failure in persistence"
+      },
+      "eventStore": {
+        "item": "Event Store grows indefinitely",
+        "detail": "Requires archiving strategy"
+      }
+    }
+  },
+  "components": {
+    "mermaid": {
+      "clickToView": "Click to view diagram",
+      "viewFull": "View full diagram",
+      "tapToView": "Tap to view full diagram",
+      "clickToClose": "Click anywhere to close",
+      "scrollToExplore": "Scroll to explore"
+    }
+  },
+  "footer": {
+    "text": "Distributed Commerce Platform - Event-Driven Architecture Documentation"
   }
 }

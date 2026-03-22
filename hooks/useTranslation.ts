@@ -9,6 +9,10 @@ import cvEs from "@/locales/es/cv.json";
 import cvEn from "@/locales/en/cv.json";
 import projectsEs from "@/locales/es/projects.json";
 import projectsEn from "@/locales/en/projects.json";
+import zapenuEs from "@/locales/es/zapenu.json";
+import zapenuEn from "@/locales/en/zapenu.json";
+import orderEs from "@/locales/es/order.json";
+import orderEn from "@/locales/en/order.json";
 
 type TranslationsMap = {
   es: Record<string, unknown>;
@@ -19,6 +23,8 @@ const translationsMap: Record<string, TranslationsMap> = {
   common: { es: commonEs, en: commonEn },
   cv: { es: cvEs, en: cvEn },
   projects: { es: projectsEs, en: projectsEn },
+  zapenu: { es: zapenuEs, en: zapenuEn },
+  order: { es: orderEs, en: orderEn },
 };
 
 interface UseTranslationReturn {

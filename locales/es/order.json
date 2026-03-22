@@ -1,70 +1,4 @@
 {
-  "overview": {
-    "title": "Resumen del Proyecto",
-    "subtitle": "Sistema de Gestión de Órdenes Basado en Eventos",
-    "problemTitle": "Problema Resuelto",
-    "problemItems": [
-      "Gestión del ciclo de vida completo de órdenes de compra",
-      "Consistencia eventual en entorno de microservicios",
-      "Comunicación confiable entre servicios descentralizados",
-      "Compensación distribuida ante fallos",
-      "Auditabilidad completa del sistema de pedidos"
-    ],
-    "badges": [
-      "Orientado a Eventos",
-      "Event Sourcing",
-      "Saga Pattern",
-      "Microservicios"
-    ]
-  },
-  "architecture": {
-    "title": "Arquitectura del Sistema",
-    "services": "Servicios",
-    "components": "Componentes",
-    "patterns": "Patrones",
-    "layers": {
-      "compute": "Computación",
-      "messaging": "Mensajería",
-      "storage": "Almacenamiento",
-      "networking": "Redes",
-      "security": "Seguridad"
-    }
-  },
-  "infrastructure": {
-    "title": "Infraestructura AWS",
-    "clusters": "Clusters ECS",
-    "services": "Servicios ECS",
-    "databases": "Bases de Datos",
-    "queues": "Colas"
-  },
-  "dataflows": {
-    "title": "Flujos de Datos",
-    "orderCreation": "Creación de Orden",
-    "paymentProcessing": "Procesamiento de Pago",
-    "inventoryUpdate": "Actualización de Inventario",
-    "compensation": "Compensación"
-  },
-  "patterns": {
-    "eventSourcing": "Event Sourcing",
-    "eventSourcingDesc": "Almacena el estado como secuencia de eventos en lugar de estado actual",
-    "outboxPattern": "Outbox Pattern",
-    "outboxPatternDesc": "Publica eventos de forma confiable usando tabla outbox",
-    "sagaChoreography": "Saga (Coreografía)",
-    "sagaChoreographyDesc": "Orquestación distribuida mediante mensajes entre servicios",
-    "deduplication": "Deduplicación",
-    "deduplicationDesc": "Prevención de procesamiento duplicado con Redis",
-    "consistentHashing": "Consistent Hashing",
-    "consistentHashingDesc": "Distribución uniforme de eventos entre workers"
-  },
-  "decisions": {
-    "title": "Decisiones Técnicas"
-  },
-  "security": {
-    "title": "Seguridad"
-  },
-  "limitations": {
-    "title": "Limitaciones y Mejoras Futuras"
-  },
   "nav": {
     "overview": "Resumen",
     "architecture": "Arquitectura",
@@ -73,5 +7,215 @@
     "decisions": "Decisiones",
     "security": "Seguridad",
     "limitations": "Limitaciones"
+  },
+  "sections": {
+    "overview": {
+      "title": "Resumen del Proyecto",
+      "subtitle": "Sistema de Gestión de Órdenes Basado en Eventos",
+      "description": "Plataforma de comercio electrónico distribuida que gestiona el ciclo de vida completo de órdenes de compra con garantías de consistencia eventual en un entorno de microservicios.",
+      "problemTitle": "Problema Resuelto",
+      "problemItems": {
+        "0": "Gestión del ciclo de vida completo de órdenes de compra",
+        "1": "Consistencia eventual en entorno de microservicios",
+        "2": "Comunicación confiable entre servicios descentralizados",
+        "3": "Compensación distribuida ante fallos",
+        "4": "Auditabilidad completa del sistema de pedidos"
+      },
+      "badges": {
+        "eventDriven": "Orientado a Eventos",
+        "eventSourcing": "Event Sourcing",
+        "sagaPattern": "Saga Pattern",
+        "microservices": "Microservicios"
+      }
+    },
+    "architecture": {
+      "title": "Arquitectura del Sistema",
+      "servicesTitle": "Servicios",
+      "componentsTitle": "Componentes",
+      "patternsTitle": "Patrones de Diseño",
+      "internalComponents": "Componentes Internos del Order Service",
+      "internalComponentsSubtitle": "Patrones: Outbox Pattern + Consistent Hashing + Partitions",
+      "designPatternsTitle": "Patrones de Diseño Implementados",
+      "systemOverview": "Vista General de la Arquitectura del Sistema",
+      "patternsCount": "{{count}} Patrones"
+    },
+    "infrastructure": {
+      "title": "Infraestructura AWS",
+      "diagramTitle": "Arquitectura en la Nube AWS",
+      "componentsTitle": "Componentes de Infraestructura AWS"
+    },
+    "dataflows": {
+      "title": "Flujos de Datos",
+      "orderCreation": "Flujo de Creación de Orden",
+      "sagaCompensation": "Flujo de Compensación Saga",
+      "stateMachine": "Máquina de Estados de Orden"
+    },
+    "decisions": {
+      "title": "Decisiones de Diseño y Trade-offs",
+      "why": "Por qué:",
+      "tradeoff": "Trade-off:",
+      "alternatives": "Alternativas:"
+    },
+    "security": {
+      "title": "Consideraciones de Seguridad",
+      "authentication": "Autenticación",
+      "authorization": "Autorización",
+      "secretsManagement": "Gestión de Secretos",
+      "vulnerabilities": "Vulnerabilidades Identificadas",
+      "status": "Estado",
+      "notImplemented": "NO IMPLEMENTADO",
+      "detail": "Detalle",
+      "mitigation": "Mitigación"
+    },
+    "limitations": {
+      "title": "Limitaciones y No-Objetivos",
+      "notImplementedTitle": "Lo que el Sistema NO Hace",
+      "restrictionsTitle": "Restricciones Técnicas"
+    }
+  },
+  "architecture": {
+    "services": {
+      "orderService": {
+        "role": "Gestión de órdenes, Event Sourcing, Outbox Worker"
+      },
+      "inventoryService": {
+        "role": "Reservas de stock, gestión de inventario"
+      },
+      "paymentService": {
+        "role": "Procesamiento de pagos, validación"
+      }
+    },
+    "components": {
+      "restApi": {
+        "role": "HTTP endpoints para clientes"
+      },
+      "outboxWorker": {
+        "role": "Publica eventos del outbox a RabbitMQ",
+        "features": "Polling cada 5s, Publicación confiable"
+      },
+      "router": {
+        "role": "Enruta eventos usando Consistent Hashing",
+        "features": "Distribución por orderId"
+      },
+      "workers": {
+        "role": "Procesan eventos de órdenes",
+        "features": "2 particiones, DLQ support, Deduplicación Redis"
+      }
+    },
+    "patterns": {
+      "eventSourcing": {
+        "description": "Almacena el estado como secuencia de eventos en lugar de estado actual",
+        "benefits": "Audit trail completo, Replay de estado, Debugging temporal"
+      },
+      "outboxPattern": {
+        "description": "Publica eventos de forma confiable usando tabla outbox",
+        "benefits": "Garantía de entrega, Sin CDC externo, Transaccional"
+      },
+      "sagaChoreography": {
+        "description": "Orquestación distribuida mediante mensajes entre servicios",
+        "benefits": "Desacoplamiento total, Escalabilidad horizontal, Fault isolation"
+      },
+      "deduplication": {
+        "description": "Prevención de procesamiento duplicado con Redis",
+        "benefits": "Idempotencia, Exactly-once semantics, Recovery"
+      },
+      "consistentHashing": {
+        "description": "Distribución uniforme de eventos entre workers",
+        "benefits": "Balanceo de carga, Escalabilidad, Minimize reshuffling"
+      }
+    }
+  },
+  "decisions": {
+    "items": {
+      "eventSourcing": {
+        "why": "Auditabilidad completa, replay de eventos, debugging detallado de estado",
+        "tradeoff": "Complejidad de implementación, curva de aprendizaje, requiere proyecciones para lecturas eficientes",
+        "alternatives": "CRUD tradicional"
+      },
+      "outboxPattern": {
+        "why": "Publicación confiable de eventos sin CDC externo, simple de implementar",
+        "tradeoff": "Latencia de 5s (polling), no es real-time, requiere workers adicionales",
+        "alternatives": "Transaction Outbox con Debezium"
+      },
+      "sagaChoreography": {
+        "why": "Desacoplamiento total entre servicios, escalabilidad horizontal",
+        "tradeoff": "Difícil de rastrear, debugging complejo, riesgo de ciclos infinitos",
+        "alternatives": "Saga Orquestada (orquestador central)"
+      },
+      "hexagonalArchitecture": {
+        "why": "Testabilidad, independencia de frameworks, facilidad para cambiar tecnología",
+        "tradeoff": "Boilerplate adicional, curva de aprendizaje, más archivos",
+        "alternatives": "MVC, Layered Architecture"
+      },
+      "postgresqlPerService": {
+        "why": "Aislamiento de fallos, independencia de equipos, cumplimiento de microservicios",
+        "tradeoff": "Consistencia eventual compleja, joins distribuidos imposibles, más operacional",
+        "alternatives": "Base de datos compartida (monolito)"
+      }
+    }
+  },
+  "security": {
+    "authentication": {
+      "detail": "No se observa JWT, API keys, ni OAuth",
+      "mitigation": "Implementar JWT tokens, API keys"
+    },
+    "authorization": {
+      "detail": "Cualquier cliente puede consultar cualquier orden",
+      "mitigation": "Autorización por customerId"
+    }
+  },
+  "limitations": {
+    "notImplemented": {
+      "auth": {
+        "item": "Autenticación/Autorización",
+        "detail": "Cualquier cliente puede acceder a cualquier recurso"
+      },
+      "catalog": {
+        "item": "Catálogo de productos",
+        "detail": "Asume productId existentes"
+      },
+      "users": {
+        "item": "Gestión de usuarios",
+        "detail": "Asume customerId existentes"
+      },
+      "notifications": {
+        "item": "Notificaciones (email/SMS)",
+        "detail": "Podría extenderse con webhook"
+      },
+      "analytics": {
+        "item": "Reporting/Analytics",
+        "detail": "Requiere proyecciones adicionales"
+      }
+    },
+    "restrictions": {
+      "workers": {
+        "item": "Workers fijos (2 particiones)",
+        "detail": "Throughput limitado, requiere reconfiguración"
+      },
+      "polling": {
+        "item": "Polling 5s en Outbox",
+        "detail": "Latencia mínima de 5s para eventos"
+      },
+      "singleNode": {
+        "item": "PostgreSQL single-node",
+        "detail": "Punto único de fallo en persistencia"
+      },
+      "eventStore": {
+        "item": "Event Store crece indefinidamente",
+        "detail": "Requiere estrategia de archivado"
+      }
+    }
+  },
+  "components": {
+    "mermaid": {
+      "clickToView": "Click para ver diagrama",
+      "viewFull": "Ver diagrama completo",
+      "tapToView": "Toca para ver diagrama completo",
+      "clickToClose": "Click en cualquier lugar para cerrar",
+      "scrollToExplore": "Desplaza para explorar"
+    }
+  },
+  "footer": {
+    "text": "Plataforma de Comercio Distribuido - Documentación de Arquitectura Orientada a Eventos"
   }
 }

@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -48,32 +50,42 @@ import {
 } from "lucide-react";
 import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
+interface Service {
+  name: string;
+  typeKey?: string;
+  stack?: string;
+  port?: string;
+  roleKey?: string;
+  accessKey?: string;
+  cache?: string;
+  protocol?: string;
+  features?: string[];
+}
+
+interface Layer {
+  nameKey: string;
+  services: Service[];
+}
+
 const navigationItems = [
-  { id: "overview", label: "Overview" },
-  { id: "architecture", label: "Architecture" },
-  { id: "dataflows", label: "Data Flows" },
-  { id: "decisions", label: "Decisions" },
-  { id: "costs", label: "Costs" },
+  { id: "overview", labelKey: "nav.overview" },
+  { id: "architecture", labelKey: "nav.architecture" },
+  { id: "dataflows", labelKey: "nav.dataflows" },
+  { id: "decisions", labelKey: "nav.decisions" },
+  { id: "costs", labelKey: "nav.costs" },
 ];
 
 const overviewData = {
   title: "Zapenu",
-  description: "Plataforma multi-tenant de pedidos digitales con pagos integrados, notificaciones en tiempo real y arquitectura optimizada en costos",
   badges: [
-    { label: "Architecture-focused", icon: "GitBranch", color: "bg-secondary text-secondary-foreground" },
-    { label: "Real payments integration", icon: "CreditCard", color: "bg-secondary text-secondary-foreground" },
-    { label: "Cost-aware design", icon: "DollarSign", color: "bg-secondary text-secondary-foreground" },
-    { label: "Security-conscious", icon: "Shield", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "overview.badges.architectureFocused", icon: "GitBranch", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "overview.badges.realPayments", icon: "CreditCard", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "overview.badges.costAware", icon: "DollarSign", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "overview.badges.securityConscious", icon: "Shield", color: "bg-secondary text-secondary-foreground" },
   ],
   problem: {
-    title: "Problema Resuelto",
-    items: [
-      "Digitalización de menús con opciones personalizables",
-      "Gestión multi-tenant de múltiples locales comerciales",
-      "Procesamiento de pedidos con flujos de estado",
-      "Procesamiento de pagos en línea mediante integración con MercadoPago",
-      "Notificaciones en tiempo real a través de WhatsApp",
-    ]
+    titleKey: "overview.problemTitle",
+    itemsKeys: ["overview.problemItems.0", "overview.problemItems.1", "overview.problemItems.2", "overview.problemItems.3", "overview.problemItems.4"]
   },
   stack: {
     frontend: ["React 19", "Vite 6.2.x", "Tailwind CSS 3.4", "Radix UI / shadcn/ui"],
@@ -86,42 +98,42 @@ const overviewData = {
   }
 };
 
-const architectureData = {
+const architectureData: { layers: Layer[] } = {
   layers: [
     { 
-      name: "Presentation Layer", 
+      nameKey: "architecture.layers.presentation", 
       services: [
-        { name: "Homero", type: "Frontend Público", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Menú digital para clientes", access: "Público", cache: "5 min" },
-        { name: "Marge", type: "Frontend Admin", stack: "React 19 + Vite", port: "Cloudflare Pages", role: "Dashboard de gestión", access: "Autenticado", cache: "1 min" },
+        { name: "Homero", typeKey: "architecture.serviceTypes.frontendPublic", stack: "React 19 + Vite", port: "Cloudflare Pages", roleKey: "architecture.roles.menuDigital", accessKey: "architecture.accessTypes.public", cache: "5 min" },
+        { name: "Marge", typeKey: "architecture.serviceTypes.frontendAdmin", stack: "React 19 + Vite", port: "Cloudflare Pages", roleKey: "architecture.roles.dashboardGestion", accessKey: "architecture.accessTypes.authenticated", cache: "1 min" },
       ]
     },
     { 
-      name: "Edge Layer", 
+      nameKey: "architecture.layers.edge", 
       services: [
-        { name: "Cloudflare Edge", type: "CDN + Functions", stack: "Cloudflare", role: "Cache, Auth, Proxy", features: ["Cache 5min (Homero)", "Auth (Marge)", "Edge Functions"] },
+        { name: "Cloudflare Edge", typeKey: "architecture.serviceTypes.cdnFunctions", stack: "Cloudflare", roleKey: "architecture.roles.edgeFunctions", features: ["Cache 5min (Homero)", "Auth (Marge)", "Edge Functions"] },
       ]
     },
     { 
-      name: "Backend Layer", 
+      nameKey: "architecture.layers.backend", 
       services: [
-        { name: "Barto", type: "API Principal", stack: "Node.js + Express + TSOA", port: "3001", role: "Gestión de productos, órdenes, usuarios", protocol: "REST + gRPC" },
-        { name: "Omnipago", type: "Microservicio de Pagos", stack: "Node.js 16 + Express", port: "4000", role: "Integración con MercadoPago", protocol: "REST" },
+        { name: "Barto", typeKey: "architecture.serviceTypes.mainAPI", stack: "Node.js + Express + TSOA", port: "3001", roleKey: "architecture.roles.gestionProductos", protocol: "REST + gRPC" },
+        { name: "Omnipago", typeKey: "architecture.serviceTypes.paymentMicroservice", stack: "Node.js 16 + Express", port: "4000", roleKey: "architecture.roles.paymentIntegration", protocol: "REST" },
       ]
     },
     { 
-      name: "Data Layer", 
+      nameKey: "architecture.layers.data", 
       services: [
-        { name: "PostgreSQL (Supabase)", type: "DB Principal", role: "Datos de operaciones, productos, órdenes" },
-        { name: "PostgreSQL (RDS + omnipago)", type: "DB Pagos", role: "Schema payments_gateway" },
-        { name: "Cloudflare R2", type: "Object Storage", role: "Almacenamiento de imágenes (S3-compatible)" },
+        { name: "PostgreSQL (Supabase)", typeKey: "architecture.serviceTypes.dbMain", roleKey: "architecture.roles.operationalData" },
+        { name: "PostgreSQL (RDS + omnipago)", typeKey: "architecture.serviceTypes.dbPayments", roleKey: "architecture.roles.schemaPayments" },
+        { name: "Cloudflare R2", typeKey: "architecture.serviceTypes.objectStorage", roleKey: "architecture.roles.imageStorage" },
       ]
     },
     { 
-      name: "External Services", 
+      nameKey: "architecture.layers.external", 
       services: [
-        { name: "MercadoPago", type: "Pasarela de pagos", role: "Procesamiento de transacciones, Webhooks" },
-        { name: "WAHA", type: "WhatsApp API", role: "Notificaciones en tiempo real", port: "3000" },
-        { name: "Supabase", type: "Auth + Storage", role: "Autenticación JWT, Row Level Security" },
+        { name: "MercadoPago", typeKey: "architecture.serviceTypes.paymentGateway", roleKey: "architecture.roles.transactions" },
+        { name: "WAHA", typeKey: "architecture.serviceTypes.whatsappApi", roleKey: "architecture.roles.realTimeNotifications", port: "3000" },
+        { name: "Supabase", typeKey: "architecture.serviceTypes.authStorage", roleKey: "architecture.roles.jwtAuth" },
       ]
     }
   ]
@@ -130,96 +142,97 @@ const architectureData = {
 const dataFlowsData = [
   {
     id: "order-creation",
-    title: "Creación de Pedido",
+    titleKey: "dataflows.orderCreation",
     icon: ShoppingCart,
     steps: [
-      { num: 1, title: "Cliente navega menú", desc: "GET /products/all/{client}/{short_id}" },
-      { num: 2, title: "Selecciona productos", desc: "Construye carrito local (React state)" },
-      { num: 3, title: "Confirma pedido", desc: "POST /orders (sin auth público)" },
-      { num: 4, title: "Procesamiento backend", desc: "Valida, calcula totales, inserta en DB" },
-      { num: 5, title: "Notificación async", desc: "WhatsApp al negocio vía WAHA" },
+      { num: 1, titleKey: "dataflows.steps.customerBrowses", desc: "GET /products/all/{client}/{short_id}" },
+      { num: 2, titleKey: "dataflows.steps.selectProducts", desc: "Construye carrito local (React state)" },
+      { num: 3, titleKey: "dataflows.steps.confirmOrder", desc: "POST /orders (sin auth público)" },
+      { num: 4, titleKey: "dataflows.steps.backendProcessing", desc: "Valida, calcula totales, inserta en DB" },
+      { num: 5, titleKey: "dataflows.steps.asyncNotification", desc: "WhatsApp al negocio vía WAHA" },
     ]
   },
   {
     id: "authentication",
-    title: "Autenticación Administrativa",
+    titleKey: "dataflows.authentication",
     icon: Lock,
     steps: [
-      { num: 1, title: "Admin abre Marge", desc: "Redirigido a /login" },
-      { num: 2, title: "Ingresa email", desc: "Supabase Auth: signInWithOtp()" },
-      { num: 3, title: "Magic link", desc: "Callback con session JWT" },
-      { num: 4, title: "Token storage", desc: "LocalStorage + Context API" },
-      { num: 5, title: "Requests protegidos", desc: "Bearer token en headers" },
+      { num: 1, titleKey: "dataflows.steps.adminOpensMarge", desc: "Redirigido a /login" },
+      { num: 2, titleKey: "dataflows.steps.enterEmail", desc: "Supabase Auth: signInWithOtp()" },
+      { num: 3, titleKey: "dataflows.steps.magicLink", desc: "Callback con session JWT" },
+      { num: 4, titleKey: "dataflows.steps.tokenStorage", desc: "LocalStorage + Context API" },
+      { num: 5, titleKey: "dataflows.steps.protectedRequests", desc: "Bearer token en headers" },
     ]
   },
   {
     id: "payment-flow",
-    title: "Flujo de Pagos",
+    titleKey: "dataflows.paymentFlow",
     icon: CreditCard,
     steps: [
-      { num: 1, title: "Confirmar pedido", desc: "POST /orders → PENDING_PAYMENT" },
-      { num: 2, title: "Crear preferencia", desc: "POST /omnipago/payments/create-order" },
-      { num: 3, title: "Redirect a MP", desc: "init_point → checkout MercadoPago" },
-      { num: 4, title: "Webhook", desc: "POST /payments/payment-webhook" },
-      { num: 5, title: "Actualizar estado", desc: "PUT /orders/{id}/payment-status" },
+      { num: 1, titleKey: "dataflows.steps.confirmOrderPending", desc: "POST /orders → PENDING_PAYMENT" },
+      { num: 2, titleKey: "dataflows.steps.createPreference", desc: "POST /omnipago/payments/create-order" },
+      { num: 3, titleKey: "dataflows.steps.redirectMP", desc: "init_point → checkout MercadoPago" },
+      { num: 4, titleKey: "dataflows.steps.webhook", desc: "POST /payments/payment-webhook" },
+      { num: 5, titleKey: "dataflows.steps.updateStatus", desc: "PUT /orders/{id}/payment-status" },
     ]
   }
 ];
 
 const decisionsData = [
   {
-    decision: "Separación de Frontends (Homero vs Marge)",
-    why: "Homero público con cache agresivo, Marge con auth y datos sensibles",
-    tradeoff: "Duplicación de código, overhead de mantenimiento. vs. Independencia de deploy, optimización de bundle, seguridad por separación",
-    alternatives: "Single SPA con code-splitting"
+    titleKey: "decisions.items.0.title",
+    whyKey: "decisions.items.0.why",
+    tradeoffKey: "decisions.items.0.tradeoff",
+    alternativesKey: "decisions.items.0.alternatives"
   },
   {
-    decision: "Supabase como Backend-as-a-Service",
-    why: "Menor infraestructura, precio predictivo, RLS incorporado",
-    tradeoff: "Vendor lock-in, límites de conexiones, latencia en regiones no cubiertas",
-    alternatives: "Auth0 + RDS independiente, Firebase"
+    titleKey: "decisions.items.1.title",
+    whyKey: "decisions.items.1.why",
+    tradeoffKey: "decisions.items.1.tradeoff",
+    alternativesKey: "decisions.items.1.alternatives"
   },
   {
-    decision: "TSOA para Generación de API",
-    why: "Type safety end-to-end, OpenAPI automático, validación integrada",
-    tradeoff: "Curva de aprendizaje, menos flexible que Express puro, dependencia de tooling",
-    alternatives: "Express manual, NestJS, Fastify"
+    titleKey: "decisions.items.2.title",
+    whyKey: "decisions.items.2.why",
+    tradeoffKey: "decisions.items.2.tradeoff",
+    alternativesKey: "decisions.items.2.alternatives"
   },
   {
-    decision: "Cloudflare R2 vs AWS S3",
-    why: "Costo: $0 egress fees (vs AWS), S3-compatible",
-    tradeoff: "Menos maduro, menos integraciones nativas, dependencia de Cloudflare",
-    alternatives: "AWS S3, MinIO self-hosted"
+    titleKey: "decisions.items.3.title",
+    whyKey: "decisions.items.3.why",
+    tradeoffKey: "decisions.items.3.tradeoff",
+    alternativesKey: "decisions.items.3.alternatives"
   },
   {
-    decision: "WhatsApp (WAHA) Self-Hosted",
-    why: "Costo cero (usa WhatsApp Business API no oficial), control total",
-    tradeoff: "No oficial, puede romperse, requiere mantener sesión activa",
-    alternatives: "Twilio, MessageBird, WATI"
+    titleKey: "decisions.items.4.title",
+    whyKey: "decisions.items.4.why",
+    tradeoffKey: "decisions.items.4.tradeoff",
+    alternativesKey: "decisions.items.4.alternatives"
   },
   {
-    decision: "Microservicio de Pagos (Omnipago)",
-    why: "Separación de responsabilidades, aislamiento de fallas de pagos",
-    tradeoff: "Complejidad de deployment, latencia adicional (HTTP entre servicios)",
-    alternatives: "Integrado en barto (monolito)"
+    titleKey: "decisions.items.5.title",
+    whyKey: "decisions.items.5.why",
+    tradeoffKey: "decisions.items.5.tradeoff",
+    alternativesKey: "decisions.items.5.alternatives"
   }
 ];
 
 // Component for Decision Accordion
 interface DecisionAccordionProps {
   decision: {
-    decision: string;
-    why: string;
-    tradeoff: string;
-    alternatives: string;
+    titleKey: string;
+    whyKey: string;
+    tradeoffKey: string;
+    alternativesKey: string;
   };
   index: number;
   icon: React.ElementType;
   isExpanded: boolean;
   onToggle: () => void;
+  tZapenu: (key: string) => string;
 }
 
-function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }: DecisionAccordionProps) {
+function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle, tZapenu }: DecisionAccordionProps) {
   const isEven = index % 2 === 0;
 
   return (
@@ -249,7 +262,7 @@ function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 leading-tight pr-8">
-                  {decision.decision}
+                  {tZapenu(decision.titleKey)}
                 </h3>
               </div>
               <div className={`flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
@@ -263,20 +276,20 @@ function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }
                 {/* Why & Trade-off */}
                 <div className="space-y-3 text-sm pt-4">
                   <div className="flex gap-2">
-                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Why:</span>
-                    <span className="text-muted-foreground">{decision.why}</span>
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">{tZapenu("decisions.whyLabel")}</span>
+                    <span className="text-muted-foreground">{tZapenu(decision.whyKey)}</span>
                   </div>
                   <div className="flex gap-2">
-                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Trade-off:</span>
-                    <span className="text-muted-foreground">{decision.tradeoff}</span>
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">{tZapenu("decisions.tradeoffLabel")}</span>
+                    <span className="text-muted-foreground">{tZapenu(decision.tradeoffKey)}</span>
                   </div>
                 </div>
 
                 {/* Alternatives */}
                 <div className="mt-4 pt-3 border-t border-border/50">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Alternatives:</span>
-                    <span className="text-muted-foreground">{decision.alternatives}</span>
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">{tZapenu("decisions.alternativesLabel")}</span>
+                    <span className="text-muted-foreground">{tZapenu(decision.alternativesKey)}</span>
                   </div>
                 </div>
               </div>
@@ -290,26 +303,26 @@ function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }
 
 const costsData = {
 baseline: [
-{ component: "VPS Backend", provider: "AWS/GCP/Otros", model: "Single VPS (barto + omnipago)", estimate: "$5-20/mes", icon: Server },
-{ component: "Supabase", provider: "Supabase", model: "Free tier", estimate: "$0", icon: Database },
-{ component: "Cloudflare R2", provider: "Cloudflare", model: "Storage S3-compatible", estimate: "$0", icon: Cloud },
-{ component: "Cloudflare Pages", provider: "Cloudflare", model: "Free tier", estimate: "$0", icon: Globe },
-{ component: "WhatsApp WAHA", provider: "Self-hosted", model: "Infraestructura propia", estimate: "$0 (marginal)", icon: MessageSquare },
-{ component: "GitHub Actions", provider: "GitHub", model: "Self-hosted", estimate: "$0", icon: GitBranch },
-{ component: "MercadoPago Fees", provider: "MercadoPago", model: "% por transacción", estimate: "2.99% + IVA", icon: CreditCard, variable: true },
+  { componentKey: "costs.components.vpsBackend", provider: "AWS/GCP/Otros", modelKey: "costs.models.infraOwn", estimate: "$5-20/mes", icon: Server },
+  { componentKey: "costs.components.supabase", provider: "Supabase", modelKey: "costs.models.infraOwn", estimate: "$0", icon: Database },
+  { componentKey: "costs.components.r2", provider: "Cloudflare", modelKey: "costs.models.infraOwn", estimate: "$0", icon: Cloud },
+  { componentKey: "costs.components.pages", provider: "Cloudflare", modelKey: "costs.models.infraOwn", estimate: "$0", icon: Globe },
+  { componentKey: "costs.components.waha", provider: "Self-hosted", modelKey: "costs.models.infraOwn", estimate: "$0 (marginal)", icon: MessageSquare },
+  { componentKey: "costs.components.github", provider: "GitHub", modelKey: "costs.models.infraOwn", estimate: "$0", icon: GitBranch },
+  { componentKey: "costs.components.mercadopago", provider: "MercadoPago", modelKey: "costs.models.transaction", estimate: "2.99% + IVA", icon: CreditCard, variable: true },
 ],
 total: "$5-20/mes",
-totalNote: "+ 2.99% + IVA por transacción",
+totalNoteKey: "costs.totalNote",
 drivers: [
-{ label: "VPS Upgrade", impact: "Si escala: $20-50/mes", icon: Server, tier: "medium" },
-{ label: "Supabase Pro", impact: "$25+/mes si escala", icon: Database, tier: "high" },
-{ label: "Cloudflare Pro", impact: "$20/mes si 10x tráfico", icon: Cloud, tier: "medium" },
+  { labelKey: "costs.components.vpsBackend", impact: "Si escala: $20-50/mes", icon: Server, tier: "medium" },
+  { labelKey: "costs.components.supabase", impact: "$25+/mes si escala", icon: Database, tier: "high" },
+  { labelKey: "costs.components.pages", impact: "$20/mes si 10x tráfico", icon: Cloud, tier: "medium" },
 ],
 risks: [
-{ scenario: "10x tráfico en Homero", risk: "Cloudflare Pages free tier limits", mitigation: "Upgrade a Pro ($20/mes)", severity: "medium" },
-{ scenario: "100x imágenes subidas", risk: "R2 storage limits", mitigation: "Compresión previa, límites de tamaño", severity: "low" },
-{ scenario: "1000x pedidos/día", risk: "Supabase rate limits", mitigation: "Pool tuning, migración a Pro", severity: "high" },
-{ scenario: "Viralización WhatsApp", risk: "Ban de número WAHA", mitigation: "Fallback a email/SMS", severity: "medium" },
+  { scenarioKey: "costs.scenarios.traffic10x", riskKey: "costs.risksList.cloudflareLimits", mitigationKey: "costs.risksList.upgradePro", severity: "medium" },
+  { scenarioKey: "costs.scenarios.images100x", riskKey: "costs.risksList.r2Limits", mitigationKey: "costs.risksList.compressionLimits", severity: "low" },
+  { scenarioKey: "costs.scenarios.orders1000x", riskKey: "costs.risksList.supabaseLimits", mitigationKey: "costs.risksList.poolTuning", severity: "high" },
+  { scenarioKey: "costs.scenarios.viralWhatsapp", riskKey: "costs.risksList.whatsappBan", mitigationKey: "costs.risksList.fallbackEmail", severity: "medium" },
 ]
 };
 
@@ -654,6 +667,8 @@ Click outside to close • Scroll to explore
 }
 
 export default function ZapenuProjectPage() {
+  const { t: tZapenu } = useTranslation('zapenu');
+  const { t: tCommon } = useTranslation('common');
   const [activeSection, setActiveSection] = useState("overview");
   const [isProblemExpanded, setIsProblemExpanded] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -759,23 +774,26 @@ export default function ZapenuProjectPage() {
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
                 }`}
               >
-                {item.label}
+                {tZapenu(item.labelKey)}
               </button>
             ))}
           </nav>
 
-{/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-6 w-6 text-white" />
-          ) : (
-            <Menu className="h-6 w-6 text-foreground" />
-          )}
-        </button>
+{/* Right side: LanguageSwitcher + Mobile Menu */}
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6 text-white" />
+            ) : (
+              <Menu className="h-6 w-6 text-foreground" />
+            )}
+          </button>
+        </div>
         </div>
       </header>
 
@@ -807,7 +825,7 @@ export default function ZapenuProjectPage() {
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
                 }`}
               >
-                {item.label}
+                {tZapenu(item.labelKey)}
               </button>
             ))}
           </nav>
@@ -830,7 +848,7 @@ export default function ZapenuProjectPage() {
         <div className="max-w-7xl mx-auto w-full">
           {/* Section Title */}
           <div className="text-center mb-6 md:mb-10">
-            <h2 className="text-xl md:text-3xl font-bold text-foreground opacity-80">Project Overview</h2>
+            <h2 className="text-xl md:text-3xl font-bold text-foreground opacity-80">{tZapenu('sections.overview.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
           
@@ -847,10 +865,10 @@ export default function ZapenuProjectPage() {
                     </div>
                     <div className="min-w-0 flex-1 overflow-hidden">
                       <h3 className="text-lg sm:text-xl md:text-3xl font-bold text-foreground opacity-80 truncate">{overviewData.title}</h3>
-                      <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">Digital Ordering Platform</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">{tZapenu("overview.subtitle")}</p>
                     </div>
                   </div>
-                  <p className="text-foreground opacity-80 text-sm md:text-base mb-3 md:mb-5 leading-relaxed break-words">{overviewData.description}</p>
+                  <p className="text-foreground opacity-80 text-sm md:text-base mb-3 md:mb-5 leading-relaxed break-words">{tZapenu("overview.description")}</p>
                   
                   {/* Badges - Icons only on mobile, with text on desktop */}
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -862,15 +880,16 @@ export default function ZapenuProjectPage() {
                         Shield,
                       };
                       const Icon = iconMap[badge.icon] || Badge;
+                      const badgeLabel = tZapenu(badge.labelKey);
                       return (
                         <Badge 
                           key={idx} 
                           variant="secondary" 
                           className="flex items-center justify-center p-1.5 sm:p-2 md:px-2.5 md:py-1.5 transition-all flex-shrink-0"
-                          title={badge.label}
+                          title={badgeLabel}
                         >
                           <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-3 md:w-3 flex-shrink-0" />
-                          <span className="hidden md:inline md:ml-1.5 text-xs font-medium">{badge.label}</span>
+                          <span className="hidden md:inline md:ml-1.5 text-xs font-medium">{badgeLabel}</span>
                         </Badge>
                       );
                     })}
@@ -890,7 +909,7 @@ export default function ZapenuProjectPage() {
                       <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <CheckCircle className="h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 text-primary" />
                       </div>
-                      <h4 className="text-sm sm:text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{overviewData.problem.title}</h4>
+                      <h4 className="text-sm sm:text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{tZapenu("overview.problemTitle")}</h4>
                     </div>
                     <div className="md:hidden flex-shrink-0 ml-2">
                       {isProblemExpanded ? (
@@ -904,12 +923,12 @@ export default function ZapenuProjectPage() {
                   {/* Accordion Content - Always visible on desktop, toggle on mobile */}
                   <div className={`px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 transition-all duration-300 md:block ${isProblemExpanded ? 'block' : 'hidden md:block'}`}>
                     <ul className="space-y-2 md:space-y-3">
-                      {overviewData.problem.items.map((item, idx) => (
+                      {overviewData.problem.itemsKeys.map((itemKey: string, idx: number) => (
                         <li key={idx} className="flex gap-2 md:gap-3 text-sm text-foreground opacity-80 items-start min-w-0">
                           <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                             <span className="text-[9px] sm:text-[10px] font-bold text-primary">{idx + 1}</span>
                           </div>
-                          <span className="leading-relaxed text-sm break-words flex-1 min-w-0">{item}</span>
+                          <span className="leading-relaxed text-sm break-words flex-1 min-w-0">{tZapenu(itemKey)}</span>
                         </li>
                       ))}
                     </ul>
@@ -927,7 +946,7 @@ export default function ZapenuProjectPage() {
                     <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                     <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-foreground opacity-80 truncate">Infrastructure Architecture</span>
                   </div>
-                  <Badge variant="outline" className="text-[10px] sm:text-xs flex-shrink-0 ml-2">5-Layer</Badge>
+                  <Badge variant="outline" className="text-[10px] sm:text-xs flex-shrink-0 ml-2">{tZapenu('sections.architecture.fiveLayer')}</Badge>
                 </div>
                 
                 {/* Image Container with Expand Button */}
@@ -1012,7 +1031,7 @@ export default function ZapenuProjectPage() {
       <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="px-4 md:px-6 py-8 md:py-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">System Architecture</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">{tZapenu('sections.architecture.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
@@ -1021,7 +1040,7 @@ export default function ZapenuProjectPage() {
             {/* Header general del System Architecture */}
             <div className="flex items-center justify-center gap-3 p-4 md:p-6 bg-primary/5 border-b border-border">
               <Server className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">5-Layer Architecture</h3>
+              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">{tZapenu('sections.architecture.subtitle')}</h3>
               <Badge variant="secondary" className="text-xs">{architectureData.layers.reduce((acc, layer) => acc + layer.services.length, 0)} Services</Badge>
             </div>
 
@@ -1062,7 +1081,7 @@ export default function ZapenuProjectPage() {
                                   {layerIdx + 1}.
                                 </span>
                                 <h4 className="text-sm md:text-base font-semibold text-foreground opacity-80 truncate">
-                                  {layer.name}
+                                  {tZapenu(layer.nameKey)}
                                 </h4>
                               </div>
                               <p className="text-[10px] md:text-xs text-muted-foreground truncate">
@@ -1086,7 +1105,7 @@ export default function ZapenuProjectPage() {
                             <div className="p-3 md:p-4 pt-0 md:pt-0">
                               {/* Grid de servicios */}
                               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                                {layer.services.map((service, svcIdx) => {
+                                {layer.services.map((service: Service, svcIdx) => {
                                   const ServiceIcon = serviceIcons[service.name] || Server;
 
                                   return (
@@ -1105,19 +1124,19 @@ export default function ZapenuProjectPage() {
                                               <h5 className="text-sm md:text-base font-semibold text-foreground opacity-80 truncate">
                                                 {service.name}
                                               </h5>
-                                              {service.port && typeof service.port === 'string' && service.port.length < 10 && (
+                                              {service && 'port' in service && service.port && typeof service.port === 'string' && service.port.length < 10 && (
                                                 <Badge variant="outline" className="text-[10px] h-4 md:h-5 px-1 md:px-1.5 flex-shrink-0">
                                                   {service.port}
                                                 </Badge>
                                               )}
                                             </div>
-                                            <p className="text-[10px] md:text-xs text-primary truncate">{service.type}</p>
+                                            <p className="text-[10px] md:text-xs text-primary truncate">{tZapenu(service.typeKey ?? '')}</p>
                                           </div>
                                         </div>
 
                                         {/* Descripción */}
                                         <p className="text-sm text-foreground opacity-70 mb-2.5 md:mb-3 leading-relaxed line-clamp-2">
-                                          {service.role}
+                                          {tZapenu(service.roleKey ?? '')}
                                         </p>
 
                                         {/* Stack */}
@@ -1136,17 +1155,17 @@ export default function ZapenuProjectPage() {
                                           {service.protocol}
                                         </Badge>
                                       )}
-                                      {service.access && (
+                                      {service.accessKey && (
                                         <Badge
                                           variant="secondary"
                                           className="text-[10px] h-4 md:h-5 px-1.5 md:px-2"
                                         >
-                                          {service.access === "Público" ? (
+                                          {service.accessKey === "architecture.accessTypes.public" ? (
                                             <Globe className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
                                           ) : (
                                             <Lock className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
                                           )}
-                                          <span className="hidden sm:inline">{service.access}</span>
+                                          <span className="hidden sm:inline">{tZapenu(service.accessKey)}</span>
                                         </Badge>
                                       )}
                                       {service.cache && (
@@ -1194,7 +1213,7 @@ export default function ZapenuProjectPage() {
       <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="px-4 md:px-6 py-8 md:py-12">
 <div className="max-w-7xl mx-auto">
 <div className="text-center mb-8 md:mb-10">
-<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Key Data Flows</h2>
+<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">{tZapenu('sections.dataflows.title')}</h2>
 <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
 </div>
 
@@ -1203,7 +1222,7 @@ export default function ZapenuProjectPage() {
 {/* Mobile: Order Creation First (Featured) */}
 <div className="lg:hidden">
 <LargeDiagramCard
-title="Order Creation with Payment"
+title={tZapenu('sections.dataflows.orderCreationWithPayment')}
 diagram={`sequenceDiagram
 participant Cliente
 participant Homero as Homero (Frontend)
@@ -1246,7 +1265,7 @@ WAHA->>Cliente: WhatsApp confirmación`}
 <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6">
 {/* Authentication Flow */}
 <MiniDiagramCard
-title="Authentication Flow (Marge)"
+title={tZapenu('sections.dataflows.authenticationFlow')}
 diagram={`sequenceDiagram
 participant Admin
 participant Marge
@@ -1270,7 +1289,7 @@ Barto-->>Marge: Recurso solicitado`}
 
 {/* Order State Diagram */}
 <MiniDiagramCard
-title="Order State Diagram"
+title={tZapenu('sections.dataflows.orderStateDiagram')}
 diagram={`stateDiagram-v2
 [*] --> PENDING_PAYMENT: Crear pedido (con pago)
 [*] --> CREATED: Crear pedido (efectivo)
@@ -1288,7 +1307,7 @@ CANCELLED --> [*]`}
 {/* Right Column - Large featured card (3 cols on desktop, hidden on mobile) */}
 <div className="hidden lg:block lg:col-span-3">
 <LargeDiagramCard
-title="Order Creation with Payment"
+title={tZapenu('sections.dataflows.orderCreationWithPayment')}
 diagram={`sequenceDiagram
 participant Cliente
 participant Homero as Homero (Frontend)
@@ -1333,7 +1352,7 @@ WAHA->>Cliente: WhatsApp confirmación`}
       <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="px-4 md:px-6 py-8 md:py-12">
 <div className="max-w-5xl mx-auto">
 <div className="text-center mb-10 md:mb-12">
-<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Design Decisions & Trade-offs</h2>
+<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">{tZapenu('sections.decisions.title')}</h2>
 <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
 </div>
 
@@ -1359,6 +1378,7 @@ WAHA->>Cliente: WhatsApp confirmación`}
                   icon={Icon}
                   isExpanded={expandedDecisions[idx]}
                   onToggle={() => toggleDecision(idx)}
+                  tZapenu={tZapenu}
                 />
               );
             })}
@@ -1378,7 +1398,7 @@ WAHA->>Cliente: WhatsApp confirmación`}
 <section id="costs" ref={(el) => { sectionRefs.current['costs'] = el; }} className="min-h-screen px-4 md:px-6 py-12 md:py-20">
 <div className="max-w-7xl mx-auto">
 <div className="text-center mb-10 md:mb-12">
-<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">Cost Considerations</h2>
+<h2 className="text-xl md:text-2xl font-bold text-foreground opacity-80">{tZapenu('sections.costs.title')}</h2>
 <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
 </div>
 
@@ -1394,22 +1414,22 @@ WAHA->>Cliente: WhatsApp confirmación`}
 <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-primary" />
 </div>
 <div>
-<h3 className="text-lg font-semibold text-foreground opacity-80">Total Cost</h3>
-<p className="text-xs text-muted-foreground">Estimated Monthly</p>
+<h3 className="text-lg font-semibold text-foreground opacity-80">{tZapenu('sections.costs.totalCost')}</h3>
+<p className="text-xs text-muted-foreground">{tZapenu('sections.costs.estimatedMonthly')}</p>
 </div>
 </div>
 
 {/* Cost Display */}
 <div className="text-center py-6 md:py-8 bg-gradient-to-br from-primary/5 to-transparent rounded-lg border border-primary/10 mb-6">
 <p className="text-4xl md:text-5xl font-bold text-primary">{costsData.total}</p>
-<p className="text-sm text-muted-foreground mt-2">{costsData.totalNote}</p>
+<p className="text-sm text-muted-foreground mt-2">{tZapenu(costsData.totalNoteKey)}</p>
 </div>
 
 {/* Free Services Summary */}
 <div className="space-y-3 mt-auto">
 <h4 className="text-sm font-semibold text-foreground opacity-80 flex items-center gap-2">
 <CheckCircle className="h-4 w-4 text-green-500" />
-Free Infrastructure
+{tZapenu('sections.costs.freeInfrastructure')}
 </h4>
 <div className="space-y-2">
 {costsData.baseline.filter(item => item.estimate === "$0" || item.estimate === "$0 (marginal)").slice(0, 4).map((item, idx) => {
@@ -1417,7 +1437,7 @@ const Icon = item.icon || Server;
 return (
 <div key={idx} className="flex items-center gap-2 text-sm">
 <Icon className="h-4 w-4 text-muted-foreground" />
-<span className="text-muted-foreground">{item.component}</span>
+<span className="text-muted-foreground">{tZapenu(item.componentKey)}</span>
 <Badge variant="secondary" className="text-xs ml-auto">{item.estimate}</Badge>
 </div>
 );
@@ -1438,9 +1458,9 @@ return (
 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
 <Server className="h-5 w-5 md:h-6 md:w-6 text-primary" />
 </div>
-<h3 className="text-lg font-semibold text-foreground opacity-80">Cost Breakdown</h3>
+<h3 className="text-lg font-semibold text-foreground opacity-80">{tZapenu('sections.costs.costBreakdown')}</h3>
 </div>
-<Badge variant="outline" className="text-xs">7 Services</Badge>
+<Badge variant="outline" className="text-xs">{tZapenu('sections.costs.servicesCount')}</Badge>
 </div>
 
 {/* Cost Items */}
@@ -1456,19 +1476,19 @@ return (
 </div>
 <div className="flex-1 min-w-0">
 <div className="flex items-center gap-2">
-<span className="font-medium text-sm text-foreground opacity-80 truncate">{item.component}</span>
+<span className="font-medium text-sm text-foreground opacity-80 truncate">{tZapenu(item.componentKey)}</span>
 {isVariable && (
 <Badge variant="outline" className="text-xs flex-shrink-0 bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
-Variable
+{tZapenu('sections.costs.variable')}
 </Badge>
 )}
 {isFree && (
 <Badge variant="outline" className="text-xs flex-shrink-0 bg-green-500/10 text-green-600 border-green-500/20">
-Free
+{tZapenu('sections.costs.free')}
 </Badge>
 )}
 </div>
-<p className="text-xs text-muted-foreground truncate">{item.model}</p>
+<p className="text-xs text-muted-foreground truncate">{tZapenu(item.modelKey)}</p>
 </div>
 <Badge 
 variant={isFree ? "secondary" : "default"}
@@ -1494,7 +1514,7 @@ className={`flex-shrink-0 text-xs ${isVariable ? 'bg-yellow-500/10 text-yellow-6
 <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
 <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-primary" />
 </div>
-<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80">Future Cost Drivers</h3>
+<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80">{tZapenu('sections.costs.futureCostDrivers')}</h3>
 </div>
 <div className="space-y-4">
 {costsData.drivers.map((driver, idx) => {
@@ -1508,7 +1528,7 @@ return (
 </div>
 <div className="flex-1">
 <div className="flex items-center justify-between gap-2">
-<span className="font-medium text-sm text-foreground opacity-80">{driver.label}</span>
+<span className="font-medium text-sm text-foreground opacity-80">{tZapenu(driver.labelKey)}</span>
 <Badge variant="outline" className="text-xs flex-shrink-0">
 {driver.impact}
 </Badge>
@@ -1528,7 +1548,7 @@ return (
 <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
 <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-primary" />
 </div>
-<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80">Scaling Risks</h3>
+<h3 className="text-base md:text-lg font-semibold text-foreground opacity-80">{tZapenu('sections.costs.scalingRisks')}</h3>
 </div>
 <div className="space-y-4">
 {costsData.risks.map((risk, idx) => {
@@ -1538,10 +1558,10 @@ return (
 <div key={idx} className="border-l-2 border-l-border pl-4 py-1">
 <div className="flex items-center gap-2 mb-1">
 <div className={`w-2 h-2 rounded-full ${severityBg.replace('bg-', 'bg-').replace('/10', '')}`}></div>
-<span className="font-medium text-sm text-foreground opacity-80">{risk.scenario}</span>
+<span className="font-medium text-sm text-foreground opacity-80">{tZapenu(risk.scenarioKey)}</span>
 </div>
 <p className="text-xs text-muted-foreground">
-<span className="font-medium text-foreground opacity-60">Mitigation:</span> {risk.mitigation}
+<span className="font-medium text-foreground opacity-60">Mitigation:</span> {tZapenu(risk.mitigationKey)}
 </p>
 </div>
 );

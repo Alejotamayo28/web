@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   ArrowLeft,
   Server,
@@ -48,33 +50,33 @@ import {
 import { MermaidDiagram, MiniMermaidDiagram } from "@/components/ui/mermaid-diagram";
 
 const navigationItems = [
-  { id: "overview", label: "Overview" },
-  { id: "architecture", label: "Architecture" },
-  { id: "infrastructure", label: "AWS Infra" },
-  { id: "dataflows", label: "Data Flows" },
-  { id: "decisions", label: "Decisions" },
-  { id: "security", label: "Security" },
-  { id: "limitations", label: "Limitations" },
+  { id: "overview", labelKey: "nav.overview" },
+  { id: "architecture", labelKey: "nav.architecture" },
+  { id: "infrastructure", labelKey: "nav.infrastructure" },
+  { id: "dataflows", labelKey: "nav.dataflows" },
+  { id: "decisions", labelKey: "nav.decisions" },
+  { id: "security", labelKey: "nav.security" },
+  { id: "limitations", labelKey: "nav.limitations" },
 ];
 
 const overviewData = {
-  title: "Distributed Commerce Platform",
-  subtitle: "Event-Driven Order Management System",
-  description: "Plataforma de comercio electrónico distribuida que gestiona el ciclo de vida completo de órdenes de compra con garantías de consistencia eventual en un entorno de microservicios.",
+  titleKey: "sections.overview.title",
+  subtitleKey: "sections.overview.subtitle",
+  descriptionKey: "sections.overview.description",
   badges: [
-    { label: "Event-Driven", color: "bg-secondary text-secondary-foreground" },
-    { label: "Event Sourcing", color: "bg-secondary text-secondary-foreground" },
-    { label: "Saga Pattern", color: "bg-secondary text-secondary-foreground" },
-    { label: "Microservices", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "sections.overview.badges.eventDriven", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "sections.overview.badges.eventSourcing", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "sections.overview.badges.sagaPattern", color: "bg-secondary text-secondary-foreground" },
+    { labelKey: "sections.overview.badges.microservices", color: "bg-secondary text-secondary-foreground" },
   ],
   problem: {
-    title: "Problema Resuelto",
-    items: [
-      "Gestión del ciclo de vida completo de órdenes de compra",
-      "Consistencia eventual en entorno de microservicios",
-      "Comunicación confiable entre servicios descentralizados",
-      "Compensación distribuida ante fallos",
-      "Auditabilidad completa del sistema de pedidos"
+    titleKey: "sections.overview.problemTitle",
+    itemsKeys: [
+      "sections.overview.problemItems.0",
+      "sections.overview.problemItems.1",
+      "sections.overview.problemItems.2",
+      "sections.overview.problemItems.3",
+      "sections.overview.problemItems.4"
     ]
   }
 };
@@ -86,7 +88,7 @@ const architectureData = {
       type: "API + Workers",
       stack: "Node.js + Express + TSOA",
       port: "3000",
-      role: "Gestión de órdenes, Event Sourcing, Outbox Worker",
+      roleKey: "architecture.services.orderService.role",
       protocol: "REST + AMQP",
       features: ["Event Store", "Outbox Pattern", "Deduplication"]
     },
@@ -94,7 +96,7 @@ const architectureData = {
       name: "Inventory Service",
       type: "Event Consumer",
       stack: "Node.js",
-      role: "Reservas de stock, gestión de inventario",
+      roleKey: "architecture.services.inventoryService.role",
       protocol: "AMQP Consumer",
       features: ["Stock Management", "Reservations"]
     },
@@ -102,7 +104,7 @@ const architectureData = {
       name: "Payment Service",
       type: "Event Consumer",
       stack: "Node.js",
-      role: "Procesamiento de pagos, validación",
+      roleKey: "architecture.services.paymentService.role",
       protocol: "AMQP Consumer",
       features: ["Payment Processing", "Validation"]
     }
@@ -112,58 +114,58 @@ const architectureData = {
       name: "REST API",
       type: "Express + TSOA",
       port: "3000",
-      role: "HTTP endpoints para clientes",
+      roleKey: "architecture.components.restApi.role",
       features: ["POST /orders", "GET /orders/:id", "GET /:id/events"]
     },
     {
       name: "outbox-worker",
       type: "Worker",
-      role: "Publica eventos del outbox a RabbitMQ",
-      features: ["Polling cada 5s", "Publicación confiable"]
+      roleKey: "architecture.components.outboxWorker.role",
+      featuresKey: "architecture.components.outboxWorker.features"
     },
     {
       name: "router.ts",
       type: "Event Router",
-      role: "Enruta eventos usando Consistent Hashing",
-      features: ["fnv1a hash", "Distribución por orderId"]
+      roleKey: "architecture.components.router.role",
+      featuresKey: "architecture.components.router.features"
     },
     {
       name: "workers",
       type: "Partitioned Workers",
-      role: "Procesan eventos de órdenes",
-      features: ["2 particiones", "DLQ support", "Deduplicación Redis"]
+      roleKey: "architecture.components.workers.role",
+      featuresKey: "architecture.components.workers.features"
     }
   ],
   patterns: [
-    { 
-      name: "Event Sourcing", 
+    {
+      name: "Event Sourcing",
       icon: GitBranch,
-      description: "Almacena el estado como secuencia de eventos en lugar de estado actual",
-      benefits: ["Audit trail completo", "Replay de estado", "Debugging temporal"]
+      descriptionKey: "architecture.patterns.eventSourcing.description",
+      benefitsKey: "architecture.patterns.eventSourcing.benefits"
     },
-    { 
-      name: "Outbox Pattern", 
+    {
+      name: "Outbox Pattern",
       icon: RefreshCw,
-      description: "Publica eventos de forma confiable usando tabla outbox",
-      benefits: ["Garantía de entrega", "Sin CDC externo", "Transaccional"]
+      descriptionKey: "architecture.patterns.outboxPattern.description",
+      benefitsKey: "architecture.patterns.outboxPattern.benefits"
     },
-    { 
-      name: "Saga (Coreografía)", 
+    {
+      name: "Saga (Coreografía)",
       icon: Workflow,
-      description: "Orquestación distribuida mediante mensajes entre servicios",
-      benefits: ["Desacoplamiento total", "Escalabilidad horizontal", "Fault isolation"]
+      descriptionKey: "architecture.patterns.sagaChoreography.description",
+      benefitsKey: "architecture.patterns.sagaChoreography.benefits"
     },
-    { 
-      name: "Deduplicación", 
+    {
+      name: "Deduplicación",
       icon: Layers,
-      description: "Prevención de procesamiento duplicado con Redis",
-      benefits: ["Idempotencia", "Exactly-once semantics", "Recovery"]
+      descriptionKey: "architecture.patterns.deduplication.description",
+      benefitsKey: "architecture.patterns.deduplication.benefits"
     },
-    { 
-      name: "Consistent Hashing", 
+    {
+      name: "Consistent Hashing",
       icon: Globe,
-      description: "Distribución uniforme de eventos entre workers",
-      benefits: ["Balanceo de carga", "Escalabilidad", "Minimize reshuffling"]
+      descriptionKey: "architecture.patterns.consistentHashing.description",
+      benefitsKey: "architecture.patterns.consistentHashing.benefits"
     }
   ]
 };
@@ -341,48 +343,48 @@ const dataFlowsData = [
 const decisionsData = [
   {
     decision: "Event Sourcing",
-    why: "Auditabilidad completa, replay de eventos, debugging detallado de estado",
-    tradeoff: "Complejidad de implementación, curva de aprendizaje, requiere proyecciones para lecturas eficientes",
-    alternatives: "CRUD tradicional"
+    whyKey: "decisions.items.eventSourcing.why",
+    tradeoffKey: "decisions.items.eventSourcing.tradeoff",
+    alternativesKey: "decisions.items.eventSourcing.alternatives"
   },
   {
     decision: "Outbox Pattern",
-    why: "Publicación confiable de eventos sin CDC externo, simple de implementar",
-    tradeoff: "Latencia de 5s (polling), no es real-time, requiere workers adicionales",
-    alternatives: "Transaction Outbox con Debezium"
+    whyKey: "decisions.items.outboxPattern.why",
+    tradeoffKey: "decisions.items.outboxPattern.tradeoff",
+    alternativesKey: "decisions.items.outboxPattern.alternatives"
   },
   {
     decision: "Saga (Coreografía)",
-    why: "Desacoplamiento total entre servicios, escalabilidad horizontal",
-    tradeoff: "Difícil de rastrear, debugging complejo, riesgo de ciclos infinitos",
-    alternatives: "Saga Orquestada (orquestador central)"
+    whyKey: "decisions.items.sagaChoreography.why",
+    tradeoffKey: "decisions.items.sagaChoreography.tradeoff",
+    alternativesKey: "decisions.items.sagaChoreography.alternatives"
   },
   {
     decision: "Hexagonal Architecture",
-    why: "Testabilidad, independencia de frameworks, facilidad para cambiar tecnología",
-    tradeoff: "Boilerplate adicional, curva de aprendizaje, más archivos",
-    alternatives: "MVC, Layered Architecture"
+    whyKey: "decisions.items.hexagonalArchitecture.why",
+    tradeoffKey: "decisions.items.hexagonalArchitecture.tradeoff",
+    alternativesKey: "decisions.items.hexagonalArchitecture.alternatives"
   },
   {
     decision: "PostgreSQL por Servicio",
-    why: "Aislamiento de fallos, independencia de equipos, cumplimiento de microservicios",
-    tradeoff: "Consistencia eventual compleja, joins distribuidos imposibles, másoperacional",
-    alternatives: "Base de datos compartida (monolito)"
+    whyKey: "decisions.items.postgresqlPerService.why",
+    tradeoffKey: "decisions.items.postgresqlPerService.tradeoff",
+    alternativesKey: "decisions.items.postgresqlPerService.alternatives"
   }
 ];
 
 const securityData = {
   authentication: {
     status: "NOT IMPLEMENTED",
-    detail: "No se observa JWT, API keys, ni OAuth",
+    detailKey: "security.authentication.detail",
     severity: "high",
-    mitigation: "Implementar JWT tokens, API keys"
+    mitigationKey: "security.authentication.mitigation"
   },
   authorization: {
     status: "NOT IMPLEMENTED",
-    detail: "Cualquier cliente puede consultar cualquier orden",
+    detailKey: "security.authorization.detail",
     severity: "high",
-    mitigation: "Autorización por customerId"
+    mitigationKey: "security.authorization.mitigation"
   },
   secrets: [
     { item: "DATABASE_URL", status: "OK", detail: "AWS SSM" },
@@ -398,17 +400,17 @@ const securityData = {
 
 const limitationsData = {
   notImplemented: [
-    { item: "Autenticación/Autorización", detail: "Cualquier cliente puede acceder a cualquier recurso" },
-    { item: "Catálogo de productos", detail: "Asume productId existentes" },
-    { item: "Gestión de usuarios", detail: "Asume customerId existentes" },
-    { item: "Notificaciones (email/SMS)", detail: "Podría extenderse con webhook" },
-    { item: "Reporting/Analytics", detail: "Requiere proyecciones adicionales" },
+    { itemKey: "limitations.notImplemented.auth.item", detailKey: "limitations.notImplemented.auth.detail" },
+    { itemKey: "limitations.notImplemented.catalog.item", detailKey: "limitations.notImplemented.catalog.detail" },
+    { itemKey: "limitations.notImplemented.users.item", detailKey: "limitations.notImplemented.users.detail" },
+    { itemKey: "limitations.notImplemented.notifications.item", detailKey: "limitations.notImplemented.notifications.detail" },
+    { itemKey: "limitations.notImplemented.analytics.item", detailKey: "limitations.notImplemented.analytics.detail" },
   ],
   restrictions: [
-    { item: "Workers fijos (2 particiones)", detail: "Throughput limitado, requiere reconfiguración" },
-    { item: "Polling 5s en Outbox", detail: "Latencia mínima de 5s para eventos" },
-    { item: "PostgreSQL single-node", detail: "Punto único de fallo en persistencia" },
-    { item: "Event Store crece indefinidamente", detail: "Requiere estrategia de archivado" },
+    { itemKey: "limitations.restrictions.workers.item", detailKey: "limitations.restrictions.workers.detail" },
+    { itemKey: "limitations.restrictions.polling.item", detailKey: "limitations.restrictions.polling.detail" },
+    { itemKey: "limitations.restrictions.singleNode.item", detailKey: "limitations.restrictions.singleNode.detail" },
+    { itemKey: "limitations.restrictions.eventStore.item", detailKey: "limitations.restrictions.eventStore.detail" },
   ]
 };
 
@@ -416,9 +418,9 @@ const limitationsData = {
 interface DecisionAccordionProps {
   decision: {
     decision: string;
-    why: string;
-    tradeoff: string;
-    alternatives: string;
+    whyKey: string;
+    tradeoffKey: string;
+    alternativesKey: string;
   };
   index: number;
   icon: React.ElementType;
@@ -427,6 +429,7 @@ interface DecisionAccordionProps {
 }
 
 function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }: DecisionAccordionProps) {
+  const { t: tOrder } = useTranslation('order');
   const isEven = index % 2 === 0;
 
   return (
@@ -463,19 +466,19 @@ function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }
               <div className="px-4 md:px-6 pb-4 md:pb-6 border-t border-border/50">
                 <div className="space-y-3 text-sm pt-4">
                   <div className="flex gap-2">
-                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Why:</span>
-                    <span className="text-muted-foreground">{decision.why}</span>
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">{tOrder('sections.decisions.why')}</span>
+                    <span className="text-muted-foreground">{tOrder(decision.whyKey)}</span>
                   </div>
                   <div className="flex gap-2">
-                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Trade-off:</span>
-                    <span className="text-muted-foreground">{decision.tradeoff}</span>
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">{tOrder('sections.decisions.tradeoff')}</span>
+                    <span className="text-muted-foreground">{tOrder(decision.tradeoffKey)}</span>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-border/50">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">Alternatives:</span>
-                    <span className="text-muted-foreground">{decision.alternatives}</span>
+                    <span className="font-semibold text-foreground opacity-80 whitespace-nowrap">{tOrder('sections.decisions.alternatives')}</span>
+                    <span className="text-muted-foreground">{tOrder(decision.alternativesKey)}</span>
                   </div>
                 </div>
               </div>
@@ -490,12 +493,14 @@ function DecisionAccordion({ decision, index, icon: Icon, isExpanded, onToggle }
 // Component for Mermaid Accordion
 interface MermaidAccordionProps {
   title: string;
+  titleKey?: string;
   icon: LucideIcon;
   diagram: string;
   defaultOpen?: boolean;
 }
 
-function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: MermaidAccordionProps) {
+function MermaidAccordion({ title, titleKey, icon: Icon, diagram, defaultOpen = false }: MermaidAccordionProps) {
+  const { t: tOrder } = useTranslation('order');
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollPositionRef = useRef<number>(0);
@@ -530,6 +535,8 @@ function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: M
     };
   }, [isModalOpen]);
 
+  const displayTitle = titleKey ? tOrder(titleKey) : title;
+
   return (
     <>
       <Card className="overflow-hidden border-l-4 border-l-primary">
@@ -541,8 +548,8 @@ function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: M
             <Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{title}</h3>
-            <p className="text-xs md:text-sm text-muted-foreground">Click to view diagram</p>
+            <h3 className="text-base md:text-lg font-semibold text-foreground opacity-80 truncate">{displayTitle}</h3>
+            <p className="text-xs md:text-sm text-muted-foreground">{tOrder('components.mermaid.clickToView')}</p>
           </div>
           <div className={`w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
             <ChevronDown className="h-4 w-4 text-primary" />
@@ -557,7 +564,7 @@ function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: M
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="hidden md:block absolute top-2 right-2 p-2 bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
-                aria-label="View full diagram"
+                aria-label={tOrder('components.mermaid.viewFull')}
               >
                 <Maximize2 className="h-4 w-4 text-foreground" />
               </button>
@@ -568,7 +575,7 @@ function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: M
               className="w-full mt-3 flex items-center justify-center gap-2 py-2 px-4 bg-primary/5 rounded-lg border border-border/50 md:hidden hover:bg-primary/10 transition-colors"
             >
               <Maximize2 className="h-4 w-4 text-primary" />
-              <span className="text-xs font-medium text-foreground opacity-80">Tap to view full diagram</span>
+              <span className="text-xs font-medium text-foreground opacity-80">{tOrder('components.mermaid.tapToView')}</span>
             </button>
           </div>
         </div>
@@ -588,14 +595,14 @@ function MermaidAccordion({ title, icon: Icon, diagram, defaultOpen = false }: M
               <X className="h-6 w-6 text-white" />
             </button>
             
-            <h3 className="text-white text-lg font-semibold mb-4 text-center">{title}</h3>
+            <h3 className="text-white text-lg font-semibold mb-4 text-center">{displayTitle}</h3>
             
             <div className="relative rounded-lg overflow-hidden bg-white shadow-2xl p-4 md:p-6 overflow-x-auto">
               <MermaidDiagram chart={diagram} />
             </div>
             
             <p className="text-white/80 text-center mt-4 text-sm">
-              Click anywhere to close
+              {tOrder('components.mermaid.clickToClose')}
             </p>
           </div>
         </div>
@@ -611,6 +618,7 @@ interface MiniDiagramCardProps {
 }
 
 function MiniDiagramCard({ title, diagram }: MiniDiagramCardProps) {
+  const { t: tOrder } = useTranslation('order');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollPositionRef = useRef<number>(0);
 
@@ -693,7 +701,7 @@ function MiniDiagramCard({ title, diagram }: MiniDiagramCardProps) {
             </div>
             
             <p className="text-white/70 text-center mt-2 text-xs">
-              Click outside to close • Scroll to explore
+              {tOrder('components.mermaid.clickToClose')} • {tOrder('components.mermaid.scrollToExplore')}
             </p>
           </div>
         </div>
@@ -714,6 +722,8 @@ const serviceIcons: Record<string, LucideIcon> = {
 };
 
 export default function OrderTechnicalDocumentation() {
+  const { t: tOrder } = useTranslation('order');
+  const { t: tCommon } = useTranslation('common');
   const [activeSection, setActiveSection] = useState("overview");
   const [expandedDecisions, setExpandedDecisions] = useState<number[]>([0]); // First decision expanded by default
   const [expandedInfrastructure, setExpandedInfrastructure] = useState<number[]>([0]); // First layer expanded by default
@@ -806,23 +816,26 @@ export default function OrderTechnicalDocumentation() {
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
                 }`}
               >
-                {item.label}
+                {tOrder(item.labelKey)}
               </button>
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6 text-white" />
-            ) : (
-              <Menu className="h-6 w-6 text-foreground" />
-            )}
-          </button>
+          {/* Right side: LanguageSwitcher + Mobile Menu */}
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-white" />
+              ) : (
+                <Menu className="h-6 w-6 text-foreground" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -865,7 +878,7 @@ export default function OrderTechnicalDocumentation() {
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
                 }`}
               >
-                {item.label}
+                {tOrder(item.labelKey)}
               </button>
             ))}
           </nav>
@@ -877,19 +890,19 @@ export default function OrderTechnicalDocumentation() {
         <section id="overview" ref={(el) => { sectionRefs.current['overview'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              {overviewData.title}
+              {tOrder(overviewData.titleKey)}
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-6">
-              {overviewData.subtitle}
+              {tOrder(overviewData.subtitleKey)}
             </p>
             <p className="text-foreground/80 max-w-3xl mx-auto leading-relaxed mb-8">
-              {overviewData.description}
+              {tOrder(overviewData.descriptionKey)}
             </p>
             
             <div className="flex flex-wrap justify-center gap-2 mb-8">
               {overviewData.badges.map((badge, idx) => (
                 <Badge key={idx} className={badge.color}>
-                  {badge.label}
+                  {tOrder(badge.labelKey)}
                 </Badge>
               ))}
             </div>
@@ -901,13 +914,13 @@ export default function OrderTechnicalDocumentation() {
               <CardContent className="p-6 md:p-8">
                 <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-primary" />
-                  {overviewData.problem.title}
+                  {tOrder(overviewData.problem.titleKey)}
                 </h2>
                 <ul className="space-y-2">
-                  {overviewData.problem.items.map((item, idx) => (
+                  {overviewData.problem.itemsKeys.map((itemKey, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-muted-foreground">
                       <span className="text-primary mt-1">•</span>
-                      <span>{item}</span>
+                      <span>{tOrder(itemKey)}</span>
                     </li>
                   ))}
                 </ul>
@@ -919,14 +932,14 @@ export default function OrderTechnicalDocumentation() {
         {/* Architecture Section */}
         <section id="architecture" ref={(el) => { sectionRefs.current['architecture'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">Architecture</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">{tOrder('sections.architecture.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
           {/* Main Architecture Diagram */}
           <div className="max-w-5xl mx-auto mb-8">
             <MiniDiagramCard 
-              title="System Architecture Overview"
+              title={tOrder('sections.architecture.systemOverview')}
               diagram={`graph TB
     Client[Client<br/>HTTP] -->|POST /orders| API[REST API<br/>Express + TSOA<br/>Port: 3000]
     API -->|Use Cases| App[Application Layer<br/>CreateOrder<br/>QueryOrder]
@@ -978,7 +991,7 @@ export default function OrderTechnicalDocumentation() {
                       </div>
                       <Badge variant="outline" className="text-xs">{service.port}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4">{service.role}</p>
+                    <p className="text-sm text-muted-foreground mb-4">{tOrder(service.roleKey)}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {service.features.map((feature, fIdx) => (
                         <Badge key={fIdx} variant="secondary" className="text-xs">{feature}</Badge>
@@ -1001,8 +1014,8 @@ export default function OrderTechnicalDocumentation() {
                   <Server className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base md:text-lg font-semibold text-foreground">Order Service - Internal Components</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">Patrones: Outbox Pattern + Consistent Hashing + Partitions</p>
+                  <h3 className="text-base md:text-lg font-semibold text-foreground">{tOrder('sections.architecture.internalComponents')}</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">{tOrder('sections.architecture.internalComponentsSubtitle')}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs">{architectureData.orderServiceComponents.length}</Badge>
                 <div className={`w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center transition-transform duration-300 ${showOrderServiceComponents ? 'rotate-180' : ''}`}>
@@ -1019,13 +1032,18 @@ export default function OrderTechnicalDocumentation() {
                           <Server className="h-4 w-4 text-primary" />
                           <h4 className="text-base font-semibold text-foreground">{component.name}</h4>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{component.type}</p>
-                        <p className="text-sm text-primary mb-2">{component.role}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {component.features.map((feature, fIdx) => (
-                            <Badge key={fIdx} variant="secondary" className="text-xs">{feature}</Badge>
-                          ))}
-                        </div>
+          <p className="text-sm text-muted-foreground mb-2">{component.type}</p>
+          <p className="text-sm text-primary mb-2">{tOrder(component.roleKey)}</p>
+          <div className="flex flex-wrap gap-1">
+            {component.features 
+              ? component.features.map((feature, fIdx) => (
+                  <Badge key={fIdx} variant="secondary" className="text-xs">{feature}</Badge>
+                ))
+              : tOrder(component.featuresKey || '').split(', ').map((feature, fIdx) => (
+                  <Badge key={fIdx} variant="secondary" className="text-xs">{feature}</Badge>
+                ))
+            }
+          </div>
                       </CardContent>
                     </Card>
                   ))}
@@ -1039,10 +1057,10 @@ export default function OrderTechnicalDocumentation() {
             {/* Header */}
             <div className="flex items-center justify-center gap-3 p-4 md:p-6 bg-primary/5 border-2 border-foreground/80 rounded-t-xl">
               <Workflow className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">Design Patterns Implemented</h3>
-              <Badge variant="secondary" className="text-xs">
-                {architectureData.patterns.length} Patterns
-              </Badge>
+              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">{tOrder('sections.architecture.designPatternsTitle')}</h3>
+      <Badge variant="secondary" className="text-xs">
+        {architectureData.patterns.length} {tOrder('sections.architecture.patternsTitle')}
+      </Badge>
             </div>
 
             {/* Patterns Grid */}
@@ -1057,15 +1075,15 @@ export default function OrderTechnicalDocumentation() {
                           <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                             <PatternIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-base font-semibold text-foreground">{pattern.name}</h4>
-                            <p className="text-sm text-primary mb-3">{pattern.description}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {pattern.benefits.map((benefit, bIdx) => (
-                                <Badge key={bIdx} variant="secondary" className="text-xs">{benefit}</Badge>
-                              ))}
-                            </div>
-                          </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-base font-semibold text-foreground">{pattern.name}</h4>
+              <p className="text-sm text-primary mb-3">{tOrder(pattern.descriptionKey)}</p>
+              <div className="flex flex-wrap gap-1">
+                {tOrder(pattern.benefitsKey).split(', ').map((benefit: string, bIdx: number) => (
+                  <Badge key={bIdx} variant="secondary" className="text-xs">{benefit}</Badge>
+                ))}
+              </div>
+            </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -1079,14 +1097,14 @@ export default function OrderTechnicalDocumentation() {
           {/* AWS Infrastructure Section */}
         <section id="infrastructure" ref={(el) => { sectionRefs.current['infrastructure'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">AWS Infrastructure</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">{tOrder('sections.infrastructure.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
           {/* AWS Architecture Diagram */}
           <div className="max-w-5xl mx-auto mb-8">
             <MiniDiagramCard 
-              title="AWS Cloud Architecture"
+              title={tOrder('sections.infrastructure.diagramTitle')}
               diagram={`graph TB
     subgraph Internet["INTERNET"]
         Client["Client"]
@@ -1148,7 +1166,7 @@ export default function OrderTechnicalDocumentation() {
             {/* Header */}
             <div className="flex items-center justify-center gap-3 p-4 md:p-6 bg-primary/5 border-2 border-foreground/80 rounded-t-xl">
               <Cloud className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">AWS Infrastructure Components</h3>
+              <h3 className="text-lg md:text-xl font-semibold text-foreground opacity-80">{tOrder('sections.infrastructure.componentsTitle')}</h3>
               <Badge variant="secondary" className="text-xs">
                 {infrastructureData.layers.reduce((acc, layer) => {
                   if (layer.subcategories) {
@@ -1315,7 +1333,7 @@ export default function OrderTechnicalDocumentation() {
         {/* Data Flows Section */}
         <section id="dataflows" ref={(el) => { sectionRefs.current['dataflows'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">Data Flows</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">{tOrder('sections.dataflows.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
@@ -1335,7 +1353,7 @@ export default function OrderTechnicalDocumentation() {
         {/* Design Decisions Section */}
         <section id="decisions" ref={(el) => { sectionRefs.current['decisions'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">Design Decisions & Trade-offs</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">{tOrder('sections.decisions.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
@@ -1372,7 +1390,7 @@ export default function OrderTechnicalDocumentation() {
         {/* Security Section */}
         <section id="security" ref={(el) => { sectionRefs.current['security'] = el; }} className="mb-16 md:mb-24">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">Security Considerations</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">{tOrder('sections.security.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
@@ -1383,11 +1401,11 @@ export default function OrderTechnicalDocumentation() {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Lock className="h-5 w-5 text-red-500" />
-                    <h3 className="font-semibold text-foreground">Authentication</h3>
+                    <h3 className="font-semibold text-foreground">{tOrder('sections.security.authentication')}</h3>
                   </div>
-                  <Badge variant="destructive" className="mb-2">{securityData.authentication.status}</Badge>
-                  <p className="text-sm text-muted-foreground">{securityData.authentication.detail}</p>
-                  <p className="text-xs text-muted-foreground mt-2">Mitigation: {securityData.authentication.mitigation}</p>
+          <Badge variant="destructive" className="mb-2">{tOrder('sections.security.notImplemented')}</Badge>
+          <p className="text-sm text-muted-foreground">{tOrder(securityData.authentication.detailKey)}</p>
+          <p className="text-xs text-muted-foreground mt-2">{tOrder('sections.security.mitigation')}: {tOrder(securityData.authentication.mitigationKey)}</p>
                 </CardContent>
               </Card>
 
@@ -1395,11 +1413,11 @@ export default function OrderTechnicalDocumentation() {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Key className="h-5 w-5 text-red-500" />
-                    <h3 className="font-semibold text-foreground">Authorization</h3>
+                    <h3 className="font-semibold text-foreground">{tOrder('sections.security.authorization')}</h3>
                   </div>
-                  <Badge variant="destructive" className="mb-2">{securityData.authorization.status}</Badge>
-                  <p className="text-sm text-muted-foreground">{securityData.authorization.detail}</p>
-                  <p className="text-xs text-muted-foreground mt-2">Mitigation: {securityData.authorization.mitigation}</p>
+          <Badge variant="destructive" className="mb-2">{tOrder('sections.security.notImplemented')}</Badge>
+          <p className="text-sm text-muted-foreground">{tOrder(securityData.authorization.detailKey)}</p>
+          <p className="text-xs text-muted-foreground mt-2">{tOrder('sections.security.mitigation')}: {tOrder(securityData.authorization.mitigationKey)}</p>
                 </CardContent>
               </Card>
             </div>
@@ -1409,7 +1427,7 @@ export default function OrderTechnicalDocumentation() {
               <CardContent className="p-6">
                 <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                   <Shield className="h-5 w-5 text-green-500" />
-                  Secrets Management
+                  {tOrder('sections.security.secretsManagement')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {securityData.secrets.map((secret, idx) => (
@@ -1430,7 +1448,7 @@ export default function OrderTechnicalDocumentation() {
               <CardContent className="p-6">
                 <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
-                  Vulnerabilities Identified
+                  {tOrder('sections.security.vulnerabilities')}
                 </h3>
                 <div className="space-y-3">
                   {securityData.vulnerabilities.map((vuln, idx) => (
@@ -1438,7 +1456,7 @@ export default function OrderTechnicalDocumentation() {
                       <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium text-foreground">{vuln.item}</p>
-                        <p className="text-xs text-muted-foreground">Mitigation: {vuln.mitigation}</p>
+                        <p className="text-xs text-muted-foreground">{tOrder('sections.security.mitigation')}: {vuln.mitigation}</p>
                       </div>
                     </div>
                   ))}
@@ -1451,41 +1469,41 @@ export default function OrderTechnicalDocumentation() {
         {/* Limitations Section */}
         <section id="limitations" ref={(el) => { sectionRefs.current['limitations'] = el; }} className="mb-16">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">Limitations & Non-Goals</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground opacity-80">{tOrder('sections.limitations.title')}</h2>
             <div className="w-20 md:w-24 h-1 bg-primary/30 mx-auto mt-3 md:mt-4 rounded-full"></div>
           </div>
 
           <div className="max-w-4xl mx-auto">
             <Card className="border-0 border-l-4 border-l-muted-foreground/40 bg-background mb-8">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">What the System Does NOT Do</h3>
+                <h3 className="font-semibold text-foreground mb-4">{tOrder('sections.limitations.notImplementedTitle')}</h3>
                 <div className="space-y-3">
-                  {limitationsData.notImplemented.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <X className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{item.item}</p>
-                        <p className="text-xs text-muted-foreground">{item.detail}</p>
-                      </div>
-                    </div>
-                  ))}
+          {limitationsData.notImplemented.map((item, idx) => (
+            <div key={idx} className="flex items-start gap-3">
+              <X className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
+              <div>
+                <p className="text-sm font-medium text-foreground">{tOrder(item.itemKey)}</p>
+                <p className="text-xs text-muted-foreground">{tOrder(item.detailKey)}</p>
+              </div>
+            </div>
+          ))}
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-0 border-l-4 border-l-amber-500/60 bg-background">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Technical Restrictions</h3>
+                <h3 className="font-semibold text-foreground mb-4">{tOrder('sections.limitations.restrictionsTitle')}</h3>
                 <div className="space-y-3">
-                  {limitationsData.restrictions.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <Clock className="h-4 w-4 text-amber-500 flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{item.item}</p>
-                        <p className="text-xs text-muted-foreground">{item.detail}</p>
-                      </div>
-                    </div>
-                  ))}
+          {limitationsData.restrictions.map((item, idx) => (
+            <div key={idx} className="flex items-start gap-3">
+              <Clock className="h-4 w-4 text-amber-500 flex-shrink-0 mt-1" />
+              <div>
+                <p className="text-sm font-medium text-foreground">{tOrder(item.itemKey)}</p>
+                <p className="text-xs text-muted-foreground">{tOrder(item.detailKey)}</p>
+              </div>
+            </div>
+          ))}
                 </div>
               </CardContent>
             </Card>
@@ -1495,7 +1513,7 @@ export default function OrderTechnicalDocumentation() {
         {/* Footer */}
         <footer className="text-center py-8 border-t border-border">
           <p className="text-sm text-muted-foreground">
-            Distributed Commerce Platform - Event-Driven Architecture Documentation
+            {tOrder('sections.footer.text')}
           </p>
         </footer>
       </main>
