@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/app/context/LanguageContext";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -22,6 +23,7 @@ import {
 export default function Portfolio() {
   const { t } = useTranslation('common');
   const { t: tProjects } = useTranslation('projects');
+  const { language } = useLanguage();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 const [activeSection, setActiveSection] = useState("home");
 const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
@@ -76,13 +78,19 @@ const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>, sectionId:
 const isProjectsActive = activeSection === 'projects' || activeSection === 'personal-projects';
 
   const handleViewCV = () => {
-    window.open('https://assets.alejotamayo.com/cv/Alejandro_Vergara_Tamayo_CV.docx.pdf', '_blank');
+    const cvUrl = language === 'en'
+      ? 'https://assets.alejotamayo.com/cv/Alejandro_Vergara_Tamayo_CV_ENG.docx.pdf'
+      : 'https://assets.alejotamayo.com/cv/Alejandro_Vergara_Tamayo_CV.docx.pdf';
+    window.open(cvUrl, '_blank');
   };
 
   const handleDownloadCV = () => {
+    const fileName = language === 'en'
+      ? 'Alejandro_Vergara_Tamayo_CV_ENG.pdf'
+      : 'Alejandro_Vergara_Tamayo_CV.pdf';
     const link = document.createElement('a');
-    link.href = '/Alejandro_Vergara_Tamayo_CV.pdf';
-    link.download = 'Alejandro_Vergara_Tamayo_CV.pdf';
+    link.href = `/${fileName}`;
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
