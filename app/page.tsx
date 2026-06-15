@@ -8,6 +8,13 @@ import { PersonalProjectItem } from "@/components/personal-project-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -19,6 +26,17 @@ import {
   Menu, X, Server, Cloud, Database, FileCode2,
   LayoutGrid
 } from "lucide-react";
+
+const zapenuPreviewImages = [
+  {
+    src: "https://assets.alejotamayo.com/zapenu/lepancake-3.png",
+    alt: "Zapenu architecture preview",
+  },
+  {
+    src: "https://assets.alejotamayo.com/zapenu/zapenu-lylapets-2.png",
+    alt: "Zapenu product preview",
+  },
+];
 
 export default function Portfolio() {
   const { t } = useTranslation('common');
@@ -395,9 +413,9 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
               <Card className="border-0 border-l-4 border-l-primary/60 overflow-hidden bg-background hover:shadow-xl transition-all duration-300">
                 <CardContent className="p-0">
                   {/* Header - Clickable */}
-                  <button
+                  <div
                     onClick={() => setIsProjectExpanded(!isProjectExpanded)}
-                    className="w-full p-6 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-8 text-left hover:bg-accent/5 transition-colors"
+                    className="w-full p-6 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-8 text-left hover:bg-accent/5 transition-colors cursor-pointer"
                   >
                     {/* Left: Project Info */}
                     <div className="flex-1 min-w-0">
@@ -446,23 +464,36 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                       </div>
                     </div>
 
-                    {/* Right: Architecture Preview */}
-                    <div className="lg:w-[400px] xl:w-[500px] flex-shrink-0">
-                      <div className="relative rounded-lg overflow-hidden border border-border/50 bg-white shadow-sm">
-                        <Image
-                          src="/zapenu-infrastructure-diagram.png"
-                          alt="Zapenu Architecture"
-                          width={500}
-                          height={350}
-                          className="w-full h-auto"
-                          priority
-                        />
-                      </div>
+                    {/* Right: Product Preview Carousel */}
+                    <div
+                      className="lg:w-[400px] xl:w-[500px] flex-shrink-0"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <Carousel opts={{ loop: true }} className="w-full">
+                        <CarouselContent className="-ml-2">
+                          {zapenuPreviewImages.map((image, index) => (
+                            <CarouselItem key={image.src} className="pl-2">
+                              <div className="relative aspect-[10/7] rounded-lg overflow-hidden border border-border/50 bg-white shadow-sm">
+                                <Image
+                                  src={image.src}
+                                  alt={image.alt}
+                                  fill
+                                  sizes="(min-width: 1280px) 500px, (min-width: 1024px) 400px, 100vw"
+                                  className="object-cover object-top"
+                                  priority={index === 0}
+                                />
+                              </div>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="!left-2 bg-background/90 backdrop-blur-sm hover:bg-background" />
+                        <CarouselNext className="!right-2 bg-background/90 backdrop-blur-sm hover:bg-background" />
+                      </Carousel>
                       <p className="text-xs text-muted-foreground text-center mt-2">
                         {t('projects.architectureOf5Layers')}
                       </p>
                     </div>
-                  </button>
+                  </div>
 
                   {/* Expandable Content */}
                   <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isProjectExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>

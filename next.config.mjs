@@ -7,6 +7,12 @@ const nextConfig = {
   distDir: 'out',
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'assets.alejotamayo.com',
+      },
+    ],
   },
 }
 
