@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -68,6 +69,22 @@ const whatsappAssistantPreviewImages = [
   },
 ];
 
+const CAROUSEL_AUTO_ADVANCE_DELAY_MS = 4500;
+
+function useAutoAdvanceCarousel(api: CarouselApi, delay = CAROUSEL_AUTO_ADVANCE_DELAY_MS) {
+  useEffect(() => {
+    if (!api || api.scrollSnapList().length <= 1) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      api.scrollNext();
+    }, delay);
+
+    return () => window.clearInterval(intervalId);
+  }, [api, delay]);
+}
+
 export default function Portfolio() {
   const { t } = useTranslation('common');
   const { t: tProjects } = useTranslation('projects');
@@ -78,6 +95,11 @@ const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
 const [isProjectExpanded, setIsProjectExpanded] = useState(true);
 const [isWhatsappProjectExpanded, setIsWhatsappProjectExpanded] = useState(false);
 const [isProjectsMenuOpen, setIsProjectsMenuOpen] = useState(false);
+const [zapenuCarouselApi, setZapenuCarouselApi] = useState<CarouselApi>();
+const [whatsappCarouselApi, setWhatsappCarouselApi] = useState<CarouselApi>();
+
+useAutoAdvanceCarousel(zapenuCarouselApi);
+useAutoAdvanceCarousel(whatsappCarouselApi);
 
 const homeRef = useRef<HTMLDivElement>(null);
 const projectsRef = useRef<HTMLDivElement>(null);
@@ -500,7 +522,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                       className="lg:w-[400px] xl:w-[500px] flex-shrink-0"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      <Carousel opts={{ loop: true }} className="w-full">
+                      <Carousel opts={{ loop: true }} setApi={setZapenuCarouselApi} className="w-full">
                         <CarouselContent className="-ml-2">
                           {zapenuPreviewImages.map((image, index) => (
                             <CarouselItem key={image.src} className="pl-2">
@@ -665,7 +687,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                       className="lg:w-[400px] xl:w-[500px] flex-shrink-0"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      <Carousel opts={{ loop: true }} className="w-full">
+                      <Carousel opts={{ loop: true }} setApi={setWhatsappCarouselApi} className="w-full">
                         <CarouselContent className="-ml-2">
                           {whatsappAssistantPreviewImages.map((image, index) => (
                             <CarouselItem key={`${image.src}-${index}`} className="pl-2">
