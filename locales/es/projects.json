@@ -18,5 +18,14 @@
   "nvimConfigFullDescription": "Setup de Neovim con LSP, tree-sitter, autocompletado y plugins esenciales para desarrollo moderno.",
   "orderPlatformTitle": "Distributed Commerce Platform",
   "orderPlatformDescription": "Plataforma de comercio electrónico distribuida con Event Sourcing y Saga Pattern",
-  "orderPlatformFullDescription": "Sistema completo de gestión de órdenes con arquitectura de microservicios, implementando Event Sourcing, Saga Pattern para compensación distribuida, y Outbox Pattern para publicación confiable de eventos."
+  "orderPlatformFullDescription": "Sistema completo de gestión de órdenes con arquitectura de microservicios, implementando Event Sourcing, Saga Pattern para compensación distribuida, y Outbox Pattern para publicación confiable de eventos.",
+  "whatsappAssistantTitle": "Asistente de Ventas WhatsApp",
+  "whatsappAssistantSubtitle": "Automatización de Ventas con IA y Contexto Conversacional",
+  "whatsappAssistantDescription": "Plataforma backend para un asistente de ventas por WhatsApp que ayuda a clientes a encontrar productos tecnológicos, consultar disponibilidad, pedir información del negocio y escalar a un asesor humano.",
+  "whatsappAssistantChallenge": "Construir un asistente de ventas por WhatsApp que pudiera mantener el contexto de la conversación, responder consultas sobre productos y evitar respuestas inventadas al manejar precios, disponibilidad, presupuestos y solicitudes de asesor humano.",
+  "whatsappAssistantSolution": "Implementé un backend en TypeScript/Express integrado con WAHA, Supabase/PostgreSQL y proveedores de IA. El sistema combina enrutamiento determinístico, herramientas validadas contra base de datos y una capa de contexto persistente para resolver seguimientos de conversación de forma segura.",
+  "whatsappAssistantResult1": "Permitió conversaciones con seguimiento contextual sobre productos, presupuestos y alternativas.",
+  "whatsappAssistantResult2": "Mitigó alucinaciones al validar respuestas sobre precios, stock, horarios, ubicación y servicios contra fuentes controladas.",
+  "whatsappAssistantResult3": "Automatizó la atención inicial y preservó el estado de derivación para detener el bot cuando se solicita un asesor humano.",
+  "whatsappAssistantImagePlaceholder": "Capturas próximamente: flujo de WhatsApp, arquitectura y vistas admin/API"
 }

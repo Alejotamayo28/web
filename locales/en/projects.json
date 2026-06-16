@@ -18,5 +18,14 @@
   "nvimConfigFullDescription": "Neovim setup with LSP, tree-sitter, autocomplete, and essential plugins for modern development.",
   "orderPlatformTitle": "Distributed Commerce Platform",
   "orderPlatformDescription": "Distributed e-commerce platform with Event Sourcing and Saga Pattern",
-  "orderPlatformFullDescription": "Complete order management system with microservices architecture, implementing Event Sourcing, Saga Pattern for distributed compensation, and Outbox Pattern for reliable event publishing."
+  "orderPlatformFullDescription": "Complete order management system with microservices architecture, implementing Event Sourcing, Saga Pattern for distributed compensation, and Outbox Pattern for reliable event publishing.",
+  "whatsappAssistantTitle": "WhatsApp Sales Assistant",
+  "whatsappAssistantSubtitle": "Context-Aware AI Sales Automation",
+  "whatsappAssistantDescription": "Backend platform for a WhatsApp sales assistant that helps customers find technology products, check availability, request business information, and escalate to a human advisor.",
+  "whatsappAssistantChallenge": "Build a WhatsApp sales assistant capable of preserving conversation context, answering product questions, and avoiding invented responses when handling prices, availability, budgets, and human advisor requests.",
+  "whatsappAssistantSolution": "Implemented a TypeScript/Express backend integrated with WAHA, Supabase/PostgreSQL, and AI providers. The system combines deterministic routing, database-validated tools, and a persistent context layer to safely resolve conversation follow-ups.",
+  "whatsappAssistantResult1": "Enabled context-aware conversations around products, budgets, and alternatives.",
+  "whatsappAssistantResult2": "Mitigated hallucinations by validating answers about prices, stock, schedules, location, and services against controlled sources.",
+  "whatsappAssistantResult3": "Automated initial customer support while preserving handoff state to stop the bot when a human advisor is requested.",
+  "whatsappAssistantImagePlaceholder": "Screenshots coming soon: WhatsApp flow, architecture, and admin/API views"
 }

@@ -24,17 +24,47 @@ import {
   Download, Github, Linkedin, Mail, MapPin, FileText,
   Home, Briefcase, ChevronDown,
   Menu, X, Server, Cloud, Database, FileCode2,
-  LayoutGrid
+  LayoutGrid, MessageSquare
 } from "lucide-react";
 
 const zapenuPreviewImages = [
   {
     src: "https://assets.alejotamayo.com/zapenu/lepancake-3.png",
     alt: "Zapenu architecture preview",
+    aspectClassName: "aspect-[10/7]",
+    imageClassName: "object-cover object-top",
+    containerClassName: "bg-white",
   },
   {
     src: "https://assets.alejotamayo.com/zapenu/zapenu-lylapets-2.png",
     alt: "Zapenu product preview",
+    aspectClassName: "aspect-[10/7]",
+    imageClassName: "object-cover object-top",
+    containerClassName: "bg-white",
+  },
+];
+
+const whatsappAssistantPreviewImages = [
+  {
+    src: "https://assets.alejotamayo.com/bot/bot-1.png",
+    alt: "WhatsApp sales assistant conversation preview",
+    aspectClassName: "aspect-[851/403]",
+    imageClassName: "object-cover object-center",
+    containerClassName: "bg-transparent",
+  },
+  {
+    src: "https://assets.alejotamayo.com/bot/bot-1.1.png",
+    alt: "WhatsApp sales assistant follow-up conversation preview",
+    aspectClassName: "aspect-[816/366]",
+    imageClassName: "object-cover object-center",
+    containerClassName: "bg-transparent",
+  },
+  {
+    src: "https://assets.alejotamayo.com/bot/bot-1.2.png",
+    alt: "WhatsApp sales assistant product recommendation preview",
+    aspectClassName: "aspect-[839/300]",
+    imageClassName: "object-cover object-center",
+    containerClassName: "bg-transparent",
   },
 ];
 
@@ -46,6 +76,7 @@ export default function Portfolio() {
 const [activeSection, setActiveSection] = useState("home");
 const [isCvMenuOpen, setIsCvMenuOpen] = useState(false);
 const [isProjectExpanded, setIsProjectExpanded] = useState(true);
+const [isWhatsappProjectExpanded, setIsWhatsappProjectExpanded] = useState(false);
 const [isProjectsMenuOpen, setIsProjectsMenuOpen] = useState(false);
 
 const homeRef = useRef<HTMLDivElement>(null);
@@ -473,13 +504,13 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                         <CarouselContent className="-ml-2">
                           {zapenuPreviewImages.map((image, index) => (
                             <CarouselItem key={image.src} className="pl-2">
-                              <div className="relative aspect-[10/7] rounded-lg overflow-hidden border border-border/50 bg-white shadow-sm">
+                              <div className={`relative ${image.aspectClassName} rounded-lg overflow-hidden border border-border/50 ${image.containerClassName} shadow-sm`}>
                                 <Image
                                   src={image.src}
                                   alt={image.alt}
                                   fill
                                   sizes="(min-width: 1280px) 500px, (min-width: 1024px) 400px, 100vw"
-                                  className="object-cover object-top"
+                                  className={image.imageClassName}
                                   priority={index === 0}
                                 />
                               </div>
@@ -564,6 +595,156 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                             {t('project.viewDocumentation')}
                           </Button>
                         </Link>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* WhatsApp Sales Assistant Project Card */}
+              <Card className="mt-10 border-0 border-l-4 border-l-primary/60 overflow-hidden bg-background hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-0">
+                  {/* Header - Clickable */}
+                  <div
+                    onClick={() => setIsWhatsappProjectExpanded(!isWhatsappProjectExpanded)}
+                    className="w-full p-6 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-8 text-left hover:bg-accent/5 transition-colors cursor-pointer"
+                  >
+                    {/* Left: Project Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <MessageSquare className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">{tProjects('whatsappAssistantTitle')}</h3>
+                          <p className="text-sm text-muted-foreground">{tProjects('whatsappAssistantSubtitle')}</p>
+                        </div>
+                      </div>
+
+                      <p className="text-foreground/80 text-base mb-4 leading-relaxed hidden md:block">
+                        {tProjects('whatsappAssistantDescription')}
+                      </p>
+
+                      {/* Tech Stack Badges */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                          <FileCode2 className="h-3 w-3 mr-1" />
+                          TypeScript
+                        </Badge>
+                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                          <Server className="h-3 w-3 mr-1" />
+                          Node.js
+                        </Badge>
+                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                          <Server className="h-3 w-3 mr-1" />
+                          Express
+                        </Badge>
+                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                          <Database className="h-3 w-3 mr-1" />
+                          Supabase
+                        </Badge>
+                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                          <MessageSquare className="h-3 w-3 mr-1" />
+                          WAHA
+                        </Badge>
+                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                          <Cloud className="h-3 w-3 mr-1" />
+                          AI APIs
+                        </Badge>
+                      </div>
+
+                      {/* Expand Indicator */}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>{isWhatsappProjectExpanded ? t('project.hideDetails') : t('project.viewDetails')}</span>
+                        <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isWhatsappProjectExpanded ? 'rotate-180' : ''}`} />
+                      </div>
+                    </div>
+
+                    {/* Right: Placeholder Preview Carousel */}
+                    <div
+                      className="lg:w-[400px] xl:w-[500px] flex-shrink-0"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <Carousel opts={{ loop: true }} className="w-full">
+                        <CarouselContent className="-ml-2">
+                          {whatsappAssistantPreviewImages.map((image, index) => (
+                            <CarouselItem key={`${image.src}-${index}`} className="pl-2">
+                              <div className={`relative ${image.aspectClassName} rounded-lg overflow-hidden ${image.containerClassName}`}>
+                                <Image
+                                  src={image.src}
+                                  alt={image.alt}
+                                  fill
+                                  sizes="(min-width: 1280px) 500px, (min-width: 1024px) 400px, 100vw"
+                                  className={image.imageClassName}
+                                />
+                              </div>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="!left-2 bg-background/90 backdrop-blur-sm hover:bg-background" />
+                        <CarouselNext className="!right-2 bg-background/90 backdrop-blur-sm hover:bg-background" />
+                      </Carousel>
+                      <p className="text-xs text-muted-foreground text-center mt-2">
+                        {tProjects('whatsappAssistantImagePlaceholder')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Expandable Content */}
+                  <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isWhatsappProjectExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="px-6 md:px-8 pb-6 md:pb-8">
+                      {/* Divider with margins */}
+                      <div className="mx-4 md:mx-6 border-t border-border/50 mb-6" />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Challenge */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                              <span className="text-red-600 font-bold text-sm">!</span>
+                            </div>
+                            <h4 className="font-semibold text-foreground">{t('project.challenge')}</h4>
+                          </div>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {tProjects('whatsappAssistantChallenge')}
+                          </p>
+                        </div>
+
+                        {/* Solution */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                              <span className="text-blue-600 font-bold text-sm">💡</span>
+                            </div>
+                            <h4 className="font-semibold text-foreground">{t('project.solution')}</h4>
+                          </div>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {tProjects('whatsappAssistantSolution')}
+                          </p>
+                        </div>
+
+                        {/* Results */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                              <span className="text-green-600 font-bold text-sm">✓</span>
+                            </div>
+                            <h4 className="font-semibold text-foreground">{t('project.results')}</h4>
+                          </div>
+                          <ul className="text-sm text-muted-foreground space-y-2">
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-500 mt-0.5">•</span>
+                              <span>{tProjects('whatsappAssistantResult1')}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-500 mt-0.5">•</span>
+                              <span>{tProjects('whatsappAssistantResult2')}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-500 mt-0.5">•</span>
+                              <span>{tProjects('whatsappAssistantResult3')}</span>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
