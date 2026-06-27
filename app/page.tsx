@@ -436,7 +436,7 @@ const isProjectsActive = activeSection === 'projects' || activeSection === 'pers
                   <div className="relative">
                     <div className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl">
                       <Image
-                        src="/traje-alejandro.png"
+                        src="/photo_me.png"
                         alt={cvData.name}
                         fill
                         className="object-cover rounded-full"
